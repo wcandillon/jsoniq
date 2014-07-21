@@ -1,0 +1,46 @@
+{
+  "name": "jsoniq",
+  "version": "0.0.0",
+  "description": "JSONiq implementation for JavaScript",
+  "main": "lib/jsoniq.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/wcandillon/jsoniq.git"
+  },
+  "keywords": [
+    "jsoniq",
+    "query",
+    "json"
+  ],
+  "author": {
+    "name": "William Candillon",
+    "email": "w@28.io",
+    "url": "http://28.io"
+  },
+  "licenses": [
+    {
+      "type": "Apache 2",
+      "url": "https://github.com/wcandillon/grunt-swagger-js-codegen/blob/master/LICENSE"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/wcandillon/jsoniq/issues"
+  },
+  "homepage": "https://github.com/wcandillon/jsoniq",
+  "dependencies": {
+    "lodash": "~2.4.1",
+    "q": "~1.0.1",
+    "node-uuid": "~1.4.1"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-jsonlint": "~1.0.4",
+    "matchdep": "~0.3.0",
+    "vows": "~0.7.0",
+    "grunt-vows": "~0.4.1"
+  }
+}
