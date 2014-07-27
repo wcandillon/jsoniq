@@ -128,6 +128,18 @@ vows.describe('Test Building PUL').addBatch({
         assert.equal(pul.upds.deleteFromObject[0].pairs.indexOf('b') !== -1, true);
     },
     
+    'DeleteFromArray Normalization': function(){
+        var target = uuid.v4();
+        var pul = new PUL();
+        pul
+        .deleteFromArray(target, 0)
+        .deleteFromArray(target, 0)
+        .deleteFromArray(target, 0)
+        .deleteFromArray(target, 1)
+        .deleteFromArray(target, 1);
+        assert.equal(pul.upds.deleteFromArray.length, 2, 'Should contain one deleteFromArray primitives');
+    },
+    
     'Test PUL parsing and serialization': function(){
         var pul = new PUL();
         pul
