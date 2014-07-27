@@ -73,7 +73,7 @@ vows.describe('Test Building PUL').addBatch({
             pul
             .replaceInArray(target, 1, 'b')
             .replaceInArray(target, 1, 'c');
-        }, Error);
+        }, jerr.JNUP0009);
     },
     
     'insertIntoObject() Normalization': function(){
@@ -85,11 +85,11 @@ vows.describe('Test Building PUL').addBatch({
         .insertIntoObject(target, { a: 1, b: 2})
         .insertIntoObject(target, { c: 3 })
         .insertIntoObject(target, { d: 4 });
-        assert.equal(pul.upds.insertIntoObject.length, 1, 'Should contain a single insertIntoObject primitive');
-        assert.equal(pul.upds.insertIntoObject[0].pairs.a, 1);
-        assert.equal(pul.upds.insertIntoObject[0].pairs.b, 2);
-        assert.equal(pul.upds.insertIntoObject[0].pairs.c, 3);
-        assert.equal(pul.upds.insertIntoObject[0].pairs.d, 4);
+        assert.equal(pul.udps.insertIntoObject.length, 1, 'Should contain a single insertIntoObject primitive');
+        assert.equal(pul.udps.insertIntoObject[0].pairs.a, 1);
+        assert.equal(pul.udps.insertIntoObject[0].pairs.b, 2);
+        assert.equal(pul.udps.insertIntoObject[0].pairs.c, 3);
+        assert.equal(pul.udps.insertIntoObject[0].pairs.d, 4);
         
         //An error jerr:JNUP0005 is raised if a collision occurs.
         assert.throws(function () {
@@ -111,7 +111,7 @@ vows.describe('Test Building PUL').addBatch({
         .insertIntoArray(target, 1, ['a'])
         .insertIntoArray(target, 0, ['a'])
         .insertIntoArray(target, 0, ['a']);
-        assert.equal(pul.upds.insertIntoArray.length, 2, 'Should contain two insertIntoArray primitives');
+        assert.equal(pul.udps.insertIntoArray.length, 2, 'Should contain two insertIntoArray primitives');
     },
     
     'DeleteFromObject() Normalization': function(){
@@ -122,10 +122,10 @@ vows.describe('Test Building PUL').addBatch({
         .deleteFromObject(target, ['a'])
         .deleteFromObject(target, ['b'])
         .deleteFromObject(target, ['b']);
-        assert.equal(pul.upds.deleteFromObject.length, 1, 'Should contain one deleteFromObject primitives');
-        assert.equal(pul.upds.deleteFromObject[0].pairs.length, 2);
-        assert.equal(pul.upds.deleteFromObject[0].pairs.indexOf('a') !== -1, true);
-        assert.equal(pul.upds.deleteFromObject[0].pairs.indexOf('b') !== -1, true);
+        assert.equal(pul.udps.deleteFromObject.length, 1, 'Should contain one deleteFromObject primitives');
+        assert.equal(pul.udps.deleteFromObject[0].pairs.length, 2);
+        assert.equal(pul.udps.deleteFromObject[0].pairs.indexOf('a') !== -1, true);
+        assert.equal(pul.udps.deleteFromObject[0].pairs.indexOf('b') !== -1, true);
     },
     
     'DeleteFromArray Normalization': function(){
@@ -137,7 +137,46 @@ vows.describe('Test Building PUL').addBatch({
         .deleteFromArray(target, 0)
         .deleteFromArray(target, 1)
         .deleteFromArray(target, 1);
-        assert.equal(pul.upds.deleteFromArray.length, 2, 'Should contain one deleteFromArray primitives');
+        assert.equal(pul.udps.deleteFromArray.length, 2, 'Should contain one deleteFromArray primitives');
+    },
+    
+    'ReplaceInArray() Normalization': function(){
+        var target = uuid.v4();
+        var pul = new PUL();
+        pul
+        .deleteFromArray(target, 0)
+        .replaceInArray(target, 0);
+        assert.equal(pul.normalize().udps.replaceInArray.length, 0, 'Should contain no replaceInArray primitives');
+        
+        pul = new PUL();
+        pul
+        .replaceInArray(target, 0)
+        .deleteFromArray(target, 0);
+        assert.equal(pul.normalize().udps.replaceInArray.length, 0, 'Should contain no replaceInArray primitives');
+        
+        //The presence of multiple UPs of this type with the same (array,index) target raises an error.
+        assert.throws(function () {
+            var pul = new PUL();
+            pul
+            .replaceInArray(target, 0)
+            .replaceInArray(target, 0);
+        }, jerr.JNUP0009);
+        
+        assert.throws(function () {
+            var pul = new PUL();
+            pul
+            .deleteFromArray(target, 0)
+            .replaceInArray(target, 0)
+            .replaceInArray(target, 0);
+        }, jerr.JNUP0009);
+        
+        assert.throws(function () {
+            var pul = new PUL();
+            pul
+            .replaceInArray(target, 0)
+            .deleteFromArray(target, 0)
+            .replaceInArray(target, 0);
+        },  jerr.JNUP0009);
     },
     
     'Test PUL parsing and serialization': function(){
