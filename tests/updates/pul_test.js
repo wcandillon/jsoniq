@@ -83,8 +83,8 @@ vows.describe('Test Building PUL').addBatch({
         var pul = new PUL();
         pul
         .insertIntoObject(target, { a: 1, b: 2})
-        .insertIntoObject(target, { c: 3})
-        .insertIntoObject(target, { d: 4});
+        .insertIntoObject(target, { c: 3 })
+        .insertIntoObject(target, { d: 4 });
         assert.equal(pul.upds.insertIntoObject.length, 1, 'Should contain a single insertIntoObject primitive');
         assert.equal(pul.upds.insertIntoObject[0].pairs.a, 1);
         assert.equal(pul.upds.insertIntoObject[0].pairs.b, 2);
@@ -95,11 +95,25 @@ vows.describe('Test Building PUL').addBatch({
         assert.throws(function () {
             var pul = new PUL();
             pul
-            .insertIntoObject(target, { a: 1, b: 2})
-            .insertIntoObject(target, { b: 3, c: 3})
-            .insertIntoObject(target, { c: 3, d: 4});
+            .insertIntoObject(target, { a: 1, b: 2 })
+            .insertIntoObject(target, { b: 3, c: 3 })
+            .insertIntoObject(target, { c: 3, d: 4 });
         }, jerr.JNUP0005);
     },
+    
+    'InsertIntoArray() Normalization': function(){
+        //Multiple UPs of this type with the same (array,index) target are merged into one UP with this target,
+        //where the items are merged in an implementation-dependent order.
+        //Several inserts on the same array and selector (position) are equivalent to a unique insert on that array and selector with the content of those original inserts appended in an implementation-dependent order.
+        var target = uuid.v4();
+        var pul = new PUL();
+        pul
+        .insertIntoArray(target, 1, ['a'])
+        .insertIntoArray(target, 0, ['a'])
+        .insertIntoArray(target, 0, ['a']);
+        assert.equal(pul.upds.insertIntoArray.length, 2, 'Should contain two insertIntoArray primitives');
+    },
+    
     
     'Test PUL parsing and serialization': function(){
         var pul = new PUL();
