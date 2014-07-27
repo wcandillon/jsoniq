@@ -123,9 +123,9 @@ vows.describe('Test Building PUL').addBatch({
         .deleteFromObject(target, ['b'])
         .deleteFromObject(target, ['b']);
         assert.equal(pul.udps.deleteFromObject.length, 1, 'Should contain one deleteFromObject primitives');
-        assert.equal(pul.udps.deleteFromObject[0].pairs.length, 2);
-        assert.equal(pul.udps.deleteFromObject[0].pairs.indexOf('a') !== -1, true);
-        assert.equal(pul.udps.deleteFromObject[0].pairs.indexOf('b') !== -1, true);
+        assert.equal(pul.udps.deleteFromObject[0].keys.length, 2);
+        assert.equal(pul.udps.deleteFromObject[0].keys.indexOf('a') !== -1, true);
+        assert.equal(pul.udps.deleteFromObject[0].keys.indexOf('b') !== -1, true);
     },
     
     'DeleteFromArray Normalization': function(){
