@@ -34,5 +34,43 @@ vows.describe('Test Building PUL').addBatch({
             .replaceInObject(target, 'a', 1)
             .replaceInObject(target, 'a', 2);
         }, Error);
+    },
+    
+    'Two or more RenameInObject primitives have the same target object and selector.': function(){
+        //Objects have different identity
+        assert.doesNotThrow(function () {
+            var pul = new PUL();
+            pul
+            .renameInObject({ a: 1 }, 'a', 'b')
+            .renameInObject({ a: 1 }, 'a', 'b');
+        });
+        
+        //Objects have the same identity
+        assert.throws(function () {
+            var target = { a: 1 };
+            var pul = new PUL();
+            pul
+            .renameInObject(target, 'a', 'b')
+            .renameInObject(target, 'a', 'c');
+        }, Error);
+    },
+    
+    'Two or more ReplaceInArray primitives have the same target object and selector.': function(){
+        //Objects have different identity
+        assert.doesNotThrow(function () {
+            var pul = new PUL();
+            pul
+            .replaceInArray([1, 2], 1, 'b')
+            .replaceInArray([1, 2], 1, 'a');
+        });
+        
+        //Objects have the same identity
+        assert.throws(function () {
+            var target = [1, 2];
+            var pul = new PUL();
+            pul
+            .replaceInArray(target, 1, 'b')
+            .replaceInArray(target, 1, 'c');
+        }, Error);
     }
 }).export(module);
