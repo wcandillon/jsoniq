@@ -10,6 +10,7 @@ vows.describe('Test Building PUL').addBatch({
         var pul = new PUL();
         pul
         .insertIntoObject({ a: 1 }, { b: 2 })
-        .insertIntoArray([], 0, ['a']);
+        .insertIntoArray([], 0, ['a'])
+        .deleteFromObject({ a: 1 }, ['a', 'b']);
     }
 }).export(module);
