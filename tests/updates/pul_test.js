@@ -114,6 +114,19 @@ vows.describe('Test Building PUL').addBatch({
         assert.equal(pul.upds.insertIntoArray.length, 2, 'Should contain two insertIntoArray primitives');
     },
     
+    'DeleteFromObject() Normalization': function(){
+        var target = uuid.v4();
+        var pul = new PUL();
+        pul
+        .deleteFromObject(target, ['a'])
+        .deleteFromObject(target, ['a'])
+        .deleteFromObject(target, ['b'])
+        .deleteFromObject(target, ['b']);
+        assert.equal(pul.upds.deleteFromObject.length, 1, 'Should contain one deleteFromObject primitives');
+        assert.equal(pul.upds.deleteFromObject[0].pairs.length, 2);
+        assert.equal(pul.upds.deleteFromObject[0].pairs.indexOf('a') !== -1, true);
+        assert.equal(pul.upds.deleteFromObject[0].pairs.indexOf('b') !== -1, true);
+    },
     
     'Test PUL parsing and serialization': function(){
         var pul = new PUL();
