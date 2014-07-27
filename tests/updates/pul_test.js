@@ -35,7 +35,7 @@ vows.describe('Test Building PUL').addBatch({
             pul
             .replaceInObject(target, 'a', 1)
             .replaceInObject(target, 'a', 2);
-        }, Error);
+        }, jerr.JNUP0009);
     },
     
     'Two or more RenameInObject primitives have the same target object and selector.': function(){
@@ -76,7 +76,7 @@ vows.describe('Test Building PUL').addBatch({
         }, jerr.JNUP0009);
     },
     
-    'insertIntoObject() Normalization': function(){
+    'insertIntoObject Normalization': function(){
         //Multiple UPs of this type with the same object target are merged into one UP with this target,
         //where the sources containing the pairs to insert are merged into one object.
         var target = uuid.v4();
@@ -101,7 +101,7 @@ vows.describe('Test Building PUL').addBatch({
         }, jerr.JNUP0005);
     },
     
-    'InsertIntoArray() Normalization': function(){
+    'InsertIntoArray Normalization': function(){
         //Multiple UPs of this type with the same (array,index) target are merged into one UP with this target,
         //where the items are merged in an implementation-dependent order.
         //Several inserts on the same array and selector (position) are equivalent to a unique insert on that array and selector with the content of those original inserts appended in an implementation-dependent order.
@@ -114,7 +114,7 @@ vows.describe('Test Building PUL').addBatch({
         assert.equal(pul.udps.insertIntoArray.length, 2, 'Should contain two insertIntoArray primitives');
     },
     
-    'DeleteFromObject() Normalization': function(){
+    'DeleteFromObject Normalization': function(){
         var target = uuid.v4();
         var pul = new PUL();
         pul
@@ -140,7 +140,7 @@ vows.describe('Test Building PUL').addBatch({
         assert.equal(pul.udps.deleteFromArray.length, 2, 'Should contain one deleteFromArray primitives');
     },
     
-    'ReplaceInArray() Normalization': function(){
+    'ReplaceInArray Normalization': function(){
         var target = uuid.v4();
         var pul = new PUL();
         pul
@@ -177,6 +177,46 @@ vows.describe('Test Building PUL').addBatch({
             .deleteFromArray(target, 0)
             .replaceInArray(target, 0);
         },  jerr.JNUP0009);
+    },
+    
+    'ReplaceInObject Normalization': function(){
+        var target = uuid.v4();
+        var pul = new PUL();
+        pul
+        .deleteFromObject(target, ['foo'])
+        .replaceInObject(target, 'foo', 'bar');
+        assert.equal(pul.normalize().udps.replaceInObject.length, 0, 'Should contain no replaceInObject primitives');
+        
+        pul = new PUL();
+        pul
+        .replaceInObject(target, 'foo', 'bar')
+        .deleteFromObject(target, ['foo']);
+        assert.equal(pul.normalize().udps.replaceInObject.length, 0, 'Should contain no replaceInObject primitives');
+        
+        //The presence of multiple UPs of this type with the same (array,index) target raises an error.
+        assert.throws(function () {
+            var pul = new PUL();
+            pul
+            .replaceInObject(target, 'foo', 'bar')
+            .replaceInObject(target, 'foo', 'bar');
+        }, jerr.JNUP0009);
+        
+        assert.throws(function () {
+            var pul = new PUL();
+            pul
+            .deleteFromObject(target, ['foo'])
+            .replaceInObject(target, 'foo', 'bar')
+            .replaceInObject(target, 'foo', 'bar');
+        }, jerr.JNUP0009);
+        
+        assert.throws(function () {
+            var pul = new PUL();
+            pul
+            .replaceInObject(target, 'foo', 'bar')
+            .deleteFromObject(target, ['foo'])
+            .replaceInObject(target, 'foo', 'bar');
+        },  jerr.JNUP0009);
+        
     },
     
     'Test PUL parsing and serialization': function(){
