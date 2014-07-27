@@ -218,6 +218,46 @@ vows.describe('Test Building PUL').addBatch({
         },  jerr.JNUP0009);
         
     },
+
+    'RenameInObject Normalization': function(){
+        var target = uuid.v4();
+        var pul = new PUL();
+        pul
+        .deleteFromObject(target, ['foo'])
+        .renameInObject(target, 'foo', 'bar');
+        assert.equal(pul.normalize().udps.replaceInObject.length, 0, 'Should contain no renameInObject primitives');
+        
+        pul = new PUL();
+        pul
+        .renameInObject(target, 'foo', 'bar')
+        .deleteFromObject(target, ['foo']);
+        assert.equal(pul.normalize().udps.replaceInObject.length, 0, 'Should contain no renameInObject primitives');
+        
+        //The presence of multiple UPs of this type with the same (array,index) target raises an error.
+        assert.throws(function () {
+            var pul = new PUL();
+            pul
+            .renameInObject(target, 'foo', 'bar')
+            .renameInObject(target, 'foo', 'bar');
+        }, jerr.JNUP0009);
+        
+        assert.throws(function () {
+            var pul = new PUL();
+            pul
+            .deleteFromObject(target, ['foo'])
+            .renameInObject(target, 'foo', 'bar')
+            .renameInObject(target, 'foo', 'bar');
+        }, jerr.JNUP0009);
+        
+        assert.throws(function () {
+            var pul = new PUL();
+            pul
+            .renameInObject(target, 'foo', 'bar')
+            .deleteFromObject(target, ['foo'])
+            .renameInObject(target, 'foo', 'bar');
+        },  jerr.JNUP0009);
+        
+    },
     
     'Test PUL parsing and serialization': function(){
         var pul = new PUL();
