@@ -73,5 +73,26 @@ vows.describe('Test Building PUL').addBatch({
             .replaceInArray(target, 1, 'b')
             .replaceInArray(target, 1, 'c');
         }, Error);
+    },
+    
+    'Test PUL parsing and serialization': function(){
+        var pul = new PUL();
+        pul
+        .insertIntoObject(uuid.v4(), { a: 1 })
+        .insertIntoArray(uuid.v4(), 0, [1, 2])
+        .deleteFromObject(uuid.v4(), ['a'])
+        .replaceInObject(uuid.v4(), 'a', 1)
+        .deleteFromArray(uuid.v4(), 0)
+        .replaceInArray(uuid.v4(), 0, 1)
+        .renameInObject(uuid.v4(), 'a', 'b');
+
+        var serializedPUL = pul.serialize();
+        var pul1 = new PUL();
+        pul1.parse(serializedPUL);
+        var pul2 = new PUL();
+        pul2.parse(serializedPUL);
+        assert.equal(pul1.serialize(), pul2.serialize(), 'pul1 and pul2 should be identicals');
+        assert.equal(pul1.serialize(), serializedPUL, 'pul1 and serializedPUL should be identicals');
+        assert.equal(pul2.serialize(), serializedPUL, 'pul2 and serializedPUL should be identicals');
     }
 }).export(module);
