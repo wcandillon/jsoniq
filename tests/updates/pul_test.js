@@ -5,6 +5,7 @@ var assert = require('assert');
 var uuid = require('node-uuid');
 
 var PUL = require('../../lib/update/pul');
+var jerr = require('../../lib/errors');
 
 vows.describe('Test Building PUL').addBatch({
     'simple PUL': function(){
@@ -73,6 +74,31 @@ vows.describe('Test Building PUL').addBatch({
             .replaceInArray(target, 1, 'b')
             .replaceInArray(target, 1, 'c');
         }, Error);
+    },
+    
+    'insertIntoObject() Normalization': function(){
+        //Multiple UPs of this type with the same object target are merged into one UP with this target,
+        //where the sources containing the pairs to insert are merged into one object.
+        var target = uuid.v4();
+        var pul = new PUL();
+        pul
+        .insertIntoObject(target, { a: 1, b: 2})
+        .insertIntoObject(target, { c: 3})
+        .insertIntoObject(target, { d: 4});
+        assert.equal(pul.upds.insertIntoObject.length, 1, 'Should contain a single insertIntoObject primitive');
+        assert.equal(pul.upds.insertIntoObject[0].pairs.a, 1);
+        assert.equal(pul.upds.insertIntoObject[0].pairs.b, 2);
+        assert.equal(pul.upds.insertIntoObject[0].pairs.c, 3);
+        assert.equal(pul.upds.insertIntoObject[0].pairs.d, 4);
+        
+        //An error jerr:JNUP0005 is raised if a collision occurs.
+        assert.throws(function () {
+            var pul = new PUL();
+            pul
+            .insertIntoObject(target, { a: 1, b: 2})
+            .insertIntoObject(target, { b: 3, c: 3})
+            .insertIntoObject(target, { c: 3, d: 4});
+        }, jerr.JNUP0005);
     },
     
     'Test PUL parsing and serialization': function(){
