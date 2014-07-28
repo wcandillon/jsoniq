@@ -4,7 +4,7 @@
   "description": "JSONiq implementation for JavaScript",
   "main": "lib/jsoniq.js",
   "scripts": {
-    "test": "npm test"
+    "test": "grunt"
   },
   "repository": {
     "type": "git",
