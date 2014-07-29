@@ -4,7 +4,7 @@ var vows = require('vows');
 var assert = require('assert');
 var uuid = require('node-uuid');
 
-var PUL = require('../../lib/update/pul');
+var PUL = require('../../lib/updates/pul');
 var jerr = require('../../lib/errors');
 
 vows.describe('Test Building PUL').addBatch({
