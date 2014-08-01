@@ -38,6 +38,16 @@ vows.describe('Test MemoryStore').addBatch({
         assert.equal(obj.b.d, undefined);
         assert.equal(obj.b.c, 1);
 
+        var serializedPUL = store.pul.serialize();
+        store.commit();
+
+        assert.equal(obj.b.d, 1);
+        assert.equal(obj.b.c, undefined);
+
+        obj = { a: 1, b: { c: 1 } };
+        store = new MemoryStore();
+        store.put(id, obj);
+        store.pul.parse(serializedPUL);
         store.commit();
 
         assert.equal(obj.b.d, 1);

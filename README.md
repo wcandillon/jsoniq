@@ -7,14 +7,18 @@
 ###Pending Update Lists
 
 ```javascript
-var obj = { a: 1, b: { c: 1 } };
 var store = new MemoryStore();
-var ref = store.put(obj);
-store.pul()
-.insert(ref, ['b'], { d: 1 })
-.delete(ref, ['b'], ['c'])
-.apply();
-console.log(obj); <= { a: 1, b: { d: 1 } }
+
+var obj = { a: 1, b: { c: 1 } };
+var id = store.put(obj);
+store
+.insertIntoObject(id, ['b'], { d: 1 })
+.deleteFromObject(id, ['b'], ['c']);
+
+store.commit();
+
+assert.equal(obj.b.d, 1);
+assert.equal(obj.b.c, undefined);
 ```
 
 ###TODOs
