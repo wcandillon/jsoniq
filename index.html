@@ -1,0 +1,141 @@
+﻿<!doctype html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>jsoniq | jsoniq</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+
+<header>
+    <div class="tsd-page-toolbar">
+        <div class="container">
+            <div id="tsd-filter">
+                <input type="checkbox" id="tsd-filter-inherited" checked />
+                <label for="tsd-filter-inherited">Inherited</label>
+
+                <input type="checkbox" id="tsd-filter-private" checked />
+                <label for="tsd-filter-private">Private</label>
+
+                <input type="checkbox" id="tsd-filter-only-exported" />
+                <label for="tsd-filter-only-exported">Only exported</label>
+            </div>
+
+            <a href="index.html">jsoniq</a>
+        </div>
+    </div>
+    <div class="tsd-page-title">
+        <div class="container">
+            <ul class="breadcrumb">
+                
+            </ul>
+            <h1> jsoniq</h1>
+        </div>
+    </div>
+</header>
+
+<div class="container container-main">
+    <div class="row">
+        <div class="col-8">
+            <h1 id="jsoniq">JSONiq</h1>
+<p><a href="https://travis-ci.org/wcandillon/jsoniq"><img src="http://img.shields.io/travis/wcandillon/jsoniq/master.svg?style=flat" alt="Build Status"></a> <a href="http://badge.fury.io/js/jsoniq"><img src="http://img.shields.io/npm/v/jsoniq.svg?style=flat" alt="NPM version"></a> <a href="https://codeclimate.com/github/wcandillon/jsoniq"><img src="http://img.shields.io/codeclimate/github/wcandillon/jsoniq.svg?style=flat" alt="Code Climate"></a></p>
+<h2 id="the-json-query-language">The JSON Query Language</h2>
+<h3 id="pending-update-lists">Pending Update Lists</h3>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> store = <span class="hljs-keyword">new</span> <span class="hljs-type">MemoryStore</span>();
+
+<span class="hljs-keyword">var</span> obj = { a: <span class="hljs-number">1</span>, b: { <span class="hljs-built_in">c</span>: <span class="hljs-number">1</span> } };
+<span class="hljs-keyword">var</span> id = store.put(obj);
+store
+.insertIntoObject(id, ['b'], { d: <span class="hljs-number">1</span> })
+.deleteFromObject(id, ['b'], ['<span class="hljs-built_in">c</span>']);
+
+store.commit();
+
+<span class="hljs-built_in">assert</span>.<span class="hljs-built_in">equal</span>(obj.b.d, <span class="hljs-number">1</span>);
+<span class="hljs-built_in">assert</span>.<span class="hljs-built_in">equal</span>(obj.b.<span class="hljs-built_in">c</span>, undefined);
+</code></pre>
+<h3 id="todos">TODOs</h3>
+<ul>
+<li>Implement apply, composition, inversion, and merging on a memory store</li>
+<li>Implement IndexedDB store</li>
+<li>Implement master-master replication</li>
+</ul>
+
+        </div>
+        <div class="offset-1 col-3">
+            <nav class="tsd-navigation primary">
+                <ul>
+                    
+                        <li class=" ">
+    <a href="globals.html"><em>Globals</em></a>
+    
+</li>
+                    
+                        <li class=" tsd-kind-container">
+    <a href="modules/jerr.html">jerr</a>
+    
+</li>
+                    
+                        <li class=" tsd-kind-dynamic-module">
+    <a href="modules/primitives-updateprimitive.html">primitives/UpdatePrimitive</a>
+    
+</li>
+                    
+                        <li class=" tsd-kind-dynamic-module">
+    <a href="modules/primitives-deletefromarray.html">primitives/DeleteFromArray</a>
+    
+</li>
+                    
+                        <li class=" tsd-kind-dynamic-module">
+    <a href="modules/primitives-deletefromobject.html">primitives/DeleteFromObject</a>
+    
+</li>
+                    
+                        <li class=" tsd-kind-dynamic-module">
+    <a href="modules/primitives-insertintoarray.html">primitives/InsertIntoArray</a>
+    
+</li>
+                    
+                        <li class=" tsd-kind-dynamic-module">
+    <a href="modules/primitives-insertintoobject.html">primitives/InsertIntoObject</a>
+    
+</li>
+                    
+                        <li class=" tsd-kind-dynamic-module">
+    <a href="modules/primitives-renameinobject.html">primitives/RenameInObject</a>
+    
+</li>
+                    
+                        <li class=" tsd-kind-dynamic-module">
+    <a href="modules/primitives-replaceinarray.html">primitives/ReplaceInArray</a>
+    
+</li>
+                    
+                        <li class=" tsd-kind-dynamic-module">
+    <a href="modules/primitives-replaceinobject.html">primitives/ReplaceInObject</a>
+    
+</li>
+                    
+                        <li class=" tsd-kind-dynamic-module">
+    <a href="modules/pul.html">pul</a>
+    
+</li>
+                    
+                </ul>
+            </nav>
+
+            <nav class="tsd-navigation secondary">
+                
+            </nav>
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/main.js"></script>
+
+</body>
+</html>
