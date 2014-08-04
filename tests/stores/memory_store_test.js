@@ -3,8 +3,8 @@
 var vows = require('vows');
 var assert = require('assert');
 
-var MemoryStore = require('../../lib/stores/memory-store').MemoryStore;
-//var jerr = require('../../lib/errors');
+var MemoryStore = require('../../dist/stores/MemoryStore');
+//var jerr = require('../../dist/errors');
 
 vows.describe('Test MemoryStore').addBatch({
     'simple test': function(){
@@ -46,7 +46,7 @@ vows.describe('Test MemoryStore').addBatch({
 
         obj = { a: 1, b: { c: 1 } };
         store = new MemoryStore();
-        store.put(id, obj);
+        store.put(obj, id);
         store.pul.parse(serializedPUL);
         store.commit();
 

@@ -41,6 +41,11 @@
     "grunt-jsonlint": "~1.0.4",
     "matchdep": "~0.3.0",
     "vows": "~0.7.0",
-    "grunt-vows": "~0.4.1"
+    "grunt-vows": "~0.4.1",
+    "grunt-ts": "~1.11.6",
+    "grunt-typedoc": "~0.1.1",
+    "grunt-tslint": "~0.4.2",
+    "grunt-contrib-clean": "~0.6.0",
+    "grunt-gh-pages": "~0.9.1"
   }
 }

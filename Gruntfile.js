@@ -9,7 +9,22 @@ module.exports = function (grunt) {
             }
         },
         jsonlint: {
-            all: ['package.json']
+            all: ['*.json', 'lib/**/*.json']
+        },
+        clean: {
+            build: {
+                src: ['dist/**/*']
+            }
+        },
+        ts: {
+            options: {
+                target: 'es5',
+                module: 'commonjs'
+            },
+            build: {
+                src: ['lib/**/*.ts'],
+                outDir: 'dist'
+            }
         },
         vows: {
             all: {
@@ -20,6 +35,40 @@ module.exports = function (grunt) {
                 },
                 src: ['tests/**/*.js']
             }
+        },
+        typedoc: {
+            build: {
+                options: {
+                    out: 'docs',
+                    name: 'jsoniq',
+                    target: 'es5'
+                },
+                src: [
+                    'lib/**/*.ts'
+                ]
+            }
+        },
+        tslint: {
+            options: {
+                configuration: grunt.file.readJSON('tslint.json')
+            },
+            files: {
+                src: ['lib/**/*.ts']
+            }
+        },
+        'gh-pages': {
+            docs: {
+                src: '**/*',
+                options: {
+                    base: 'docs'
+                }
+            }
+        }
+    });
+
+    grunt.registerTask('deploy', function() {
+        if(process.env.TRAVIS_BRANCH === 'master' && process.env.TRAVIS_PULL_REQUEST === 'false') {
+            grunt.task.run(['gh-pages']);
         }
     });
 
@@ -28,5 +77,5 @@ module.exports = function (grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
     // Default task.
-    grunt.registerTask('default', ['jsonlint', 'jshint', 'vows']);
+    grunt.registerTask('default', ['clean', 'jsonlint', 'jshint', 'tslint', 'ts', 'vows', 'typedoc', 'deploy']);
 };
