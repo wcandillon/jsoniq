@@ -32,3 +32,5 @@ module jerr {
         }
     }
 }
+
+export = jerr;

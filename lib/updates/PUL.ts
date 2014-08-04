@@ -1,15 +1,8 @@
-/// <reference path="../errors.ts" />
 /// <reference path="../../typings/lodash/lodash.d.ts" />
-/// <reference path="../stores/Store.ts" />
-/// <reference path="./primitives/UpdatePrimitive.ts" />
-/// <reference path="./primitives/DeleteFromArray.ts" />
-/// <reference path="./primitives/DeleteFromObject.ts" />
-/// <reference path="./primitives/InsertIntoArray.ts" />
-/// <reference path="./primitives/InsertIntoObject.ts" />
-/// <reference path="./primitives/ReplaceInObject.ts" />
-/// <reference path="./primitives/ReplaceInArray.ts" />
-/// <reference path="./primitives/RenameInObject.ts" />
 import _ = require("lodash");
+
+import jerr = require("../errors");
+import Store = require("../stores/Store");
 
 import InsertIntoObject = require("./primitives/InsertIntoObject");
 import InsertIntoArray  = require("./primitives/InsertIntoArray");

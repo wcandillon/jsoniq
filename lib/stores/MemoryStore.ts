@@ -1,8 +1,7 @@
-/// <reference path="./Store.ts" />
-/// <reference path="../updates/PUL.ts" />
 /// <reference path="../../typings/node-uuid/node-uuid.d.ts" />
 import uuid = require("node-uuid");
 import PUL = require("../updates/PUL");
+import Store = require("./Store");
 
 class MemoryStore implements Store {
     pul: PUL = new PUL();

@@ -1,4 +1,8 @@
-/// <reference path="../../stores/Store.ts" />
+/// <reference path="../../../typings/lodash/lodash.d.ts" />
+//import _ = require("lodash");
+//import jerr = require("../../errors");
+import Store = require("../../stores/Store");
+
 class UpdatePrimitive {
     target: string;
 

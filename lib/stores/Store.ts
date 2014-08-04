@@ -12,3 +12,5 @@ interface Store {
 
     commit(): Store;
 }
+
+export = Store;

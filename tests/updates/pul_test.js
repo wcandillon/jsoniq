@@ -54,7 +54,7 @@ vows.describe('Test Building PUL').addBatch({
             pul
             .renameInObject(target, 'a', 'b')
             .renameInObject(target, 'a', 'c');
-        }, Error);
+        }, jerr.JNUP0009);
     },
     
     'Two or more ReplaceInArray primitives have the same target object and selector.': function(){
