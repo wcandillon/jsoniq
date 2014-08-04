@@ -27,7 +27,7 @@ vows.describe('Test MemoryStore').addBatch({
         assert.equal(obj, object);
     },
     
-    'simple update': function(){
+    'simple update (1)': function(){
         var obj = { a: 1, b: { c: 1 } };
         var store = new MemoryStore();
         var id = store.put(obj);
@@ -52,5 +52,17 @@ vows.describe('Test MemoryStore').addBatch({
 
         assert.equal(obj.b.d, 1);
         assert.equal(obj.b.c, undefined);
+    },
+    
+    'simple update (2)': function(){
+        var obj = { a: 1, b: { c: 1 } };
+        var store = new MemoryStore();
+        var id = store.put(obj);
+        
+        store.renameInObject(id, [], 'a', 'z');
+        store.commit();
+        
+        assert.equal(obj.z, 1);
+        assert.equal(obj.a, undefined);
     }
 }).export(module);
