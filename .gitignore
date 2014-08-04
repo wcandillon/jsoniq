@@ -4,3 +4,4 @@ node_modules
 .tscache
 .baseDir.ts
 docs
+dist
