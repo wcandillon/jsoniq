@@ -77,5 +77,5 @@ module.exports = function (grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
     // Default task.
-    grunt.registerTask('default', ['clean', 'jsonlint', 'jshint', 'tslint', 'ts', 'vows', 'typedoc', 'deploy']);
+    grunt.registerTask('default', ['clean', 'jsonlint', 'jshint', 'tslint', 'ts', 'vows', 'typedoc']);
 };
