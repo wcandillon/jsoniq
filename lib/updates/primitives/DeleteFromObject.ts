@@ -1,14 +1,15 @@
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
 import _ = require("lodash");
 //import jerr = require("../../errors");
-import Store = require("../../stores/Store");
+import Transaction = require("../../stores/Transaction");
+
 import UpdatePrimitive = require("./UpdatePrimitive");
 
 class DeleteFromObject extends UpdatePrimitive {
     keys: string[];
 
-    constructor(target: string, keys: string[]) {
-        super(target);
+    constructor(id: string, ordPath: string[], keys: string[]) {
+        super(id, ordPath);
         this.keys = keys;
     }
 
@@ -17,10 +18,10 @@ class DeleteFromObject extends UpdatePrimitive {
         return this;
     }
 
-    apply(store: Store): UpdatePrimitive {
-        var item = store.get(this.target);
+    apply(transaction: Transaction): UpdatePrimitive {
+        var target = this.getTarget(transaction);
         this.keys.forEach(function(key) {
-            delete item[key];
+            delete target[key];
         });
         return this;
     }

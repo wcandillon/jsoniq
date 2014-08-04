@@ -1,14 +1,16 @@
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
 import _ = require("lodash");
 import jerr = require("../../errors");
-import Store = require("../../stores/Store");
+
+import Transaction = require("../../stores/Transaction");
+
 import UpdatePrimitive = require("./UpdatePrimitive");
 
 class InsertIntoObject extends UpdatePrimitive {
     pairs: {};
 
-    constructor(target: string, pairs: {}) {
-        super(target);
+    constructor(target: string, ordPath: string[], pairs: {}) {
+        super(target, ordPath);
         this.pairs = pairs;
     }
 
@@ -25,11 +27,17 @@ class InsertIntoObject extends UpdatePrimitive {
         return this;
     }
 
-    apply(store: Store): UpdatePrimitive {
-        var item = store.get(this.target);
+    apply(transaction: Transaction): UpdatePrimitive {
+        var target = this.getTarget(transaction);
+        //TODO: use lamba instead
         var that = this;
         Object.keys(this.pairs).forEach(function(key) {
-            item[key] = that.pairs[key];
+            //It is a dynamic error if upd:applyUpdates causes an object to contain two pairs with the same name.
+            if(target[key]) {
+                throw new jerr.JNUP0006(key);
+            } else {
+                target[key] = that.pairs[key];
+            }
         });
         return this;
     }
