@@ -13,39 +13,15 @@ import ReplaceInObject  = require("./primitives/ReplaceInObject");
 import ReplaceInArray   = require("./primitives/ReplaceInArray");
 import RenameInObject   = require("./primitives/RenameInObject");
 
+import UpdatePrimitives   = require("./UpdatePrimitives");
+
 class PUL {
-    insertIntoObjectList : InsertIntoObject[] = [];
-    insertIntoArrayList  : InsertIntoArray[]  = [];
-    deleteFromObjectList : DeleteFromObject[] = [];
-    deleteFromArrayList  : DeleteFromArray[]  = [];
-    replaceInObjectList  : ReplaceInObject[]  = [];
-    replaceInArrayList   : ReplaceInArray[]   = [];
-    renameInObjectList   : RenameInObject[]   = [];
+
+    udps = new UpdatePrimitives();
 
     parse(pul: string): PUL {
-        var that = this;
         var newPul:PUL = JSON.parse(pul);
-        newPul.insertIntoObjectList.forEach(function(udp) {
-            that.insertIntoObject(udp.id, udp.ordPath, udp.pairs);
-        });
-        newPul.insertIntoArrayList.forEach(function(udp) {
-            that.insertIntoArray(udp.id, udp.ordPath, udp.position, udp.items);
-        });
-        newPul.deleteFromObjectList.forEach(function(udp) {
-            that.deleteFromObject(udp.id, udp.ordPath, udp.keys);
-        });
-        newPul.replaceInObjectList.forEach(function(udp) {
-            that.replaceInObject(udp.id, udp.ordPath, udp.key, udp.item);
-        });
-        newPul.deleteFromArrayList.forEach(function(udp) {
-            that.deleteFromArray(udp.id, udp.ordPath, udp.position);
-        });
-        newPul.replaceInArrayList.forEach(function(udp) {
-            that.replaceInArray(udp.id, udp.ordPath, udp.position, udp.item);
-        });
-        newPul.renameInObjectList.forEach(function(udp) {
-            that.renameInObject(udp.id, udp.ordPath, udp.key, udp.newKey);
-        });
+        this.udps.parse(newPul.udps);
         return this;
     }
 
@@ -66,47 +42,48 @@ class PUL {
 
         //Apply updates
         //1. jupd:replace-in-object
-        _.forEach(this.replaceInObjectList, apply);
+        _.forEach(this.udps.replaceInObject, apply);
 
         //2. jupd:delete-from-object
-        _.forEach(this.deleteFromObjectList, apply);
+        _.forEach(this.udps.deleteFromObject, apply);
 
         //3. jupd:rename-in-object
-        _.forEach(this.renameInObjectList, apply);
+        _.forEach(this.udps.renameInObject, apply);
 
         //4. jupd:insert-into-object
-        _.forEach(this.insertIntoObjectList, apply);
+        _.forEach(this.udps.insertIntoObject, apply);
 
         //The array update primitives, furthermore, are applied right-to-left with re- gard to their index.
         //This obviates the problem of indexes being shifted and/or becoming invalid due to deletions or insertions.
         //TODO: test
         //5. jupd:replace-in-array
-        _.sortBy(this.replaceInArrayList, "position");
-        _.forEach(this.replaceInArrayList, apply);
+        _.sortBy(this.udps.replaceInArray, "position");
+        _.forEach(this.udps.replaceInArray, apply);
 
         //6. jupd:delete-from-array
-        _.sortBy(this.deleteFromArrayList, "position");
-        _.forEach(this.deleteFromArrayList, apply);
+        _.sortBy(this.udps.deleteFromArray, "position");
+        _.forEach(this.udps.deleteFromArray, apply);
 
         //7. jupd:insert-into-array
-        _.sortBy(this.insertIntoArrayList, "position");
-        _.forEach(this.insertIntoArrayList, apply);
+        _.sortBy(this.udps.insertIntoArray, "position");
+        _.forEach(this.udps.insertIntoArray, apply);
 
         return this;
     }
 
     normalize(): PUL {
+        //TODO: remove in lambda
         var that = this;
         //If there is a delete on the same (array,index) target, the replace is omitted.
-        _.forEach(this.deleteFromArrayList, function(udp: DeleteFromArray) {
-            <ReplaceInArray[]>_.remove(that.replaceInArrayList, { id: udp.id, ordPath: udp.ordPath, position: udp.position });
+        _.forEach(this.udps.deleteFromArray, function(udp: DeleteFromArray) {
+            <ReplaceInArray[]>_.remove(that.udps.replaceInArray, { id: udp.id, ordPath: udp.ordPath, position: udp.position });
         });
         //If there is a delete on the same (object,name) target, the replace is omitted.
         //If there is a delete on the same (object,name) target, the rename is omitted.
-        _.forEach(this.deleteFromObjectList, function(udp: DeleteFromObject) {
+        _.forEach(this.udps.deleteFromObject, function(udp: DeleteFromObject) {
             _.forEach(udp.keys, function(key: string) {
-                <ReplaceInObject[]>_.remove(that.replaceInObjectList, { id: udp.id, ordPath: udp.ordPath, key: key });
-                <RenameInObject[]>_.remove(that.renameInObjectList, { id: udp.id, ordPath: udp.ordPath, key: key });
+                <ReplaceInObject[]>_.remove(that.udps.replaceInObject, { id: udp.id, ordPath: udp.ordPath, key: key });
+                <RenameInObject[]>_.remove(that.udps.renameInObject, { id: udp.id, ordPath: udp.ordPath, key: key });
             });
         });
         return this;
@@ -121,11 +98,11 @@ class PUL {
         //Multiple UPs of this type with the same object target are merged into one UP with this target,
         //where the sources containing the pairs to insert are merged into one object.
         //An error jerr:JNUP0005 is raised if a collision occurs.
-        var udp = _.find(this.insertIntoObjectList, { id: id, ordPath: ordPath });
+        var udp = _.find(this.udps.insertIntoObject, { id: id, ordPath: ordPath });
         if(udp) {
             udp.merge(newUdp);
         } else {
-            this.insertIntoObjectList.push(newUdp);
+            this.udps.insertIntoObject.push(newUdp);
         }
         return this;
     }
@@ -139,11 +116,11 @@ class PUL {
         //Multiple UPs of this type with the same (array,index) target are merged into one UP with this target,
         //where the items are merged in an implementation-dependent order.
         //Several inserts on the same array and selector (position) are equivalent to a unique insert on that array and selector with the content of those original inserts appended in an implementation-dependent order.
-        var udp = _.find(this.insertIntoArrayList, { id: id, ordPath: ordPath, position: position });
+        var udp = _.find(this.udps.insertIntoArray, { id: id, ordPath: ordPath, position: position });
         if(udp) {
             udp.merge(newUdp);
         } else {
-            this.insertIntoArrayList.push(newUdp);
+            this.udps.insertIntoArray.push(newUdp);
         }
         return this;
     }
@@ -156,11 +133,11 @@ class PUL {
         var newUdp = new DeleteFromObject(id, ordPath, keys);
         //Multiple UPs of this type with the same object target are merged into one UP with this target,
         //where the selectors (names lists) are merged. Duplicate names are removed.
-        var udp = _.find(this.deleteFromObjectList, { id: id, ordPath: ordPath });
+        var udp = _.find(this.udps.deleteFromObject, { id: id, ordPath: ordPath });
         if(udp) {
             udp.merge(newUdp);
         } else {
-            this.deleteFromObjectList.push(newUdp);
+            this.udps.deleteFromObject.push(newUdp);
         }
         return this;
     }
@@ -172,9 +149,9 @@ class PUL {
     deleteFromArray(id: string, ordPath: string[], position: number): PUL {
         var newUdp = new DeleteFromArray(id, ordPath, position);
         //Multiple UPs of this type with the same (array,index) target are merged into one UP with this target.
-        var udp = _.find(this.deleteFromArrayList, { id: id, ordPath: ordPath, position: position });
+        var udp = _.find(this.udps.deleteFromArray, { id: id, ordPath: ordPath, position: position });
         if(!udp) {
-            this.deleteFromArrayList.push(newUdp);
+            this.udps.deleteFromArray.push(newUdp);
         }
         return this;
     }
@@ -186,11 +163,11 @@ class PUL {
     replaceInArray(id: string, ordPath: string[], position: number, item: any): PUL {
         var newUdp = new ReplaceInArray(id, ordPath, position, item);
         //The presence of multiple UPs of this type with the same (array,index) target raises an error.
-        var udp = _.find(this.replaceInArrayList, { id: id, ordPath: ordPath, position: position });
+        var udp = _.find(this.udps.replaceInArray, { id: id, ordPath: ordPath, position: position });
         if(udp) {
             throw new jerr.JNUP0009();
         } else {
-            this.replaceInArrayList.push(newUdp);
+            this.udps.replaceInArray.push(newUdp);
         }
         return this;
     }
@@ -202,11 +179,11 @@ class PUL {
     replaceInObject(id: string, ordPath: string[], key: string, item: any): PUL {
         var newUdp = new ReplaceInObject(id, ordPath, key, item);
         //The presence of multiple UPs of this type with the same (array,index) target raises an error.
-        var udp = _.find(this.replaceInObjectList, { id: id, ordPath: ordPath, key: key });
+        var udp = _.find(this.udps.replaceInObject, { id: id, ordPath: ordPath, key: key });
         if(udp) {
             throw new jerr.JNUP0009();
         } else {
-            this.replaceInObjectList.push(newUdp);
+            this.udps.replaceInObject.push(newUdp);
         }
         return this;
     }
@@ -219,11 +196,11 @@ class PUL {
         var newUdp = new RenameInObject(id, ordPath, key, newKey);
         //The presence of multiple UPs of this type with the same (object,name) target raises an error.
         //If there is a delete on the same (object,name) target, the rename is omitted.
-        var udp = _.find(this.renameInObjectList, { id: id, ordPath: ordPath, key: key });
+        var udp = _.find(this.udps.renameInObject, { id: id, ordPath: ordPath, key: key });
         if(udp) {
             throw new jerr.JNUP0009();
         } else {
-            this.renameInObjectList.push(newUdp);
+            this.udps.renameInObject.push(newUdp);
         }
         return this;
     }
