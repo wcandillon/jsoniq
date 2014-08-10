@@ -1,15 +1,16 @@
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
 //import _ = require("lodash");
 //import jerr = require("../../errors");
-import Store = require("../../stores/Store");
+import Transaction = require("../../stores/Transaction");
+
 import UpdatePrimitive = require("./UpdatePrimitive");
 
 class InsertIntoArray extends UpdatePrimitive {
     position: number;
     items: any[];
 
-    constructor(target: string, position: number, items: any[]) {
-        super(target);
+    constructor(id: string, ordPath: string[], position: number, items: any[]) {
+        super(id, ordPath);
         this.position = position;
         this.items = items;
     }
@@ -19,11 +20,12 @@ class InsertIntoArray extends UpdatePrimitive {
         return this;
     }
 
-    apply(store: Store): UpdatePrimitive {
-        var item = store.get(this.target);
+    apply(transaction: Transaction): UpdatePrimitive {
+        var target = this.getTarget(transaction);
+        //TODO: use lamba instead
         var that = this;
         this.items.forEach(function(i) {
-            item.splice(that.position, 0, i);
+            target.splice(that.position, 0, i);
         });
         return this;
     }

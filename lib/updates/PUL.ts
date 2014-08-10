@@ -2,8 +2,9 @@
 import _ = require("lodash");
 
 import jerr = require("../errors");
-import Store = require("../stores/Store");
+import Transaction = require("../stores/Transaction");
 
+import UpdatePrimitive  = require("./primitives/UpdatePrimitive");
 import InsertIntoObject = require("./primitives/InsertIntoObject");
 import InsertIntoArray  = require("./primitives/InsertIntoArray");
 import DeleteFromObject = require("./primitives/DeleteFromObject");
@@ -25,25 +26,25 @@ class PUL {
         var that = this;
         var newPul:PUL = JSON.parse(pul);
         newPul.insertIntoObjectList.forEach(function(udp) {
-            that.insertIntoObject(udp.target, udp.pairs);
+            that.insertIntoObject(udp.id, udp.ordPath, udp.pairs);
         });
         newPul.insertIntoArrayList.forEach(function(udp) {
-            that.insertIntoArray(udp.target, udp.position, udp.items);
+            that.insertIntoArray(udp.id, udp.ordPath, udp.position, udp.items);
         });
         newPul.deleteFromObjectList.forEach(function(udp) {
-            that.deleteFromObject(udp.target, udp.keys);
+            that.deleteFromObject(udp.id, udp.ordPath, udp.keys);
         });
         newPul.replaceInObjectList.forEach(function(udp) {
-            that.replaceInObject(udp.target, udp.key, udp.item);
+            that.replaceInObject(udp.id, udp.ordPath, udp.key, udp.item);
         });
         newPul.deleteFromArrayList.forEach(function(udp) {
-            that.deleteFromArray(udp.target, udp.position);
+            that.deleteFromArray(udp.id, udp.ordPath, udp.position);
         });
         newPul.replaceInArrayList.forEach(function(udp) {
-            that.replaceInArray(udp.target, udp.position, udp.item);
+            that.replaceInArray(udp.id, udp.ordPath, udp.position, udp.item);
         });
         newPul.renameInObjectList.forEach(function(udp) {
-            that.renameInObject(udp.target, udp.key, udp.newKey);
+            that.renameInObject(udp.id, udp.ordPath, udp.key, udp.newKey);
         });
         return this;
     }
@@ -52,50 +53,44 @@ class PUL {
         return JSON.stringify(this);
     }
 
-    apply(store: Store): PUL {
+    apply(transaction: Transaction): PUL {
         //Normalize PUL
         this.normalize();
 
+        var apply = (udp: UpdatePrimitive) => {
+            var id = udp.id;
+            var item = transaction.get(id);
+            udp.apply(transaction);
+            transaction.put(id, item);
+        };
+
         //Apply updates
         //1. jupd:replace-in-object
-        _.forEach(this.replaceInObjectList, (udp: ReplaceInObject) => {
-            udp.apply(store);
-        });
+        _.forEach(this.replaceInObjectList, apply);
 
         //2. jupd:delete-from-object
-        _.forEach(this.deleteFromObjectList, (udp: DeleteFromObject) => {
-            udp.apply(store);
-        });
+        _.forEach(this.deleteFromObjectList, apply);
 
         //3. jupd:rename-in-object
-        _.forEach(this.renameInObjectList, (udp: RenameInObject) => {
-            udp.apply(store);
-        });
+        _.forEach(this.renameInObjectList, apply);
 
         //4. jupd:insert-into-object
-        _.forEach(this.insertIntoObjectList, (udp: InsertIntoObject) => {
-            udp.apply(store);
-        });
+        _.forEach(this.insertIntoObjectList, apply);
 
         //The array update primitives, furthermore, are applied right-to-left with re- gard to their index.
         //This obviates the problem of indexes being shifted and/or becoming invalid due to deletions or insertions.
+        //TODO: test
         //5. jupd:replace-in-array
         _.sortBy(this.replaceInArrayList, "position");
-        _.forEach(this.replaceInArrayList, (udp: ReplaceInArray) => {
-            udp.apply(store);
-        });
+        _.forEach(this.replaceInArrayList, apply);
 
         //6. jupd:delete-from-array
         _.sortBy(this.deleteFromArrayList, "position");
-        _.forEach(this.deleteFromArrayList, (udp: DeleteFromArray) => {
-            udp.apply(store);
-        });
+        _.forEach(this.deleteFromArrayList, apply);
 
         //7. jupd:insert-into-array
         _.sortBy(this.insertIntoArrayList, "position");
-        _.forEach(this.insertIntoArrayList, (udp: InsertIntoArray) => {
-            udp.apply(store);
-        });
+        _.forEach(this.insertIntoArrayList, apply);
 
         return this;
     }
@@ -104,14 +99,14 @@ class PUL {
         var that = this;
         //If there is a delete on the same (array,index) target, the replace is omitted.
         _.forEach(this.deleteFromArrayList, function(udp: DeleteFromArray) {
-            <ReplaceInArray[]>_.remove(that.replaceInArrayList, { target: udp.target, position: udp.position });
+            <ReplaceInArray[]>_.remove(that.replaceInArrayList, { id: udp.id, ordPath: udp.ordPath, position: udp.position });
         });
         //If there is a delete on the same (object,name) target, the replace is omitted.
         //If there is a delete on the same (object,name) target, the rename is omitted.
         _.forEach(this.deleteFromObjectList, function(udp: DeleteFromObject) {
             _.forEach(udp.keys, function(key: string) {
-                <ReplaceInObject[]>_.remove(that.replaceInObjectList, { target: udp.target, key: key });
-                <RenameInObject[]>_.remove(that.renameInObjectList, { target: udp.target, key: key });
+                <ReplaceInObject[]>_.remove(that.replaceInObjectList, { id: udp.id, ordPath: udp.ordPath, key: key });
+                <RenameInObject[]>_.remove(that.renameInObjectList, { id: udp.id, ordPath: udp.ordPath, key: key });
             });
         });
         return this;
@@ -121,12 +116,12 @@ class PUL {
      * jupd:insert-into-object($o as object(), $p as object())
      * Inserts all pairs of the object $p into the object $o.
      */
-    insertIntoObject(target: string, pairs: {}): PUL {
-        var newUdp = new InsertIntoObject(target, pairs);
+    insertIntoObject(id: string, ordPath: string[], pairs: {}): PUL {
+        var newUdp = new InsertIntoObject(id, ordPath, pairs);
         //Multiple UPs of this type with the same object target are merged into one UP with this target,
         //where the sources containing the pairs to insert are merged into one object.
         //An error jerr:JNUP0005 is raised if a collision occurs.
-        var udp = _.find(this.insertIntoObjectList, { target: target });
+        var udp = _.find(this.insertIntoObjectList, { id: id, ordPath: ordPath });
         if(udp) {
             udp.merge(newUdp);
         } else {
@@ -139,12 +134,12 @@ class PUL {
      * jupd:insert-into-array($a as array(), $i as xs:integer, $c as item()*)
      * Inserts all items in the sequence $c before position $i into the array $a.
      */
-    insertIntoArray(target: string, position: number, items: any[]): PUL {
-        var newUdp = new InsertIntoArray(target, position, items);
+    insertIntoArray(id: string, ordPath: string[], position: number, items: any[]): PUL {
+        var newUdp = new InsertIntoArray(id, ordPath, position, items);
         //Multiple UPs of this type with the same (array,index) target are merged into one UP with this target,
         //where the items are merged in an implementation-dependent order.
         //Several inserts on the same array and selector (position) are equivalent to a unique insert on that array and selector with the content of those original inserts appended in an implementation-dependent order.
-        var udp = _.find(this.insertIntoArrayList, { target: target, position: position });
+        var udp = _.find(this.insertIntoArrayList, { id: id, ordPath: ordPath, position: position });
         if(udp) {
             udp.merge(newUdp);
         } else {
@@ -157,11 +152,11 @@ class PUL {
      * jupd:delete-from-object($o as object(), $s as xs:string*)
      * Removes the pairs the names of which appear in $s from the object $o.
      */
-    deleteFromObject(target: string, keys: Array<string>): PUL {
-        var newUdp = new DeleteFromObject(target, keys);
+    deleteFromObject(id: string, ordPath: string[], keys: Array<string>): PUL {
+        var newUdp = new DeleteFromObject(id, ordPath, keys);
         //Multiple UPs of this type with the same object target are merged into one UP with this target,
         //where the selectors (names lists) are merged. Duplicate names are removed.
-        var udp = _.find(this.deleteFromObjectList, { target: target });
+        var udp = _.find(this.deleteFromObjectList, { id: id, ordPath: ordPath });
         if(udp) {
             udp.merge(newUdp);
         } else {
@@ -174,10 +169,10 @@ class PUL {
      * jupd:delete-from-array($a as array(), $i as xs:integer)
      * Removes the item at position $i from the array $a (causes all following items in the array to move one position to the left).
      */
-    deleteFromArray(target: string, position: number): PUL {
-        var newUdp = new DeleteFromArray(target, position);
+    deleteFromArray(id: string, ordPath: string[], position: number): PUL {
+        var newUdp = new DeleteFromArray(id, ordPath, position);
         //Multiple UPs of this type with the same (array,index) target are merged into one UP with this target.
-        var udp = _.find(this.deleteFromArrayList, { target: target, position: position });
+        var udp = _.find(this.deleteFromArrayList, { id: id, ordPath: ordPath, position: position });
         if(!udp) {
             this.deleteFromArrayList.push(newUdp);
         }
@@ -188,10 +183,10 @@ class PUL {
      * jupd:replace-in-array($a as array(), $i as xs:integer, $v as item())
      * Replaces the item at position $i in the array $a with the item $v (do nothing if $i is not comprised between 1 and jdm:size($a)).
      */
-    replaceInArray(target: string, position: number, item: any): PUL {
-        var newUdp = new ReplaceInArray(target, position, item);
+    replaceInArray(id: string, ordPath: string[], position: number, item: any): PUL {
+        var newUdp = new ReplaceInArray(id, ordPath, position, item);
         //The presence of multiple UPs of this type with the same (array,index) target raises an error.
-        var udp = _.find(this.replaceInArrayList, { target: target, position: position });
+        var udp = _.find(this.replaceInArrayList, { id: id, ordPath: ordPath, position: position });
         if(udp) {
             throw new jerr.JNUP0009();
         } else {
@@ -204,10 +199,10 @@ class PUL {
      * jupd:replace-in-object($o as object(), $n as xs:string, $v as item())
      * Replaces the value of the pair named $n in the object $o with the item $v (do nothing if there is no such pair).
      */
-    replaceInObject(target: string, key: string, item: any): PUL {
-        var newUdp = new ReplaceInObject(target, key, item);
+    replaceInObject(id: string, ordPath: string[], key: string, item: any): PUL {
+        var newUdp = new ReplaceInObject(id, ordPath, key, item);
         //The presence of multiple UPs of this type with the same (array,index) target raises an error.
-        var udp = _.find(this.replaceInObjectList, { target: target, key: key });
+        var udp = _.find(this.replaceInObjectList, { id: id, ordPath: ordPath, key: key });
         if(udp) {
             throw new jerr.JNUP0009();
         } else {
@@ -220,11 +215,11 @@ class PUL {
      * jupd:rename-in-object($o as object(), $n as xs:string, $p as xs:string)
      * Renames the pair originally named $n in the object $o as $p (do nothing if there is no such pair).
      */
-    renameInObject(target: string, key: string, newKey: string): PUL {
-        var newUdp = new RenameInObject(target, key, newKey);
+    renameInObject(id: string, ordPath: string[], key: string, newKey: string): PUL {
+        var newUdp = new RenameInObject(id, ordPath, key, newKey);
         //The presence of multiple UPs of this type with the same (object,name) target raises an error.
         //If there is a delete on the same (object,name) target, the rename is omitted.
-        var udp = _.find(this.renameInObjectList, { target: target, key: key });
+        var udp = _.find(this.renameInObjectList, { id: id, ordPath: ordPath, key: key });
         if(udp) {
             throw new jerr.JNUP0009();
         } else {

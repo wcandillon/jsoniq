@@ -12,10 +12,10 @@ vows.describe('Test Building PUL').addBatch({
         assert.doesNotThrow(function () {
             var pul = new PUL();
             pul
-            .insertIntoObject(uuid.v4(), { b: 2 })
-            .insertIntoArray(uuid.v4(), 0, ['a'])
-            .deleteFromObject(uuid.v4(), ['a', 'b'])
-            .replaceInObject(uuid.v4(), 'a', 1);
+            .insertIntoObject(uuid.v4(), [], { b: 2 })
+            .insertIntoArray(uuid.v4(), [], 0, ['a'])
+            .deleteFromObject(uuid.v4(), [], ['a', 'b'])
+            .replaceInObject(uuid.v4(), [], 'a', 1);
         });
     },
     
@@ -24,8 +24,8 @@ vows.describe('Test Building PUL').addBatch({
         assert.doesNotThrow(function () {
             var pul = new PUL();
             pul
-            .replaceInObject(uuid.v4(), 'a', 1)
-            .replaceInObject(uuid.v4(), 'a', 2);
+            .replaceInObject(uuid.v4(), [], 'a', 1)
+            .replaceInObject(uuid.v4(), [], 'a', 2);
         });
         
         //Objects have the same identity
@@ -33,8 +33,8 @@ vows.describe('Test Building PUL').addBatch({
             var target = uuid.v4();
             var pul = new PUL();
             pul
-            .replaceInObject(target, 'a', 1)
-            .replaceInObject(target, 'a', 2);
+            .replaceInObject(target, [], 'a', 1)
+            .replaceInObject(target, [], 'a', 2);
         }, jerr.JNUP0009);
     },
     
@@ -43,8 +43,8 @@ vows.describe('Test Building PUL').addBatch({
         assert.doesNotThrow(function () {
             var pul = new PUL();
             pul
-            .renameInObject(uuid.v4(), 'a', 'b')
-            .renameInObject(uuid.v4(), 'a', 'b');
+            .renameInObject(uuid.v4(), [], 'a', 'b')
+            .renameInObject(uuid.v4(), [], 'a', 'b');
         });
         
         //Objects have the same identity
@@ -52,8 +52,8 @@ vows.describe('Test Building PUL').addBatch({
             var target = { a: 1 };
             var pul = new PUL();
             pul
-            .renameInObject(target, 'a', 'b')
-            .renameInObject(target, 'a', 'c');
+            .renameInObject(target, [], 'a', 'b')
+            .renameInObject(target, [], 'a', 'c');
         }, jerr.JNUP0009);
     },
     
@@ -62,8 +62,8 @@ vows.describe('Test Building PUL').addBatch({
         assert.doesNotThrow(function () {
             var pul = new PUL();
             pul
-            .replaceInArray(uuid.v4(), 1, 'b')
-            .replaceInArray(uuid.v4(), 1, 'a');
+            .replaceInArray(uuid.v4(), [], 1, 'b')
+            .replaceInArray(uuid.v4(), [], 1, 'a');
         });
         
         //Objects have the same identity
@@ -71,8 +71,8 @@ vows.describe('Test Building PUL').addBatch({
             var target = uuid.v4();
             var pul = new PUL();
             pul
-            .replaceInArray(target, 1, 'b')
-            .replaceInArray(target, 1, 'c');
+            .replaceInArray(target, [], 1, 'b')
+            .replaceInArray(target, [], 1, 'c');
         }, jerr.JNUP0009);
     },
     
@@ -82,9 +82,9 @@ vows.describe('Test Building PUL').addBatch({
         var target = uuid.v4();
         var pul = new PUL();
         pul
-        .insertIntoObject(target, { a: 1, b: 2})
-        .insertIntoObject(target, { c: 3 })
-        .insertIntoObject(target, { d: 4 });
+        .insertIntoObject(target, [], { a: 1, b: 2})
+        .insertIntoObject(target, [], { c: 3 })
+        .insertIntoObject(target, [], { d: 4 });
         assert.equal(pul.insertIntoObjectList.length, 1, 'Should contain a single insertIntoObject primitive');
         assert.equal(pul.insertIntoObjectList[0].pairs.a, 1);
         assert.equal(pul.insertIntoObjectList[0].pairs.b, 2);
@@ -95,9 +95,9 @@ vows.describe('Test Building PUL').addBatch({
         assert.throws(function () {
             var pul = new PUL();
             pul
-            .insertIntoObject(target, { a: 1, b: 2 })
-            .insertIntoObject(target, { b: 3, c: 3 })
-            .insertIntoObject(target, { c: 3, d: 4 });
+            .insertIntoObject(target, [], { a: 1, b: 2 })
+            .insertIntoObject(target, [], { b: 3, c: 3 })
+            .insertIntoObject(target, [], { c: 3, d: 4 });
         }, jerr.JNUP0005);
     },
     
@@ -108,9 +108,9 @@ vows.describe('Test Building PUL').addBatch({
         var target = uuid.v4();
         var pul = new PUL();
         pul
-        .insertIntoArray(target, 1, ['a'])
-        .insertIntoArray(target, 0, ['a'])
-        .insertIntoArray(target, 0, ['a']);
+        .insertIntoArray(target, [], 1, ['a'])
+        .insertIntoArray(target, [], 0, ['a'])
+        .insertIntoArray(target, [], 0, ['a']);
         assert.equal(pul.insertIntoArrayList.length, 2, 'Should contain two insertIntoArray primitives');
     },
     
@@ -118,10 +118,10 @@ vows.describe('Test Building PUL').addBatch({
         var target = uuid.v4();
         var pul = new PUL();
         pul
-        .deleteFromObject(target, ['a'])
-        .deleteFromObject(target, ['a'])
-        .deleteFromObject(target, ['b'])
-        .deleteFromObject(target, ['b']);
+        .deleteFromObject(target, [], ['a'])
+        .deleteFromObject(target, [], ['a'])
+        .deleteFromObject(target, [], ['b'])
+        .deleteFromObject(target, [], ['b']);
         assert.equal(pul.deleteFromObjectList.length, 1, 'Should contain one deleteFromObject primitives');
         assert.equal(pul.deleteFromObjectList[0].keys.length, 2);
         assert.equal(pul.deleteFromObjectList[0].keys.indexOf('a') !== -1, true);
@@ -132,11 +132,11 @@ vows.describe('Test Building PUL').addBatch({
         var target = uuid.v4();
         var pul = new PUL();
         pul
-        .deleteFromArray(target, 0)
-        .deleteFromArray(target, 0)
-        .deleteFromArray(target, 0)
-        .deleteFromArray(target, 1)
-        .deleteFromArray(target, 1);
+        .deleteFromArray(target, [], 0)
+        .deleteFromArray(target, [], 0)
+        .deleteFromArray(target, [], 0)
+        .deleteFromArray(target, [], 1)
+        .deleteFromArray(target, [], 1);
         assert.equal(pul.deleteFromArrayList.length, 2, 'Should contain one deleteFromArray primitives');
     },
     
@@ -144,38 +144,38 @@ vows.describe('Test Building PUL').addBatch({
         var target = uuid.v4();
         var pul = new PUL();
         pul
-        .deleteFromArray(target, 0)
-        .replaceInArray(target, 0);
+        .deleteFromArray(target, [], 0)
+        .replaceInArray(target, [], 0);
         assert.equal(pul.normalize().replaceInArrayList.length, 0, 'Should contain no replaceInArray primitives');
         
         pul = new PUL();
         pul
-        .replaceInArray(target, 0)
-        .deleteFromArray(target, 0);
+        .replaceInArray(target, [], 0)
+        .deleteFromArray(target, [], 0);
         assert.equal(pul.normalize().replaceInArrayList.length, 0, 'Should contain no replaceInArray primitives');
         
         //The presence of multiple UPs of this type with the same (array,index) target raises an error.
         assert.throws(function () {
             var pul = new PUL();
             pul
-            .replaceInArray(target, 0)
-            .replaceInArray(target, 0);
+            .replaceInArray(target, [], 0)
+            .replaceInArray(target, [], 0);
         }, jerr.JNUP0009);
         
         assert.throws(function () {
             var pul = new PUL();
             pul
-            .deleteFromArray(target, 0)
-            .replaceInArray(target, 0)
-            .replaceInArray(target, 0);
+            .deleteFromArray(target, [], 0)
+            .replaceInArray(target, [], 0)
+            .replaceInArray(target, [], 0);
         }, jerr.JNUP0009);
         
         assert.throws(function () {
             var pul = new PUL();
             pul
-            .replaceInArray(target, 0)
-            .deleteFromArray(target, 0)
-            .replaceInArray(target, 0);
+            .replaceInArray(target, [], 0)
+            .deleteFromArray(target, [], 0)
+            .replaceInArray(target, [], 0);
         },  jerr.JNUP0009);
     },
     
@@ -183,38 +183,38 @@ vows.describe('Test Building PUL').addBatch({
         var target = uuid.v4();
         var pul = new PUL();
         pul
-        .deleteFromObject(target, ['foo'])
-        .replaceInObject(target, 'foo', 'bar');
+        .deleteFromObject(target, [], ['foo'])
+        .replaceInObject(target, [], 'foo', 'bar');
         assert.equal(pul.normalize().replaceInObjectList.length, 0, 'Should contain no replaceInObject primitives');
         
         pul = new PUL();
         pul
-        .replaceInObject(target, 'foo', 'bar')
-        .deleteFromObject(target, ['foo']);
+        .replaceInObject(target, [], 'foo', 'bar')
+        .deleteFromObject(target, [], ['foo']);
         assert.equal(pul.normalize().replaceInObjectList.length, 0, 'Should contain no replaceInObject primitives');
         
         //The presence of multiple UPs of this type with the same (array,index) target raises an error.
         assert.throws(function () {
             var pul = new PUL();
             pul
-            .replaceInObject(target, 'foo', 'bar')
-            .replaceInObject(target, 'foo', 'bar');
+            .replaceInObject(target, [], 'foo', 'bar')
+            .replaceInObject(target, [], 'foo', 'bar');
         }, jerr.JNUP0009);
         
         assert.throws(function () {
             var pul = new PUL();
             pul
-            .deleteFromObject(target, ['foo'])
-            .replaceInObject(target, 'foo', 'bar')
-            .replaceInObject(target, 'foo', 'bar');
+            .deleteFromObject(target, [], ['foo'])
+            .replaceInObject(target, [], 'foo', 'bar')
+            .replaceInObject(target, [], 'foo', 'bar');
         }, jerr.JNUP0009);
         
         assert.throws(function () {
             var pul = new PUL();
             pul
-            .replaceInObject(target, 'foo', 'bar')
-            .deleteFromObject(target, ['foo'])
-            .replaceInObject(target, 'foo', 'bar');
+            .replaceInObject(target, [], 'foo', 'bar')
+            .deleteFromObject(target, [], ['foo'])
+            .replaceInObject(target, [], 'foo', 'bar');
         },  jerr.JNUP0009);
         
     },
@@ -223,38 +223,38 @@ vows.describe('Test Building PUL').addBatch({
         var target = uuid.v4();
         var pul = new PUL();
         pul
-        .deleteFromObject(target, ['foo'])
-        .renameInObject(target, 'foo', 'bar');
+        .deleteFromObject(target, [], ['foo'])
+        .renameInObject(target, [], 'foo', 'bar');
         assert.equal(pul.normalize().replaceInObjectList.length, 0, 'Should contain no renameInObject primitives');
         
         pul = new PUL();
         pul
-        .renameInObject(target, 'foo', 'bar')
-        .deleteFromObject(target, ['foo']);
+        .renameInObject(target, [], 'foo', 'bar')
+        .deleteFromObject(target, [], ['foo']);
         assert.equal(pul.normalize().replaceInObjectList.length, 0, 'Should contain no renameInObject primitives');
         
         //The presence of multiple UPs of this type with the same (array,index) target raises an error.
         assert.throws(function () {
             var pul = new PUL();
             pul
-            .renameInObject(target, 'foo', 'bar')
-            .renameInObject(target, 'foo', 'bar');
+            .renameInObject(target, [], 'foo', 'bar')
+            .renameInObject(target, [], 'foo', 'bar');
         }, jerr.JNUP0009);
         
         assert.throws(function () {
             var pul = new PUL();
             pul
-            .deleteFromObject(target, ['foo'])
-            .renameInObject(target, 'foo', 'bar')
-            .renameInObject(target, 'foo', 'bar');
+            .deleteFromObject(target, [], ['foo'])
+            .renameInObject(target, [], 'foo', 'bar')
+            .renameInObject(target, [], 'foo', 'bar');
         }, jerr.JNUP0009);
         
         assert.throws(function () {
             var pul = new PUL();
             pul
-            .renameInObject(target, 'foo', 'bar')
-            .deleteFromObject(target, ['foo'])
-            .renameInObject(target, 'foo', 'bar');
+            .renameInObject(target, [], 'foo', 'bar')
+            .deleteFromObject(target, [], ['foo'])
+            .renameInObject(target, [], 'foo', 'bar');
         },  jerr.JNUP0009);
         
     },
@@ -262,13 +262,13 @@ vows.describe('Test Building PUL').addBatch({
     'Test PUL parsing and serialization': function(){
         var pul = new PUL();
         pul
-        .insertIntoObject(uuid.v4(), { a: 1 })
-        .insertIntoArray(uuid.v4(), 0, [1, 2])
-        .deleteFromObject(uuid.v4(), ['a'])
-        .replaceInObject(uuid.v4(), 'a', 1)
-        .deleteFromArray(uuid.v4(), 0)
-        .replaceInArray(uuid.v4(), 0, 1)
-        .renameInObject(uuid.v4(), 'a', 'b');
+        .insertIntoObject(uuid.v4(), [], { a: 1 })
+        .insertIntoArray(uuid.v4(), [], 0, [1, 2])
+        .deleteFromObject(uuid.v4(), [], ['a'])
+        .replaceInObject(uuid.v4(), [], 'a', 1)
+        .deleteFromArray(uuid.v4(), [], 0)
+        .replaceInArray(uuid.v4(), [], 0, 1)
+        .renameInObject(uuid.v4(), [], 'a', 'b');
 
         var serializedPUL = pul.serialize();
         var pul1 = new PUL();

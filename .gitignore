@@ -5,3 +5,4 @@ node_modules
 .baseDir.ts
 docs
 dist
+.idea
