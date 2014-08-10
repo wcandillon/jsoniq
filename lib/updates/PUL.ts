@@ -77,18 +77,16 @@ class PUL {
     }
 
     normalize(): PUL {
-        //TODO: remove in lambda
-        var that = this;
         //If there is a delete on the same (array,index) target, the replace is omitted.
-        _.forEach(this.udps.deleteFromArray, function(udp: DeleteFromArray) {
-            <ReplaceInArray[]>_.remove(that.udps.replaceInArray, { id: udp.id, ordPath: udp.ordPath, position: udp.position });
+        _.forEach(this.udps.deleteFromArray, (udp: DeleteFromArray) => {
+            <ReplaceInArray[]>_.remove(this.udps.replaceInArray, { id: udp.id, ordPath: udp.ordPath, position: udp.position });
         });
         //If there is a delete on the same (object,name) target, the replace is omitted.
         //If there is a delete on the same (object,name) target, the rename is omitted.
-        _.forEach(this.udps.deleteFromObject, function(udp: DeleteFromObject) {
-            _.forEach(udp.keys, function(key: string) {
-                <ReplaceInObject[]>_.remove(that.udps.replaceInObject, { id: udp.id, ordPath: udp.ordPath, key: key });
-                <RenameInObject[]>_.remove(that.udps.renameInObject, { id: udp.id, ordPath: udp.ordPath, key: key });
+        _.forEach(this.udps.deleteFromObject, (udp: DeleteFromObject) => {
+            _.forEach(udp.keys, (key: string) => {
+                <ReplaceInObject[]>_.remove(this.udps.replaceInObject, { id: udp.id, ordPath: udp.ordPath, key: key });
+                <RenameInObject[]>_.remove(this.udps.renameInObject, { id: udp.id, ordPath: udp.ordPath, key: key });
             });
         });
         return this;

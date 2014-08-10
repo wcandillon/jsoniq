@@ -20,10 +20,8 @@ class InsertIntoArray extends UpdatePrimitive {
 
     apply(): UpdatePrimitive {
         var target = this.getTarget();
-        //TODO: use lamba instead
-        var that = this;
-        this.items.forEach(function(i) {
-            target.splice(that.position, 0, i);
+        this.items.forEach((i) => {
+            target.splice(this.position, 0, i);
         });
         return this;
     }
