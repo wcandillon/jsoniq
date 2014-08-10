@@ -7,6 +7,7 @@ import Transaction = require("../../stores/Transaction");
 class UpdatePrimitive {
     public id: string;
     public ordPath: string[];
+    private target: any;
 
     constructor(id: string, ordPath: string[]) {
         this.id = id;
@@ -21,16 +22,21 @@ class UpdatePrimitive {
         }
     }
 
-    getTarget(transaction: Transaction): any {
+    lockTarget(transaction: Transaction): UpdatePrimitive {
         var item = this.goTo(transaction.get(this.id), this.ordPath);
         if(!item) {
             throw new jerr.JNUP0008();
         } else {
-            return item;
+            this.target = item;
         }
+        return this;
     }
 
-    apply(transaction: Transaction): UpdatePrimitive {
+    getTarget(): any {
+        return this.target;
+    }
+
+    apply(): UpdatePrimitive {
         throw new Error("This method is abstract");
     }
 

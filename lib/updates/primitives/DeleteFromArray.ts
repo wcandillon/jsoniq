@@ -1,7 +1,6 @@
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
 //import _ = require("lodash");
 //import jerr = require("../../errors");
-import Transaction = require("../../stores/Transaction");
 
 import UpdatePrimitive = require("./UpdatePrimitive");
 
@@ -13,8 +12,8 @@ class DeleteFromArray extends UpdatePrimitive {
         this.position = position;
     }
 
-    apply(transaction: Transaction): UpdatePrimitive {
-        var target = this.getTarget(transaction);
+    apply(): UpdatePrimitive {
+        var target = this.getTarget();
         target.splice(this.position, 1);
         return this;
     }

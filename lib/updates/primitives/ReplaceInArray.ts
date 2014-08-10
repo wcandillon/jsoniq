@@ -1,7 +1,6 @@
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
 //import _ = require("lodash");
 //import jerr = require("../../errors");
-import Transaction = require("../../stores/Transaction");
 
 import UpdatePrimitive = require("./UpdatePrimitive");
 
@@ -15,8 +14,8 @@ class ReplaceInArray extends UpdatePrimitive {
         this.item = item;
     }
 
-    apply(transaction: Transaction): UpdatePrimitive {
-        var target = this.getTarget(transaction);
+    apply(): UpdatePrimitive {
+        var target = this.getTarget();
         target[this.position] = this.item;
         return this;
     }

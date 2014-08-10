@@ -156,19 +156,19 @@ vows.describe('Test MemoryStore').addBatch({
 
     //http://try.zorba.io/queries/xquery/ggGUhCUEuOUaVmfxjTOJ4ygDdas%3D
     'rename & insert': function(){
-        /*
         var obj = { a: 1, b: {} };
 
         var store = new MemoryStore();
         var id = store.put(obj);
-        store
+        var pul = new PUL();
+        pul
         .insertIntoObject(id, ['b'], { a: 1 })
-        .renameInObject(id, [], 'b', 'z')
-        .commit()
-        ;
+        .renameInObject(id, [], 'b', 'z');
 
+        store.commit(pul);
+
+        obj = store.get(id);
         assert.equal(obj.z.a, 1);
-        */
     },
 
     'simple update (5)': function(){

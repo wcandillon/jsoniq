@@ -1,8 +1,6 @@
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
 //import _ = require("lodash");
 //import jerr = require("../../errors");
-import Transaction = require("../../stores/Transaction");
-
 import UpdatePrimitive = require("./UpdatePrimitive");
 
 class InsertIntoArray extends UpdatePrimitive {
@@ -20,8 +18,8 @@ class InsertIntoArray extends UpdatePrimitive {
         return this;
     }
 
-    apply(transaction: Transaction): UpdatePrimitive {
-        var target = this.getTarget(transaction);
+    apply(): UpdatePrimitive {
+        var target = this.getTarget();
         //TODO: use lamba instead
         var that = this;
         this.items.forEach(function(i) {

@@ -1,3 +1,5 @@
+import UpdatePrimitive = require("./primitives/UpdatePrimitive");
+
 import InsertIntoObject = require("./primitives/InsertIntoObject");
 import InsertIntoArray  = require("./primitives/InsertIntoArray");
 import DeleteFromObject = require("./primitives/DeleteFromObject");
@@ -14,6 +16,19 @@ class UpdatePrimitives {
     replaceInObject  : ReplaceInObject[]  = [];
     replaceInArray   : ReplaceInArray[]   = [];
     renameInObject   : RenameInObject[]   = [];
+
+    getAll(): UpdatePrimitive[] {
+        var primitives = [];
+        primitives = this.insertIntoArray;
+        primitives = primitives.concat(this.insertIntoObject);
+        primitives = primitives.concat(this.insertIntoObject);
+        primitives = primitives.concat(this.deleteFromObject);
+        primitives = primitives.concat(this.deleteFromArray);
+        primitives = primitives.concat(this.replaceInObject);
+        primitives = primitives.concat(this.replaceInArray);
+        primitives = primitives.concat(this.renameInObject);
+        return primitives;
+    }
 
     parse(udps: UpdatePrimitives): UpdatePrimitives {
         udps.insertIntoObject.forEach((udp) => {

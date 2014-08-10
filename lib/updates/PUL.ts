@@ -33,10 +33,15 @@ class PUL {
         //Normalize PUL
         this.normalize();
 
+        //Lock targets
+        this.udps.getAll().forEach((udp) => {
+            udp.lockTarget(transaction);
+        });
+
         var apply = (udp: UpdatePrimitive) => {
             var id = udp.id;
             var item = transaction.get(id);
-            udp.apply(transaction);
+            udp.apply();
             transaction.put(id, item);
         };
 

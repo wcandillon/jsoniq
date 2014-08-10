@@ -1,8 +1,6 @@
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
 //import _ = require("lodash");
 //import jerr = require("../../errors");
-import Transaction = require("../../stores/Transaction");
-
 import UpdatePrimitive = require("./UpdatePrimitive");
 
 class RenameInObject extends UpdatePrimitive {
@@ -15,8 +13,8 @@ class RenameInObject extends UpdatePrimitive {
         this.newKey = newKey;
     }
 
-    apply(transaction: Transaction): UpdatePrimitive {
-        var target = this.getTarget(transaction);
+    apply(): UpdatePrimitive {
+        var target = this.getTarget();
         target[this.newKey] = target[this.key];
         delete target[this.key];
         return this;
