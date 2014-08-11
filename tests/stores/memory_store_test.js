@@ -155,47 +155,37 @@ vows.describe('Test MemoryStore').addBatch({
     },
 
     //http://try.zorba.io/queries/xquery/ggGUhCUEuOUaVmfxjTOJ4ygDdas%3D
-    'rename & insert': function(){
-        /*
+    'rename & insert (1)': function(){
         var obj = { a: 1, b: {} };
 
         var store = new MemoryStore();
         var id = store.put(obj);
-        store
+        var pul = new PUL();
+        pul
         .insertIntoObject(id, ['b'], { a: 1 })
-        .renameInObject(id, [], 'b', 'z')
-        .commit()
-        ;
+        .renameInObject(id, [], 'b', 'z');
 
+        store.commit(pul);
+
+        obj = store.get(id);
         assert.equal(obj.z.a, 1);
-        */
     },
 
-    'simple update (5)': function(){
-        /*
-        var obj1 = { a: 1, b: { c: [1, 2, 3] } };
-        var obj2 = { a: 1, b: { c: [1, 2, 3] } };
+    //http://try.zorba.io/queries/xquery/HdaN8mUvpAIlifs1CgBmz8gZhQo=
+    'rename & insert (2)': function(){
+        var obj = { a: 1 };
+
         var store = new MemoryStore();
-        var id1 = store.put(obj1);
-        var id2 = store.put(obj2);
-        store
-        .insertIntoObject(id1, ['b'], { d: 1 })
-        .insertIntoObject(id2, ['b'], { d: 1 })
-        .insertIntoArray(id1, ['b', 'c'], 1, [1, 2])
-        .insertIntoArray(id1, ['b', 'c'], 1, [1, 2])
-        .insertIntoArray(id2, ['b', 'c'], 2, [1, 2])
-        .insertIntoArray(id2, ['b', 'c'], 2, [1, 2])
-        .deleteFromObject(id1, [], ['a'])
-        .deleteFromObject(id2, [], ['a'])
-        .replaceInObject(id1, [], 'a', 2)
-        .replaceInObject(id2, [], 'a', 2)
-        .deleteFromArray(id1, [], 0)
-        .replaceInArray(id1, ['b', 'c'], 0, 1)
-        .replaceInArray(id2, ['b', 'c'], 0, 1)
-        .renameInObject(id1, [], 'b', 'z')
-        .renameInObject(id2, [], 'b', 'z')
-        .commit()
-        ;
-        */
+        var id = store.put(obj);
+        var pul = new PUL();
+        pul
+            .insertIntoObject(id, [], { a: 1 })
+            .renameInObject(id, [], 'a', 'b');
+
+        store.commit(pul);
+
+        obj = store.get(id);
+        assert.equal(obj.a, 1);
+        assert.equal(obj.b, 1);
     }
 }).export(module);
