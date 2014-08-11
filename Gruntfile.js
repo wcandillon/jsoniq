@@ -24,16 +24,10 @@ module.exports = function (grunt) {
             build: {
                 src: ['lib/**/*.ts'],
                 outDir: 'dist'
-            }
-        },
-        vows: {
-            all: {
-                options: {
-                    verbose: true,
-                    colors: true,
-                    coverage: 'json'
-                },
-                src: ['tests/**/*.js']
+            },
+            buildTests: {
+                src: ['__tests__/**/*.ts'],
+                outDir: 'dist'
             }
         },
         typedoc: {
@@ -53,7 +47,7 @@ module.exports = function (grunt) {
                 configuration: grunt.file.readJSON('tslint.json')
             },
             files: {
-                src: ['lib/**/*.ts']
+                src: ['lib/**/*.ts', '__tests__/**/*.ts']
             }
         },
         'gh-pages': {
@@ -62,6 +56,11 @@ module.exports = function (grunt) {
                 options: {
                     base: 'docs'
                 }
+            }
+        },
+        jest: {
+            options: {
+                testPathPattern: /.*/
             }
         }
     });
@@ -77,5 +76,5 @@ module.exports = function (grunt) {
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
     // Default task.
-    grunt.registerTask('default', ['clean', 'jsonlint', 'jshint', 'tslint', 'ts', 'vows', 'typedoc']);
+    grunt.registerTask('default', ['clean', 'jsonlint', 'jshint', 'tslint', 'ts:build', 'ts:buildTests', 'jest', 'typedoc']);
 };
