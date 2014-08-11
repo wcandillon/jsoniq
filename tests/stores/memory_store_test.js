@@ -155,7 +155,7 @@ vows.describe('Test MemoryStore').addBatch({
     },
 
     //http://try.zorba.io/queries/xquery/ggGUhCUEuOUaVmfxjTOJ4ygDdas%3D
-    'rename & insert': function(){
+    'rename & insert (1)': function(){
         var obj = { a: 1, b: {} };
 
         var store = new MemoryStore();
@@ -169,5 +169,23 @@ vows.describe('Test MemoryStore').addBatch({
 
         obj = store.get(id);
         assert.equal(obj.z.a, 1);
+    },
+
+    //http://try.zorba.io/queries/xquery/HdaN8mUvpAIlifs1CgBmz8gZhQo=
+    'rename & insert (2)': function(){
+        var obj = { a: 1 };
+
+        var store = new MemoryStore();
+        var id = store.put(obj);
+        var pul = new PUL();
+        pul
+            .insertIntoObject(id, [], { a: 1 })
+            .renameInObject(id, [], 'a', 'b');
+
+        store.commit(pul);
+
+        obj = store.get(id);
+        assert.equal(obj.a, 1);
+        assert.equal(obj.b, 1);
     }
 }).export(module);
