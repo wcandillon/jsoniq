@@ -27,14 +27,12 @@ class InsertIntoObject extends UpdatePrimitive {
 
     apply(): UpdatePrimitive {
         var target = this.getTarget();
-        //TODO: use lamba instead
-        var that = this;
-        Object.keys(this.pairs).forEach(function(key) {
+        Object.keys(this.pairs).forEach((key) => {
             //It is a dynamic error if upd:applyUpdates causes an object to contain two pairs with the same name.
             if(target[key]) {
                 throw new jerr.JNUP0006(key);
             } else {
-                target[key] = that.pairs[key];
+                target[key] = this.pairs[key];
             }
         });
         return this;
