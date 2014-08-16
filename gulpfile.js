@@ -3,7 +3,9 @@
 var gulp = require('gulp');
 
 var paths = {
-    typescript: ['lib/**/*.ts', '__tests__/**/*.ts']
+    json: ['*.json', 'lib/**/*.json'],
+    js: ['gulpfile.js'],
+    ts: ['lib/**/*.ts', '__tests__/**/*.ts']
 };
 
 gulp.task('clean', function () {
@@ -17,22 +19,22 @@ gulp.task('lint', function(){
     var jshint = require('gulp-jshint');
     var tslint = require('gulp-tslint');
 
-    gulp.src('*.json', 'lib/**/*.json')
+    gulp.src(paths.json)
         .pipe(jsonlint())
         .pipe(jsonlint.reporter());
 
-    gulp.src(['gulpfile.js', 'lib/**/*.js'])
+    gulp.src(paths.js)
         .pipe(jshint())
         .pipe(jshint.reporter());
 
-    gulp.src(paths.typescript)
+    gulp.src(paths.ts)
         .pipe(tslint(require('./tslint.json')))
         .pipe(tslint.report('verbose'));
 });
 
 gulp.task('compile', ['clean', 'lint'], function(){
     var typescript = require('gulp-tsc');
-    return gulp.src(paths.typescript)
+    return gulp.src(paths.ts)
         .pipe(typescript())
         .pipe(gulp.dest('dist/'));
 });
