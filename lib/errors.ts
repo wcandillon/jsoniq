@@ -62,6 +62,13 @@ module jerr {
             super("JNUP0009", "It is a dynamic error if a pending update list contains two JSON replacing update primitives on the same object or array, and with the same selector.");
         }
     }
+
+    //It is a dynamic error if it is attempted to create a replace, delete or rename update primitive with a selector that cannot be resolved against the target array or object.
+    export class JNUP0016 extends DynamicError {
+        constructor(key: string) {
+            super("JNUP0016", "\"" + key +"\" : selector cannot be resolved against supplied object");
+        }
+    }
 }
 
 export = jerr;

@@ -4,6 +4,8 @@
 
 import UpdatePrimitive = require("./UpdatePrimitive");
 
+import IPUL = require("../IPUL");
+
 class DeleteFromArray extends UpdatePrimitive {
     position: number;
 
@@ -15,6 +17,11 @@ class DeleteFromArray extends UpdatePrimitive {
     apply(): UpdatePrimitive {
         var target = this.getTarget();
         target.splice(this.position, 1);
+        return this;
+    }
+
+    invert(target: any, pul: IPUL): UpdatePrimitive {
+        pul.insertIntoArray(this.id, this.ordPath, this.position, target);
         return this;
     }
 }

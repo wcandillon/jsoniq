@@ -4,6 +4,8 @@ import _ = require("lodash");
 
 import UpdatePrimitive = require("./UpdatePrimitive");
 
+import IPUL = require("../IPUL");
+
 class DeleteFromObject extends UpdatePrimitive {
     keys: string[];
 
@@ -22,6 +24,15 @@ class DeleteFromObject extends UpdatePrimitive {
         this.keys.forEach(function(key) {
             delete target[key];
         });
+        return this;
+    }
+
+    invert(item: any, pul: IPUL): UpdatePrimitive {
+        var pairs = {};
+        this.keys.forEach((key) => {
+            pairs[key] = item[key];
+        });
+        pul.insertIntoObject(this.id, this.ordPath, pairs);
         return this;
     }
 }

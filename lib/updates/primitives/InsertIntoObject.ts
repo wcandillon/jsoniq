@@ -4,6 +4,8 @@ import jerr = require("../../errors");
 
 import UpdatePrimitive = require("./UpdatePrimitive");
 
+import IPUL = require("../IPUL");
+
 class InsertIntoObject extends UpdatePrimitive {
     pairs: {};
 
@@ -35,6 +37,11 @@ class InsertIntoObject extends UpdatePrimitive {
                 target[key] = this.pairs[key];
             }
         });
+        return this;
+    }
+
+    invert(item: any, pul: IPUL): UpdatePrimitive {
+        pul.deleteFromObject(this.id, this.ordPath, Object.keys(this.pairs));
         return this;
     }
 }

@@ -2,10 +2,13 @@
 
 var gulp = require('gulp');
 
+var typescript = require('gulp-tsc');
+
 var paths = {
     json: ['*.json', 'lib/**/*.json'],
     js: ['gulpfile.js'],
-    ts: ['lib/**/*.ts', '__tests__/**/*.ts']
+    ts: ['lib/**/*.ts'],
+    tests: ['__tests__/**/*.ts']
 };
 
 gulp.task('clean', function () {
@@ -33,17 +36,20 @@ gulp.task('lint', function(){
 });
 
 gulp.task('compile', ['clean', 'lint'], function(){
-    var typescript = require('gulp-tsc');
     return gulp.src(paths.ts)
         .pipe(typescript())
         .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('jest', ['compile'], function () {
+gulp.task('compile-tests', ['clean'], function(){
+    return gulp.src(paths.tests)
+        .pipe(typescript())
+        .pipe(gulp.dest('dist/'));
+});
+
+gulp.task('jest', ['compile-tests'], function () {
     var jest = require('gulp-jest');
     return gulp.src('dist/__TESTS__/').pipe(jest({ rootDir: __dirname }));
 });
 
-gulp.task('default', function() {
-    gulp.start('jest');
-});
+gulp.task('default', ['compile', 'jest']);
