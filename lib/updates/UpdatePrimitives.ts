@@ -7,6 +7,8 @@ import DeleteFromArray  = require("./primitives/DeleteFromArray");
 import ReplaceInObject  = require("./primitives/ReplaceInObject");
 import ReplaceInArray   = require("./primitives/ReplaceInArray");
 import RenameInObject   = require("./primitives/RenameInObject");
+import Insert           = require("./primitives/Insert");
+import Remove           = require("./primitives/Remove");
 
 class UpdatePrimitives {
     insertIntoObject : InsertIntoObject[] = [];
@@ -16,6 +18,8 @@ class UpdatePrimitives {
     replaceInObject  : ReplaceInObject[]  = [];
     replaceInArray   : ReplaceInArray[]   = [];
     renameInObject   : RenameInObject[]   = [];
+    insert           : Insert[]           = [];
+    remove           : Remove[]           = [];
 
     getAll(): UpdatePrimitive[] {
         var primitives = [];
@@ -27,6 +31,8 @@ class UpdatePrimitives {
         primitives = primitives.concat(this.replaceInObject);
         primitives = primitives.concat(this.replaceInArray);
         primitives = primitives.concat(this.renameInObject);
+        primitives = primitives.concat(this.insert);
+        primitives = primitives.concat(this.remove);
         return primitives;
     }
 
@@ -51,6 +57,12 @@ class UpdatePrimitives {
         });
         udps.renameInObject.forEach((udp) => {
             this.renameInObject.push(new RenameInObject(udp.id, udp.ordPath, udp.key, udp.newKey));
+        });
+        udps.insert.forEach((udp) => {
+            this.insert.push(new Insert(udp.id, udp.item));
+        });
+        udps.remove.forEach((udp) => {
+            this.remove.push(new Remove(udp.id));
         });
         return this;
     }

@@ -26,6 +26,12 @@ class Transaction {
         this.snapshot[id] = item;
         return this;
     }
+
+    remove(id: string): Transaction {
+        delete this.snapshot[id];
+        this.store.remove(id);
+        return this;
+    }
 }
 
 export = Transaction;

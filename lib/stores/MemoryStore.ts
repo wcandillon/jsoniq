@@ -24,6 +24,16 @@ class MemoryStore extends Store {
         return ref;
     }
 
+    remove(id: string): MemoryStore {
+        var item = this.snapshot[id];
+        if(!item) {
+            //TODO: throw proper error code
+            throw new Error();
+        }
+        delete this.snapshot[id];
+        return this;
+    }
+
     commit(pul: PUL): Store {
         //"An individual function may create an invalid JSON instance;
         // however, an updating query must produce a valid JSON instance once the entire query is evaluated,

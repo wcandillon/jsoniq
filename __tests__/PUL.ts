@@ -296,6 +296,20 @@ describe("PUL", () => {
         }).toThrow();
     });
 
+    it("Insert Conflict", () => {
+       expect(() => {
+           try {
+               var target = uuid.v4();
+               var pul = new PUL();
+               pul.insert(target, { id: 1 });
+               pul.insert(target, { id: 2 });
+           } catch(e) {
+               expect(e instanceof jerr.JNUP0005).toBe(true);
+               throw e;
+           }
+       }).toThrow();
+    });
+
     it("Normalization Example", () => {
         var target = uuid.v4();
         var pul = new PUL();
@@ -335,7 +349,9 @@ describe("PUL", () => {
             .replaceInObject(uuid.v4(), [], "a", 1)
             .deleteFromArray(uuid.v4(), [], 0)
             .replaceInArray(uuid.v4(), [], 0, 1)
-            .renameInObject(uuid.v4(), [], "a", "b");
+            .renameInObject(uuid.v4(), [], "a", "b")
+            .insert(uuid.v4(), { hello: "world" })
+            .remove(uuid.v4());
 
         var serializedPUL = pul.serialize();
         var pul1 = new PUL();
