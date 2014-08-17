@@ -72,6 +72,7 @@ describe("Invert Operator", () => {
 
         var store = new MemoryStore();
         var id = store.put(todos);
+        var ref = store.put({ user: 'bar' });
         var pul = new PUL();
         pul
             .insertIntoArray(id, [], 1, [{ id: 1 }])
@@ -79,6 +80,8 @@ describe("Invert Operator", () => {
             .renameInObject(id, ["0"], "complete", "completed")
             .insertIntoObject(id, ["0"], { title: "More figures" })
             .deleteFromObject(id, ["0"], ["title"]);
+        pul.insert('hello', { user: 'foo' });
+        pul.remove(ref);
 
         var invert = pul.invert(new Transaction(store));
         //console.log(JSON.stringify(JSON.parse(invert.serialize()), null, 2));
@@ -90,6 +93,8 @@ describe("Invert Operator", () => {
         expect(d1[0].id).toBe(0);
         expect(d1[0].title).toBe("More figures");
         expect(d1[1].id).toBe(1);
+        expect(_.isEqual(store.get('hello'), { user: 'foo' })).toBe(true);
+        expect(() => { store.get(ref); }).toThrow();
 
         store.commit(invert);
         var d0 = store.get(id);
@@ -98,5 +103,7 @@ describe("Invert Operator", () => {
         //console.log(JSON.stringify(todos, null, 2));
         //console.log(_.isEqual(d0, todos));
         expect(_.isEqual(d0, todos)).toBe(true);
+        expect(() => { store.get('hello'); }).toThrow();
+        expect(_.isEqual(store.get(ref), { user: 'bar' }));
     });
 });

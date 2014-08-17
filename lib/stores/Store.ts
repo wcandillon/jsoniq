@@ -10,6 +10,10 @@ class Store {
         throw new Error("abstract method");
     }
 
+    remove(id: string): Store {
+        throw new Error("abstract method");
+    }
+
     commit(pul: PUL): Store {
         throw new Error("abstract method");
     }

@@ -12,6 +12,8 @@ import DeleteFromArray  = require("./primitives/DeleteFromArray");
 import ReplaceInObject  = require("./primitives/ReplaceInObject");
 import ReplaceInArray   = require("./primitives/ReplaceInArray");
 import RenameInObject   = require("./primitives/RenameInObject");
+import Insert           = require("./primitives/Insert");
+import Remove           = require("./primitives/Remove");
 
 import UpdatePrimitives = require("./UpdatePrimitives");
 import IPUL             = require("./IPUL");
@@ -35,8 +37,20 @@ class PUL implements IPUL {
         this.normalize();
         this.udps.getAll().forEach((udp) => {
             var lPUL = new PUL();
-            udp.lockTarget(transaction);
-            udp.invert(udp.getTarget(), lPUL);
+            var target;
+            if(udp instanceof Remove) {
+                target = transaction.get(udp.id);
+            } else if(!(udp instanceof Insert)) {
+                udp.lockTarget(transaction);
+                target = udp.getTarget();
+            }
+            udp.invert(target, lPUL);
+            lPUL.udps.insert.forEach((udp) => {
+                pul.insert(udp.id, udp.item);
+            });
+            lPUL.udps.remove.forEach((udp) => {
+                pul.remove(udp.id);
+            });
             lPUL.udps.deleteFromArray.forEach((udp) => {
                 pul.deleteFromArray(udp.id, udp.ordPath, udp.position);
             });
@@ -64,7 +78,9 @@ class PUL implements IPUL {
 
         //Lock targets
         this.udps.getAll().forEach((udp) => {
-            udp.lockTarget(transaction);
+            if(!(udp instanceof Insert) && !(udp instanceof Remove)) {
+                udp.lockTarget(transaction);
+            }
         });
 
         var apply = (udp: UpdatePrimitive) => {
@@ -75,6 +91,14 @@ class PUL implements IPUL {
         };
 
         //Apply updates
+        _.forEach(this.udps.insert, (udp) => {
+            transaction.put(udp.id, udp.item);
+        });
+
+        _.forEach(this.udps.remove, (udp) => {
+            transaction.remove(udp.id);
+        });
+
         //1. jupd:replace-in-object
         _.forEach(this.udps.replaceInObject, apply);
 
@@ -118,6 +142,26 @@ class PUL implements IPUL {
                 <RenameInObject[]>_.remove(this.udps.renameInObject, { id: udp.id, ordPath: udp.ordPath, key: key });
             });
         });
+        return this;
+    }
+
+    remove(id: string): PUL {
+        var newUdp = new Remove(id);
+        var udp = _.find(this.udps.remove, { id: id });
+        if(udp === undefined) {
+            this.udps.remove.push(newUdp);
+        }
+        return this;
+    }
+
+    insert(id: string, item: any): PUL {
+        var newUdp = new Insert(id, item);
+        var udp = _.find(this.udps.insert, { id: id });
+        if(udp) {
+            throw new jerr.JNUP0005();
+        } else {
+            this.udps.insert.push(newUdp);
+        }
         return this;
     }
 

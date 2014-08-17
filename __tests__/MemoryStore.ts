@@ -2,7 +2,7 @@
 /// <reference path="../typings/node-uuid/node-uuid.d.ts" />
 /// <reference path="../typings/lodash/lodash.d.ts" />
 jest.autoMockOff();
-//import _ = require("lodash");
+import _ = require("lodash");
 import PUL = require("../lib/updates/PUL");
 import jerr = require("../lib/errors");
 import MemoryStore = require("../lib/stores/MemoryStore");
@@ -23,7 +23,21 @@ describe("Memory Store", () => {
 
         var id = store.put(object);
         var obj = store.get(id);
-        expect(JSON.stringify(obj) === JSON.stringify(object)).toBe(true);
+        expect(_.isEqual(obj, object)).toBe(true);
+    });
+
+    it("Insert & delete", () => {
+        var obj = { a: 1, b: { c: 1 } };
+        var store = new MemoryStore();
+        var id = store.put(obj);
+
+        var pul = new PUL();
+        pul.insert('hello', { z: 1 });
+        pul.remove(id);
+        store.commit(pul);
+
+        expect(_.isEqual(store.get('hello'), { z: 1 })).toBe(true);
+        expect(() => { store.get(id); }).toThrow();
     });
 
     it("simple update (1)", () => {
@@ -186,13 +200,17 @@ describe("Memory Store", () => {
         var pul = new PUL();
         pul
             .insertIntoObject(id, [], { a: 1 })
-            .renameInObject(id, [], "a", "b");
+            .renameInObject(id, [], "a", "b")
+            .insert("myID", { z: 1 });
 
         store.commit(pul);
 
         obj = store.get(id);
         expect(obj.a).toBe(1);
         expect(obj["b"]).toBe(1);
+
+        obj = store.get("myID");
+        expect(obj["z"]).toBe(1);
     });
 
     //http://try.zorba.io/queries/xquery/D4xY%2FX8P10C1bTKtz6ZNnVRIwWs%3D
