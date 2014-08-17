@@ -3,6 +3,8 @@
 //import jerr = require("../../errors");
 import UpdatePrimitive = require("./UpdatePrimitive");
 
+import IPUL = require("../IPUL");
+
 class InsertIntoArray extends UpdatePrimitive {
     position: number;
     items: any[];
@@ -23,6 +25,11 @@ class InsertIntoArray extends UpdatePrimitive {
         this.items.forEach((i) => {
             target.splice(this.position, 0, i);
         });
+        return this;
+    }
+
+    invert(item: any, pul: IPUL): UpdatePrimitive {
+        pul.deleteFromArray(this.id, this.ordPath, this.position);
         return this;
     }
 }

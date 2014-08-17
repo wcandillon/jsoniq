@@ -13,9 +13,10 @@ import ReplaceInObject  = require("./primitives/ReplaceInObject");
 import ReplaceInArray   = require("./primitives/ReplaceInArray");
 import RenameInObject   = require("./primitives/RenameInObject");
 
-import UpdatePrimitives   = require("./UpdatePrimitives");
+import UpdatePrimitives = require("./UpdatePrimitives");
+import IPUL             = require("./IPUL");
 
-class PUL {
+class PUL implements IPUL {
 
     udps = new UpdatePrimitives();
 
@@ -27,6 +28,39 @@ class PUL {
 
     serialize(): string {
         return JSON.stringify(this);
+    }
+
+    invert(transaction: Transaction): PUL {
+        var pul = new PUL();
+        this.normalize();
+        this.udps.getAll().forEach((udp) => {
+            var lPUL = new PUL();
+            udp.lockTarget(transaction);
+            udp.invert(udp.getTarget(), lPUL);
+            lPUL.udps.deleteFromArray.forEach((udp) => {
+                pul.udps.deleteFromArray.push(udp);
+            });
+            lPUL.udps.deleteFromObject.forEach((udp) => {
+                pul.udps.deleteFromObject.push(udp);
+            });
+            lPUL.udps.insertIntoArray.forEach((udp) => {
+                var idx = _.findIndex(pul.udps.insertIntoArray, { id: udp.id, ordPath: udp.ordPath });
+                if(idx > -1) {
+                    pul.udps.insertIntoArray[idx] = udp;
+                } else {
+                    pul.udps.insertIntoArray.push(udp);
+                }
+            });
+            lPUL.udps.insertIntoObject.forEach((udp) => {
+                var idx = _.findIndex(pul.udps.insertIntoObject, { id: udp.id, ordPath: udp.ordPath });
+                if(idx > -1) {
+                    _.merge(pul.udps.insertIntoObject[idx].pairs, udp.pairs);
+                } else {
+                    pul.udps.insertIntoObject.push(udp);
+                }
+            });
+        });
+        return pul.normalize();
     }
 
     apply(transaction: Transaction): PUL {

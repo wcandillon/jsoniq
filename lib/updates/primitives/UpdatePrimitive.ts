@@ -4,6 +4,8 @@ import jerr = require("../../errors");
 
 import Transaction = require("../../stores/Transaction");
 
+import IPUL = require("../IPUL");
+
 class UpdatePrimitive {
     public id: string;
     public ordPath: string[];
@@ -44,7 +46,7 @@ class UpdatePrimitive {
         throw new Error("This method is abstract");
     }
 
-    inverse(item: any): UpdatePrimitive[] {
+    invert(target: any, pul: IPUL): UpdatePrimitive {
         throw new Error("This method is abstract");
     }
 }

@@ -194,4 +194,23 @@ describe("Memory Store", () => {
         expect(obj.a).toBe(1);
         expect(obj["b"]).toBe(1);
     });
+
+    //http://try.zorba.io/queries/xquery/D4xY%2FX8P10C1bTKtz6ZNnVRIwWs%3D
+    it("[JNUP0016] selector cannot be resolved against supplied object", () => {
+        var obj = { completed: true };
+        var store = new MemoryStore();
+        var id = store.put(obj);
+        var pul = new PUL();
+        pul.renameInObject(id, [], 'completed', 'complete');
+        pul.replaceInObject(id, [], 'complete', false);
+
+        expect(() => {
+            try {
+                store.commit(pul);
+            } catch(e) {
+                expect(e instanceof jerr.JNUP0016).toBe(true);
+                throw e;
+            }
+        }).toThrow();
+    });
 });
