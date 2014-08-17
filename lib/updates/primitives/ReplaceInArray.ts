@@ -18,7 +18,7 @@ class ReplaceInArray extends UpdatePrimitive {
     apply(): UpdatePrimitive {
         var target = this.getTarget();
         if(target[this.position] === undefined) {
-            throw new jerr.JNUP0016('' + this.position);
+            throw new jerr.JNUP0016("" + this.position);
         }
         target[this.position] = this.item;
         return this;
