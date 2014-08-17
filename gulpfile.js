@@ -12,9 +12,9 @@ var paths = {
 };
 
 gulp.task('clean', function () {
-    var clean = require('gulp-clean');
+    var rimraf = require('gulp-rimraf');
     return gulp.src('dist', {read: false})
-        .pipe(clean());
+        .pipe(rimraf());
 });
 
 gulp.task('lint', function(){
