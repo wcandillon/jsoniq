@@ -38,18 +38,13 @@ class PUL implements IPUL {
             udp.lockTarget(transaction);
             udp.invert(udp.getTarget(), lPUL);
             lPUL.udps.deleteFromArray.forEach((udp) => {
-                pul.udps.deleteFromArray.push(udp);
+                pul.deleteFromArray(udp.id, udp.ordPath, udp.position);
             });
             lPUL.udps.deleteFromObject.forEach((udp) => {
-                pul.udps.deleteFromObject.push(udp);
+                pul.deleteFromObject(udp.id, udp.ordPath, udp.keys);
             });
             lPUL.udps.insertIntoArray.forEach((udp) => {
-                var idx = _.findIndex(pul.udps.insertIntoArray, { id: udp.id, ordPath: udp.ordPath });
-                if(idx > -1) {
-                    pul.udps.insertIntoArray[idx] = udp;
-                } else {
-                    pul.udps.insertIntoArray.push(udp);
-                }
+                pul.insertIntoArray(udp.id, udp.ordPath, udp.position, udp.items);
             });
             lPUL.udps.insertIntoObject.forEach((udp) => {
                 var idx = _.findIndex(pul.udps.insertIntoObject, { id: udp.id, ordPath: udp.ordPath });

@@ -47,9 +47,9 @@ gulp.task('compile-tests', ['clean'], function(){
         .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('jest', ['compile-tests'], function () {
+gulp.task('test', ['compile-tests'], function () {
     var jest = require('gulp-jest');
     return gulp.src('dist/__tests__/').pipe(jest({ rootDir: __dirname + '/dist' }));
 });
 
-gulp.task('default', ['compile', 'jest']);
+gulp.task('default', ['compile', 'test']);
