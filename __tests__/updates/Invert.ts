@@ -1,12 +1,12 @@
-///<reference path='../typings/jest/jest.d.ts'/>
-/// <reference path="../typings/node-uuid/node-uuid.d.ts" />
-/// <reference path="../typings/lodash/lodash.d.ts" />
+///<reference path='../../typings/jest/jest.d.ts'/>
+/// <reference path="../../typings/node-uuid/node-uuid.d.ts" />
+/// <reference path="../../typings/lodash/lodash.d.ts" />
 jest.autoMockOff();
 import _ = require("lodash");
-import PUL = require("../lib/updates/PUL");
+import PUL = require("../../lib/updates/PUL");
 //import jerr = require("../lib/errors");
-import MemoryStore = require("../lib/stores/MemoryStore");
-import Transaction = require("../lib/stores/Transaction");
+import MemoryStore = require("../../lib/stores/MemoryStore");
+import Transaction = require("../../lib/stores/Transaction");
 
 describe("Invert Operator", () => {
 
