@@ -49,7 +49,7 @@ gulp.task('compile-tests', ['clean'], function(){
 
 gulp.task('jest', ['compile-tests'], function () {
     var jest = require('gulp-jest');
-    return gulp.src('dist/__TESTS__/').pipe(jest({ rootDir: __dirname + '/dist' }));
+    return gulp.src('dist/__tests__/').pipe(jest({ rootDir: __dirname + '/dist' }));
 });
 
 gulp.task('default', ['compile', 'jest']);
