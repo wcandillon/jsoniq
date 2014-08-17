@@ -2,7 +2,7 @@
 /// <reference path="../typings/node-uuid/node-uuid.d.ts" />
 /// <reference path="../typings/lodash/lodash.d.ts" />
 jest.autoMockOff();
-//import _ = require("lodash");
+import _ = require("lodash");
 import uuid = require("node-uuid");
 import PUL = require("../lib/updates/PUL");
 import jerr = require("../lib/errors");
@@ -294,6 +294,36 @@ describe("PUL", () => {
                 throw e;
             }
         }).toThrow();
+    });
+
+    it("Normalization Example", () => {
+        var target = uuid.v4();
+        var pul = new PUL();
+        pul.insertIntoArray(target, [], 0, [{ id: 1 }]);
+        pul.insertIntoArray(target, [], 0, [{ id: 2 }]);
+        pul.deleteFromArray(target, [], 1);
+        pul.deleteFromArray(target, [], 2);
+        pul.deleteFromArray(target, [], 2);
+        pul.deleteFromArray(target, [], 3);
+        pul.renameInObject(target, ["0"], "title", "obsolete");
+        pul.deleteFromObject(target, ["0"], ["title"]);
+        pul.insertIntoObject(target, ["0"], { a: 1 });
+        pul.insertIntoObject(target, ["0"], { b: 2 });
+        pul.normalize();
+        expect(pul.udps.insertIntoArray.length).toBe(1);
+        expect(pul.udps.insertIntoArray[0].items.length).toBe(2);
+        expect(_.isEqual(pul.udps.insertIntoArray[0].items, [{ id: 1 }, { id: 2 }])).toBe(true);
+        expect(pul.udps.insertIntoObject.length).toBe(1);
+        expect(_.isEqual(pul.udps.insertIntoObject[0].pairs, {"a":1,"b":2})).toBe(true);
+        expect(pul.udps.deleteFromArray.length).toBe(3);
+        var positions = [];
+        pul.udps.deleteFromArray.forEach((udp) => {
+            positions.push(udp.position);
+        });
+        expect(_.isEqual(positions.sort(), [1, 2, 3].sort()));
+        expect(pul.udps.deleteFromObject.length).toBe(1);
+        expect(pul.udps.deleteFromObject[0].keys.length).toBe(1);
+        expect(pul.udps.deleteFromObject[0].keys["0"]).toBe("title");
     });
 
     it("Test PUL parsing and serialization", () => {

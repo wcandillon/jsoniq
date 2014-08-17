@@ -16,7 +16,7 @@ class InsertIntoArray extends UpdatePrimitive {
     }
 
     merge(udp: InsertIntoArray): UpdatePrimitive {
-        this.items.concat(udp.items);
+        Array.prototype.splice.apply(this.items, [this.items.length, 0].concat(udp.items));
         return this;
     }
 
