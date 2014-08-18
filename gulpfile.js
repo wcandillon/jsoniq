@@ -37,13 +37,13 @@ gulp.task('lint', function(){
 
 gulp.task('compile', ['clean', 'lint'], function(){
     return gulp.src(paths.ts)
-        .pipe(typescript())
+        .pipe(typescript({ sourcemap: true }))
         .pipe(gulp.dest('dist/'));
 });
 
 gulp.task('compile-tests', ['clean'], function(){
     return gulp.src(paths.tests)
-        .pipe(typescript())
+        .pipe(typescript({ sourcemap: true }))
         .pipe(gulp.dest('dist/'));
 });
 
