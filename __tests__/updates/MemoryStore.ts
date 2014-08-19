@@ -32,11 +32,11 @@ describe("Memory Store", () => {
         var id = store.put(obj);
 
         var pul = new PUL();
-        pul.insert('hello', { z: 1 });
+        pul.insert("hello", { z: 1 });
         pul.remove(id);
         store.commit(pul);
 
-        expect(_.isEqual(store.get('hello'), { z: 1 })).toBe(true);
+        expect(_.isEqual(store.get("hello"), { z: 1 })).toBe(true);
         expect(() => { store.get(id); }).toThrow();
     });
 
@@ -219,8 +219,8 @@ describe("Memory Store", () => {
         var store = new MemoryStore();
         var id = store.put(obj);
         var pul = new PUL();
-        pul.renameInObject(id, [], 'completed', 'complete');
-        pul.replaceInObject(id, [], 'complete', false);
+        pul.renameInObject(id, [], "completed", "complete");
+        pul.replaceInObject(id, [], "complete", false);
 
         expect(() => {
             try {

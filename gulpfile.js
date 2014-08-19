@@ -30,7 +30,7 @@ gulp.task('lint', function(){
         .pipe(jshint())
         .pipe(jshint.reporter());
 
-    gulp.src(paths.ts)
+    gulp.src(paths.ts.concat(paths.tests))
         .pipe(tslint(require('./tslint.json')))
         .pipe(tslint.report('verbose'));
 });
