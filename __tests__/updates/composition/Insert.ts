@@ -4,7 +4,7 @@
 jest.autoMockOff();
 //import _ = require("lodash");
 import PUL = require("../../../lib/updates/PUL");
-import Composer = require("../../../lib/updates/Composer");
+import PULComposition = require("../../../lib/updates/composition/PULComposition");
 import Common = require("./Common");
 //import jerr = require("../../lib/errors");
 
@@ -18,14 +18,14 @@ describe("Insert Composition", () => {
         var d1 = new PUL();
         d1.insert("1", { a: 1 });
 
-        var delta = Composer.compose(d0, d1, true);
+        var delta = PULComposition.compose(d0, d1, true);
         expect(delta.udps.remove.length).toBe(0);
         expect(delta.udps.insert.length).toBe(1);
         expect(delta.udps.insert[0].id).toBe("1");
         expect(delta.udps.insert[0].item.a).toBe(1);
 
         expect(
-            Common.checkIntegrity(d0, d1, { "1": {} })
+            Common.checkCompositionIntegrity(d0, d1, { "1": {} })
         ).toBe(true);
     });
 
@@ -36,14 +36,14 @@ describe("Insert Composition", () => {
         var d1 = new PUL();
         d1.insert("1", { a: 1 });
 
-        var delta = Composer.compose(d0, d1, true);
+        var delta = PULComposition.compose(d0, d1, true);
         expect(delta.udps.remove.length).toBe(0);
         expect(delta.udps.insert.length).toBe(1);
         expect(delta.udps.insert[0].id).toBe("1");
         expect(delta.udps.insert[0].item.a).toBe(1);
 
         expect(
-            Common.checkIntegrity(d0, d1, { "1": {} })
+            Common.checkCompositionIntegrity(d0, d1, { "1": {} })
         ).toBe(true);
     });
 });

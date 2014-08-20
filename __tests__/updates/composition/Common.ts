@@ -3,7 +3,7 @@
 jest.autoMockOff();
 import _ = require("lodash");
 import PUL = require("../../../lib/updates/PUL");
-import Composer = require("../../../lib/updates/Composer");
+import PULComposition = require("../../../lib/updates/composition/PULComposition");
 import Store = require("../../../lib/stores/Store");
 import MemoryStore = require("../../../lib/stores/MemoryStore");
 
@@ -37,11 +37,11 @@ class Common {
         return result;
     }
 
-    static checkIntegrity(d0: PUL, d1: PUL, snapshot: {}): boolean {
+    static checkCompositionIntegrity(d0: PUL, d1: PUL, snapshot: {}): boolean {
         d0.normalize();
         d1.normalize();
 
-        var delta = Composer.compose(d0, d1, true);
+        var delta = PULComposition.compose(d0, d1, true);
 
         var store1 = new MemoryStore();
         Common.loadSnapshot(store1, snapshot);

@@ -231,4 +231,45 @@ describe("Memory Store", () => {
             }
         }).toThrow();
     });
+
+    //http://try.zorba.io/queries/xquery/tzcZsn7c8sI82o45LJUo3SgkENM%3D
+    it("[JNUP0006] b: pair to insert already exists in object", () => {
+        var d0 = new PUL();
+        d0.insertIntoObject("1", [], { a: 1, b: 1 });
+
+        var d1 = new PUL();
+        d1.renameInObject("1", [], "a", "b");
+
+        var store = new MemoryStore();
+        store.put({}, "1");
+        store.commit(d0);
+        expect(() => {
+            try {
+                store.commit(d1);
+            } catch(e) {
+                expect(e instanceof jerr.JNUP0006).toBe(true);
+                throw e;
+            }
+        }).toThrow();
+    });
+
+    it("Tests Aggregation with ReplaceInObject", () => {
+        var d0 = new PUL();
+        d0.replaceInObject("1", [], "a", { b: 1 });
+
+        var d1 = new PUL();
+        d1.renameInObject("1", ["a"], "b", "c");
+
+        var store = new MemoryStore();
+        store.put({ a: {} }, "1");
+        store.commit(d0);
+        store.commit(d1);
+        expect(_.isEqual(store.snapshot, {
+            "1": {
+                "a": {
+                    "c": 1
+                }
+            }
+        })).toBe(true);
+    });
 });

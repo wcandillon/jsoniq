@@ -17,6 +17,9 @@ class RenameInObject extends UpdatePrimitive {
 
     apply(): UpdatePrimitive {
         var target = this.getTarget();
+        if(target[this.newKey] !== undefined) {
+            throw new jerr.JNUP0006(this.newKey);
+        }
         if(target[this.key] === undefined) {
             throw new jerr.JNUP0016(this.key);
         }
