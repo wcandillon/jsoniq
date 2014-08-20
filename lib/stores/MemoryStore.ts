@@ -7,7 +7,7 @@ import Store = require("./Store");
 import Transaction = require("./Transaction");
 
 class MemoryStore extends Store {
-    private snapshot: {} = {};
+    snapshot: {} = {};
 
     get(id: string): any {
         var result = this.snapshot[id];
