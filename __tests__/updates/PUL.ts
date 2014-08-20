@@ -310,6 +310,15 @@ describe("PUL", () => {
        }).toThrow();
     });
 
+    it("Remove Normalization", () => {
+        var pul = new PUL();
+        pul.insert("1", { a: 1 });
+        pul.remove("1");
+        pul.normalize();
+        expect(pul.udps.insert.length).toBe(0);
+        expect(pul.udps.remove.length).toBe(1);
+    });
+
     it("Normalization Example", () => {
         var target = uuid.v4();
         var pul = new PUL();

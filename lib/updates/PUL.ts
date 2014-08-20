@@ -145,7 +145,7 @@ class PUL implements IPUL {
         //If there is a remove primitive, all primitives with the same target are removed
         var handler = (udps, id) => {
             var idx;
-            while((idx = _.find(udps, { id: id })) > -1) {
+            while((idx = _.findIndex(udps, { id: id })) > -1) {
                 udps.splice(idx, 1);
             }
         };
