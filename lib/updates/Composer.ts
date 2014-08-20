@@ -4,7 +4,7 @@ import _ = require("lodash");
 import UpdatePrimitive  = require("./primitives/UpdatePrimitive");
 import InsertIntoObject = require("./primitives/InsertIntoObject");
 //import InsertIntoArray  = require("./primitives/InsertIntoArray");
-//import DeleteFromObject = require("./primitives/DeleteFromObject");
+import DeleteFromObject = require("./primitives/DeleteFromObject");
 //import DeleteFromArray  = require("./primitives/DeleteFromArray");
 import ReplaceInObject  = require("./primitives/ReplaceInObject");
 //import ReplaceInArray   = require("./primitives/ReplaceInArray");
@@ -17,7 +17,7 @@ class Composer {
 
      private static isSubsetOrEqual(ordpath1: string[], ordpath2: string[], index?: number): number {
         if(ordpath1.length > ordpath2.length) {
-            return -1;
+            return -2;
         }
         if(index === undefined) {
             index = 0;
@@ -28,7 +28,7 @@ class Composer {
         if(ordpath1[0] === ordpath2[index]) {
             return Composer.isSubsetOrEqual(ordpath1.slice(1), ordpath2, index + 1);
         }
-        return -1;
+        return -2;
     }
 
     private static omit(object: {}, keys: string[]): {} {
@@ -101,12 +101,24 @@ class Composer {
     //This information can be extracted from ut.
     //The modified udp is then appended to the composed PUL.
     private static renameInObjectAggregation(pul: PUL, udp: UpdatePrimitive) {
-        var udps = pul.udps.renameInObject;
-        _.filter(udps, { id: udp.id }).forEach(ut => {
-            var i = Composer.isSubsetOrEqual(ut.ordPath, udp.ordPath);
+        _.filter(pul.udps.renameInObject, { id: udp.id }).forEach(ut => {
+            var i = Composer.isSubsetOrEqual(ut.ordPath.concat(ut.newKey), udp.ordPath);
             if(i > -1) {
-                udp.ordPath[i + 1] = ut.key;
+                udp.ordPath[i] = ut.key;
             }
+        });
+    }
+
+    private static renameInObjectAggregationForDeleteFromObject(pul: PUL, udp: DeleteFromObject) {
+        _.filter(pul.udps.renameInObject, { id: udp.id }).forEach(ut => {
+            udp.keys.forEach((key, index) => {
+                var i = Composer.isSubsetOrEqual(ut.ordPath.concat(ut.newKey), udp.ordPath.concat(key));
+                if(i === index) {
+                    udp.keys[index] = ut.key;
+                } else if(i > -1) {
+                    udp.ordPath[i] = ut.key;
+                }
+            });
         });
     }
 
@@ -114,6 +126,7 @@ class Composer {
 
         if(copy === true) {
             d0 = (new PUL()).parse(d0.serialize());
+            d1 = (new PUL()).parse(d1.serialize());
         }
 
         d0.normalize();
@@ -141,7 +154,7 @@ class Composer {
                 //ReplaceInObject Aggregation
                 //udp is applied on ut’s value. udp is then discarded
                 var i = Composer.isSubsetOrEqual(ut.ordPath, udp.ordPath);
-                if(i > -1) {
+                if(i > -2) {
                     _.merge(Composer.find((<ReplaceInObject> ut).item, udp.ordPath.slice(i + 2)), udp.pairs);
                 } else {
                     //Accumulation
@@ -162,13 +175,13 @@ class Composer {
                 Composer.omit((<InsertIntoObject> ut).pairs, udp.keys);
             } else if(ut instanceof ReplaceInObject) {
                 var i = Composer.isSubsetOrEqual(ut.ordPath, udp.ordPath);
-                if(i > -1) {
+                if(i > -2) {
                     Composer.omit(Composer.find((<ReplaceInObject> ut).item, udp.ordPath.slice(i + 2)), udp.keys);
                 } else {
                     d0.deleteFromObject(udp.id, udp.ordPath, udp.keys);
                 }
             } else {
-                Composer.renameInObjectAggregation(d0, udp);
+                Composer.renameInObjectAggregationForDeleteFromObject(d0, udp);
                 d0.deleteFromObject(udp.id, udp.ordPath, udp.keys);
             }
         });
@@ -183,7 +196,7 @@ class Composer {
                 (<InsertIntoObject> ut).pairs[udp.key] = udp.item;
             } else if(ut instanceof ReplaceInObject) {
                 var i = Composer.isSubsetOrEqual(ut.ordPath, udp.ordPath);
-                if(i > -1) {
+                if(i > -2) {
                     item = Composer.find((<ReplaceInObject> ut).item, udp.ordPath.slice(i + 2));
                     item[udp.key] = item;
                 } else {
@@ -207,7 +220,7 @@ class Composer {
                 Composer.omit((<InsertIntoObject> ut).pairs, [udp.key]);
             } else if(ut instanceof ReplaceInObject) {
                 var i = Composer.isSubsetOrEqual(ut.ordPath, udp.ordPath);
-                if(i > -1) {
+                if(i > -2) {
                     item = Composer.find((<ReplaceInObject> ut).item, udp.ordPath.slice(i + 2));
                     item[udp.newKey] = item;
                     Composer.omit(item, [udp.key]);
