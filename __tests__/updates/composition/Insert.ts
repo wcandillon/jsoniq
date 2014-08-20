@@ -25,7 +25,7 @@ describe("Insert Composition", () => {
         expect(delta.udps.insert[0].item.a).toBe(1);
 
         expect(
-            Common.checkIntegrity(d0, d1, { "1": {} })
+            Common.checkCompositionIntegrity(d0, d1, { "1": {} })
         ).toBe(true);
     });
 
@@ -43,7 +43,7 @@ describe("Insert Composition", () => {
         expect(delta.udps.insert[0].item.a).toBe(1);
 
         expect(
-            Common.checkIntegrity(d0, d1, { "1": {} })
+            Common.checkCompositionIntegrity(d0, d1, { "1": {} })
         ).toBe(true);
     });
 });

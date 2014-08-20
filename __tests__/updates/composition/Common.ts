@@ -37,7 +37,7 @@ class Common {
         return result;
     }
 
-    static checkIntegrity(d0: PUL, d1: PUL, snapshot: {}): boolean {
+    static checkCompositionIntegrity(d0: PUL, d1: PUL, snapshot: {}): boolean {
         d0.normalize();
         d1.normalize();
 

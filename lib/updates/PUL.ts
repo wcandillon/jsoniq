@@ -159,6 +159,15 @@ class PUL implements IPUL {
             handler(this.udps.renameInObject, udp.id);
             handler(this.udps.insert, udp.id);
         });
+
+        //We remove InsertIntoObject primitives with no pairs (if they have been removed because of composition)
+        var idx = _.findIndex(this.udps.insertIntoObject, udp => {
+            return Object.keys(udp.pairs).length === 0;
+        });
+        if(idx > -1) {
+            this.udps.insertIntoObject.splice(idx, 1);
+        }
+
         return this;
     }
 

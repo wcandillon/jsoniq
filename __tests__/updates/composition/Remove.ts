@@ -35,7 +35,7 @@ describe("Remove Composition", () => {
         ).toBe(true);
 
         expect(
-            Common.checkIntegrity(d0, d1, {})
+            Common.checkCompositionIntegrity(d0, d1, {})
         ).toBe(true);
     });
 
@@ -66,7 +66,7 @@ describe("Remove Composition", () => {
         ).toBe(true);
 
         expect(
-            Common.checkIntegrity(d0, d1, { "1": { a: [], b: {} } })
+            Common.checkCompositionIntegrity(d0, d1, { "1": { a: [], b: {} } })
         ).toBe(true);
 
     });
