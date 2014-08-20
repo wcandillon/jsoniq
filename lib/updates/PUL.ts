@@ -142,6 +142,23 @@ class PUL implements IPUL {
                 <RenameInObject[]>_.remove(this.udps.renameInObject, { id: udp.id, ordPath: udp.ordPath, key: key });
             });
         });
+        //If there is a remove primitive, all primitives with the same target are removed
+        var handler = (udps, id) => {
+            var idx;
+            while((idx = _.find(udps, { id: id })) > -1) {
+                udps.splice(idx, 1);
+            }
+        };
+        this.udps.remove.forEach(udp => {
+            handler(this.udps.deleteFromArray, udp.id);
+            handler(this.udps.deleteFromObject, udp.id);
+            handler(this.udps.insertIntoArray, udp.id);
+            handler(this.udps.insertIntoObject, udp.id);
+            handler(this.udps.replaceInArray, udp.id);
+            handler(this.udps.replaceInObject, udp.id);
+            handler(this.udps.renameInObject, udp.id);
+            handler(this.udps.insert, udp.id);
+        });
         return this;
     }
 
