@@ -137,5 +137,4 @@ describe("InsertIntoObject Composition", () => {
             Common.checkCompositionIntegrity(d0, d1, { "1": { a: {}, c: 1 } })
         ).toBe(true);
     });
-
 });
