@@ -22,7 +22,7 @@ class InsertIntoObjectComposition extends UPComposition {
         } else if(target instanceof ReplaceInObject) {
             this.replaceInObjectAggregation(<ReplaceInObject> target, u);
         } else {
-            this.renameInObjectAggregation(this.d0, u);
+            this.renameInObjectAggregation(u);
             this.d0.insertIntoObject(u.id, u.ordPath, u.pairs);
         }
         return this;

@@ -20,7 +20,7 @@ class UpdatePrimitive {
         if(ordPath.length === 0) {
             return item;
         } else {
-            return this.goTo(item[this.ordPath[0]], ordPath.slice(1));
+            return this.goTo(item[ordPath[0]], ordPath.slice(1));
         }
     }
 

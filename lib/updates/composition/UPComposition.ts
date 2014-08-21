@@ -66,8 +66,8 @@ class UPComposition {
         return -2;
     }
 
-    renameInObjectAggregation(pul: PUL, udp: UpdatePrimitive) {
-        _.filter(pul.udps.renameInObject, { id: udp.id }).forEach(ut => {
+    renameInObjectAggregation(udp: UpdatePrimitive) {
+        _.filter(this.d0.udps.renameInObject, { id: udp.id }).forEach(ut => {
             var i = this.isSubsetOrEqual(ut.ordPath.concat(ut.newKey), udp.ordPath);
             if(i > -1) {
                 udp.ordPath[i] = ut.key;

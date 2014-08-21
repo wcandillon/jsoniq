@@ -23,7 +23,7 @@ class RenameInObjectComposition extends UPComposition {
         } else if(target instanceof ReplaceInObject) {
             this.replaceInObjectAggregation(<ReplaceInObject> target, u);
         } else {
-            this.renameInObjectAggregation(this.d0, u);
+            this.renameInObjectAggregation(u);
             this.d0.renameInObject(u.id, u.ordPath, u.key, u.newKey);
         }
         return this;
@@ -52,14 +52,10 @@ class RenameInObjectComposition extends UPComposition {
         }
     }
 
-    renameInObjectAggregation(pul: PUL, udp: RenameInObject) {
-        _.filter(pul.udps.renameInObject, { id: udp.id }).forEach(ut => {
-            console.log("udp");
-            console.log(udp);
-            console.log("ut");
-            console.log(ut);
+    renameInObjectAggregation(udp: RenameInObject) {
+        _.filter(this.d0.udps.renameInObject, { id: udp.id }).forEach(ut => {
             var i = this.isSubsetOrEqual(ut.ordPath.concat(ut.newKey), udp.ordPath.concat(udp.key));
-            if(i > udp.ordPath.length) {
+            if(i === udp.ordPath.length) {
                 udp.key = ut.key;
             } else if(i > -1) {
                 udp.ordPath[i] = ut.key;

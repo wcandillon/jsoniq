@@ -253,7 +253,7 @@ describe("Memory Store", () => {
         }).toThrow();
     });
 
-    it("Tests Aggregation with ReplaceInObject", () => {
+    it("ReplaceInObject (1)", () => {
         var d0 = new PUL();
         d0.replaceInObject("1", [], "a", { b: 1 });
 
@@ -268,6 +268,28 @@ describe("Memory Store", () => {
             "1": {
                 "a": {
                     "c": 1
+                }
+            }
+        })).toBe(true);
+    });
+
+    it("RenameInObject (2)", () => {
+        var d0 = new PUL();
+        d0.replaceInObject("1", ["a"], "b", { c: 1 });
+
+        var d1 = new PUL();
+        d1.renameInObject("1", ["a", "b"], "c", "d");
+
+        var store = new MemoryStore();
+        store.put({ a: { b: { c: 1 } } }, "1");
+        store.commit(d0);
+        store.commit(d1);
+        expect(_.isEqual(store.snapshot, {
+            "1": {
+                "a": {
+                    "b": {
+                        d: 1
+                    }
                 }
             }
         })).toBe(true);
