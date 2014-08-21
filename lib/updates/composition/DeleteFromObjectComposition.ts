@@ -23,7 +23,7 @@ class DeleteFromObjectComposition extends UPComposition {
         } else if(target instanceof ReplaceInObject) {
             this.replaceInObjectAggregation(<ReplaceInObject> target, u);
         } else {
-            this.renameInObjectAggregation(this.d0, u);
+            this.renameInObjectAggregation(u);
             this.d0.deleteFromObject(u.id, u.ordPath, u.keys);
         }
         return this;
@@ -47,8 +47,8 @@ class DeleteFromObjectComposition extends UPComposition {
         }
     }
 
-    renameInObjectAggregation(pul: PUL, udp: DeleteFromObject) {
-        _.filter(pul.udps.renameInObject, { id: udp.id }).forEach(ut => {
+    renameInObjectAggregation(udp: DeleteFromObject) {
+        _.filter(this.d0.udps.renameInObject, { id: udp.id }).forEach(ut => {
             udp.keys.forEach((key, index) => {
                 var i = this.isSubsetOrEqual(ut.ordPath.concat(ut.newKey), udp.ordPath.concat(key));
                 if(i === index) {

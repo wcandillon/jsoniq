@@ -63,7 +63,7 @@ describe("RenameInObject Composition", () => {
     });
 
 
-    it("Tests Aggregation with ReplaceInObject", () => {
+    it("Tests Aggregation with ReplaceInObject (1)", () => {
         var d0 = new PUL();
         d0.replaceInObject("1", [], "a", { b: 1 });
 
@@ -84,37 +84,53 @@ describe("RenameInObject Composition", () => {
         ).toBe(true);
     });
 
-    it("Test Aggregation with RenameInObject", () => {
+    it("Tests Aggregation with ReplaceInObject (2)", () => {
+        var d0 = new PUL();
+        d0.replaceInObject("1", ["a"], "b", { c: 1 });
+
+        var d1 = new PUL();
+        d1.renameInObject("1", ["a", "b"], "c", "d");
+
+        var delta = PULComposition.compose(d0, d1, true);
+
+        expect(delta.udps.renameInObject.length).toBe(0);
+        expect(delta.udps.replaceInObject.length).toBe(1);
+        expect(
+            Common.isEqual(delta.udps.replaceInObject[0].item, { d: 1 })
+        ).toBe(true);
+
+        expect(
+            Common.checkCompositionIntegrity(d0, d1, { "1": { a: { b: 1 } } })
+        ).toBe(true);
+    });
+
+    it("Test Aggregation with RenameInObject (1)", () => {
         var d0 = new PUL();
         d0.renameInObject("1", [], "a", "b");
 
         var d1 = new PUL();
-        d1.insertIntoObject("1", ["b"], { c: 1 });
+        d1.renameInObject("1", ["b"], "c", "d");
 
         var delta = PULComposition.compose(d0, d1, true);
-        expect(delta.udps.renameInObject.length).toBe(1);
-        expect(delta.udps.insertIntoObject.length).toBe(1);
-        expect(delta.udps.insertIntoObject[0].ordPath.join(".")).toBe("a");
+        expect(delta.udps.renameInObject.length).toBe(2);
 
         expect(
-            Common.checkCompositionIntegrity(d0, d1, { "1": { a: {} } })
+            Common.checkCompositionIntegrity(d0, d1, { "1": { a: { c: 1 } } })
         ).toBe(true);
     });
 
     it("Test Accumulation (1)", () => {
         var d0 = new PUL();
-        d0.renameInObject("1", [], "c", "d");
+        d0.renameInObject("1", [], "a", "z");
 
         var d1 = new PUL();
-        d1.insertIntoObject("1", ["a"], { c: 1 });
+        d1.renameInObject("1", ["b"], "c", "d");
 
         var delta = PULComposition.compose(d0, d1, true);
-        expect(delta.udps.renameInObject.length).toBe(1);
-        expect(delta.udps.insertIntoObject.length).toBe(1);
-        expect(delta.udps.insertIntoObject[0].ordPath.join(".")).toBe("a");
+        expect(delta.udps.renameInObject.length).toBe(2);
 
         expect(
-            Common.checkCompositionIntegrity(d0, d1, { "1": { a: {}, c: 1 } })
+            Common.checkCompositionIntegrity(d0, d1, { "1": { b: { c: 1 }, a: 1 } })
         ).toBe(true);
     });
 

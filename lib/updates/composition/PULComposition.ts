@@ -6,6 +6,9 @@ import DeleteFromObjectComposition = require("./DeleteFromObjectComposition");
 import InsertIntoObjectComposition = require("./InsertIntoObjectComposition");
 import ReplaceInObjectComposition = require("./ReplaceInObjectComposition");
 import RenameInObjectComposition = require("./RenameInObjectComposition");
+import ReplaceInArrayComposition = require("./ReplaceInArrayComposition");
+import DeleteFromArrayComposition = require("./DeleteFromArrayComposition");
+import InsertIntoArrayComposition = require("./InsertIntoArrayComposition");
 
 class PULComposition {
 
@@ -47,6 +50,21 @@ class PULComposition {
         var renameInObjectComposition = new RenameInObjectComposition(d0);
         d1.udps.renameInObject.forEach(udp => {
             renameInObjectComposition.compose(udp);
+        });
+
+        var replaceInArrayComposition = new ReplaceInArrayComposition(d0);
+        d1.udps.replaceInArray.forEach(udp => {
+            replaceInArrayComposition.compose(udp);
+        });
+
+        var insertIntoArrayComposition = new InsertIntoArrayComposition(d0);
+        d1.udps.insertIntoArray.forEach(udp => {
+            insertIntoArrayComposition.compose(udp);
+        });
+
+        var deleteFromArrayComposition = new DeleteFromArrayComposition(d0);
+        d1.udps.deleteFromArray.forEach(udp => {
+            deleteFromArrayComposition.compose(udp);
         });
 
         return d0.normalize();
