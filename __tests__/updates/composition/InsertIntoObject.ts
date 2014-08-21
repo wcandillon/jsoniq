@@ -4,7 +4,7 @@
 jest.autoMockOff();
 //import _ = require("lodash");
 import PUL = require("../../../lib/updates/PUL");
-import Composer = require("../../../lib/updates/Composer");
+import PULComposition = require("../../../lib/updates/composition/PULComposition");
 import Common = require("./Common");
 //import jerr = require("../../lib/errors");
 
@@ -17,7 +17,7 @@ describe("InsertIntoObject Composition", () => {
         var d1 = new PUL();
         d1.insertIntoObject("1", [], { b: 1 });
 
-        var delta = Composer.compose(d0, d1, true);
+        var delta = PULComposition.compose(d0, d1, true);
         expect(delta.udps.insertIntoObject.length).toBe(0);
         expect(delta.udps.insert.length).toBe(1);
         expect(delta.udps.insert[0].item["a"]).toBe(1);
@@ -35,7 +35,7 @@ describe("InsertIntoObject Composition", () => {
         var d1 = new PUL();
         d1.insertIntoObject("1", ["a"], { c: 1 });
 
-        var delta = Composer.compose(d0, d1, true);
+        var delta = PULComposition.compose(d0, d1, true);
         expect(delta.udps.insertIntoObject.length).toBe(1);
         expect(delta.udps.insertIntoObject[0].pairs["b"]).toBe(1);
         expect(delta.udps.insertIntoObject[0].pairs["c"]).toBe(1);
@@ -52,7 +52,7 @@ describe("InsertIntoObject Composition", () => {
         var d1 = new PUL();
         d1.insertIntoObject("1", ["a"], { c: 1 });
 
-        var delta = Composer.compose(d0, d1, true);
+        var delta = PULComposition.compose(d0, d1, true);
 
         expect(delta.udps.insertIntoObject.length).toBe(0);
         expect(delta.udps.replaceInObject.length).toBe(1);
@@ -72,7 +72,7 @@ describe("InsertIntoObject Composition", () => {
         var d1 = new PUL();
         d1.insertIntoObject("1", ["b"], { c: 1 });
 
-        var delta = Composer.compose(d0, d1, true);
+        var delta = PULComposition.compose(d0, d1, true);
         expect(delta.udps.renameInObject.length).toBe(1);
         expect(delta.udps.insertIntoObject.length).toBe(1);
         expect(delta.udps.insertIntoObject[0].ordPath.join(".")).toBe("a");
@@ -89,7 +89,7 @@ describe("InsertIntoObject Composition", () => {
         var d1 = new PUL();
         d1.insertIntoObject("1", ["a"], { c: 1 });
 
-        var delta = Composer.compose(d0, d1, true);
+        var delta = PULComposition.compose(d0, d1, true);
         expect(delta.udps.renameInObject.length).toBe(1);
         expect(delta.udps.insertIntoObject.length).toBe(1);
         expect(delta.udps.insertIntoObject[0].ordPath.join(".")).toBe("a");
