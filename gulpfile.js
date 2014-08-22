@@ -3,6 +3,7 @@
 var gulp = require('gulp');
 
 var typescript = require('gulp-tsc');
+var karma = require('karma').server;
 
 var paths = {
     json: ['*.json', 'lib/**/*.json'],
@@ -47,9 +48,16 @@ gulp.task('compile-tests', ['clean'], function(){
         .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('test', ['compile-tests'], function () {
+gulp.task('jest', ['compile-tests'], function () {
     var jest = require('gulp-jest');
     return gulp.src('dist/__tests__/').pipe(jest({ rootDir: __dirname + '/dist' }));
+});
+
+gulp.task('test', ['jest'], function(done){
+    karma.start({
+        configFile: __dirname + '/tests/conf/karma.conf.js',
+        singleRun: true
+    }, done);
 });
 
 gulp.task('default', ['compile', 'test']);

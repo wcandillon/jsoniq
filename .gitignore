@@ -8,3 +8,4 @@ dist
 .idea
 .gulp*
 gulp-tsc-tmp*
+coverage
