@@ -23,7 +23,7 @@
   "licenses": [
     {
       "type": "Apache 2",
-      "url": "https://github.com/wcandillon/grunt-swagger-js-codegen/blob/master/LICENSE"
+      "url": "https://github.com/wcandillon/jsoniq/blob/master/LICENSE"
     }
   ],
   "bugs": {
