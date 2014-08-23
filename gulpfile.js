@@ -51,6 +51,11 @@ gulp.task('jest', function () {
     return gulp.src('dist/__tests__/').pipe(jest({ rootDir: __dirname + '/dist' }));
 });
 
+gulp.task('parser', function(){
+    var rex = require('./tasks/rex');
+    return gulp.src('parsers/ES5.ebnf').pipe(rex()).pipe(gulp.dest('parsers'));
+});
+
 gulp.task('test', ['jest'], function(done){
     karma.start({
         configFile: __dirname + '/tests/conf/karma.conf.js',
