@@ -1,15 +1,20 @@
 'use strict';
 
 var gulp = require('gulp');
-
-var typescript = require('gulp-tsc');
+var ts = require('gulp-type');
+var karma = require('karma').server;
 
 var paths = {
     json: ['*.json', 'lib/**/*.json'],
     js: ['gulpfile.js'],
-    ts: ['lib/**/*.ts'],
-    tests: ['__tests__/**/*.ts']
+    ts: ['**/*.ts', '!./node_modules/**/*.ts']
 };
+
+var tsProject = ts.createProject({
+    target: 'ES5',
+    module: 'commonjs',
+    noExternalResolve: true
+});
 
 gulp.task('clean', function () {
     var rimraf = require('gulp-rimraf');
@@ -30,24 +35,18 @@ gulp.task('lint', function(){
         .pipe(jshint())
         .pipe(jshint.reporter());
 
-    gulp.src(paths.ts.concat(paths.tests))
+    gulp.src(paths.ts.concat('!definitions/**/*.ts'))
         .pipe(tslint(require('./tslint.json')))
         .pipe(tslint.report('verbose'));
 });
 
-gulp.task('compile', ['clean', 'lint'], function(){
+gulp.task('compile', function(){
     return gulp.src(paths.ts)
-        .pipe(typescript({ sourcemap: true }))
+        .pipe(ts(tsProject)).js
         .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('compile-tests', ['clean'], function(){
-    return gulp.src(paths.tests)
-        .pipe(typescript({ sourcemap: true }))
-        .pipe(gulp.dest('dist/'));
-});
-
-gulp.task('test', ['compile-tests'], function () {
+gulp.task('jest', function () {
     var jest = require('gulp-jest');
     return gulp.src('dist/__tests__/').pipe(jest({ rootDir: __dirname + '/dist' }));
 });
@@ -57,4 +56,18 @@ gulp.task('parser', function(){
     return gulp.src('parsers/ES5.ebnf').pipe(rex()).pipe(gulp.dest('parsers'));
 });
 
-gulp.task('default', ['compile', 'test']);
+gulp.task('test', ['jest'], function(done){
+    karma.start({
+        configFile: __dirname + '/tests/conf/karma.conf.js',
+        singleRun: true
+    }, done);
+});
+
+gulp.task('watch', ['compile'], function() {
+    gulp.watch(paths.ts, ['compile']);
+});
+
+gulp.task('default', ['clean', 'lint'], function(){
+    var runSequence = require('run-sequence');
+    return runSequence('compile', 'test');
+});
