@@ -40,13 +40,13 @@ gulp.task('lint', function(){
         .pipe(tslint.report('verbose'));
 });
 
-gulp.task('compile', ['clean', 'lint'], function(){
+gulp.task('compile', function(){
     return gulp.src(paths.ts)
         .pipe(ts(tsProject)).js
         .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('jest', ['compile'], function () {
+gulp.task('jest', function () {
     var jest = require('gulp-jest');
     return gulp.src('dist/__tests__/').pipe(jest({ rootDir: __dirname + '/dist' }));
 });
@@ -62,4 +62,7 @@ gulp.task('watch', ['compile'], function() {
     gulp.watch(paths.ts, ['compile']);
 });
 
-gulp.task('default', ['test']);
+gulp.task('default', ['clean', 'lint'], function(){
+    var runSequence = require('run-sequence');
+    return runSequence('compile', 'test');
+});
