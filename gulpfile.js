@@ -2,6 +2,8 @@
 
 var gulp = require('gulp');
 var ts = require('gulp-type');
+var browserify = require('browserify');
+var source = require('vinyl-source-stream');
 var karma = require('karma').server;
 
 var paths = {
@@ -13,7 +15,8 @@ var paths = {
 var tsProject = ts.createProject({
     target: 'ES5',
     module: 'commonjs',
-    noExternalResolve: true
+    noExternalResolve: true,
+    sortOutput: true
 });
 
 gulp.task('clean', function () {
@@ -46,12 +49,18 @@ gulp.task('compile', function(){
         .pipe(gulp.dest('dist/'));
 });
 
+gulp.task('test-build', function(){
+    return browserify().require('./dist/lib/updates/PUL.js', { expose: 'PUL' }).bundle()
+        .pipe(source('jsoniq.js'))
+        .pipe(gulp.dest('dist'));
+});
+
 gulp.task('jest', function () {
     var jest = require('gulp-jest');
     return gulp.src('dist/__tests__/').pipe(jest({ rootDir: __dirname + '/dist' }));
 });
 
-gulp.task('test', ['jest'], function(done){
+gulp.task('karma', ['test-build'], function(done){
     karma.start({
         configFile: __dirname + '/tests/conf/karma.conf.js',
         singleRun: true
@@ -64,5 +73,5 @@ gulp.task('watch', ['compile'], function() {
 
 gulp.task('default', ['clean', 'lint'], function(){
     var runSequence = require('run-sequence');
-    return runSequence('compile', 'test');
+    return runSequence('compile', 'jest', 'karma');
 });
