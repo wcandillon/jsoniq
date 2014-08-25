@@ -15,8 +15,7 @@ var paths = {
 var tsProject = ts.createProject({
     target: 'ES5',
     module: 'commonjs',
-    noExternalResolve: true,
-    sortOutput: true
+    noExternalResolve: true
 });
 
 gulp.task('clean', function () {
