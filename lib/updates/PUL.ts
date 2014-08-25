@@ -1,4 +1,4 @@
-/// <reference path="../../typings/lodash/lodash.d.ts" />
+/// <reference path="../../definitions/lodash/lodash.d.ts" />
 import _ = require("lodash");
 
 import jerr = require("../errors");
@@ -30,6 +30,10 @@ class PUL implements IPUL {
 
     serialize(): string {
         return JSON.stringify(this);
+    }
+
+    setPrefix(prefix: string): PUL {
+        return this;
     }
 
     invert(transaction: Transaction): PUL {

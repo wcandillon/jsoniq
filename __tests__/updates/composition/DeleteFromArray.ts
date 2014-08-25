@@ -1,12 +1,10 @@
-///<reference path='../../../typings/jest/jest.d.ts'/>
-/// <reference path="../../../typings/node-uuid/node-uuid.d.ts" />
-/// <reference path="../../../typings/lodash/lodash.d.ts" />
-jest.autoMockOff();
-//import _ = require("lodash");
+///<reference path='../../../definitions/jest/jest.d.ts'/>
+///<reference path="../../../definitions/node-uuid/node-uuid.d.ts" />
+///<reference path="../../../definitions/lodash/lodash.d.ts" />
 import PUL = require("../../../lib/updates/PUL");
 import PULComposition = require("../../../lib/updates/composition/PULComposition");
-//import Common = require("./Common");
-//import jerr = require("../../lib/errors");
+
+jest.autoMockOff();
 
 describe("DeleteFromArray Composition", () => {
     it("should throw an error", () => {

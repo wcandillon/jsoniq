@@ -1,11 +1,12 @@
-///<reference path='../../../typings/jest/jest.d.ts'/>
-/// <reference path="../../../typings/lodash/lodash.d.ts" />
-jest.autoMockOff();
+///<reference path='../../../definitions/jest/jest.d.ts'/>
+///<reference path="../../../definitions/lodash/lodash.d.ts" />
 import _ = require("lodash");
 import PUL = require("../../../lib/updates/PUL");
 import PULComposition = require("../../../lib/updates/composition/PULComposition");
 import Store = require("../../../lib/stores/Store");
 import MemoryStore = require("../../../lib/stores/MemoryStore");
+
+jest.autoMockOff();
 
 class Common {
     private static debug(pul: PUL, snapshot: {}, show: boolean) {

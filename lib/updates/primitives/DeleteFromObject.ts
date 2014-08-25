@@ -1,6 +1,5 @@
-/// <reference path="../../../typings/lodash/lodash.d.ts" />
+/// <reference path="../../../definitions/lodash/lodash.d.ts" />
 import _ = require("lodash");
-//import jerr = require("../../errors");
 
 import UpdatePrimitive = require("./UpdatePrimitive");
 

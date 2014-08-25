@@ -1,4 +1,4 @@
-///<reference path='../typings/jest/jest.d.ts'/>
+///<reference path='../definitions/jest/jest.d.ts'/>
 ///<reference path='../lib/updates/PUL.ts' />
 var PUL = require("PUL");
 
