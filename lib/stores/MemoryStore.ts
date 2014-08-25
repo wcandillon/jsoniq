@@ -1,5 +1,5 @@
-/// <reference path="../../typings/node-uuid/node-uuid.d.ts" />
-/// <reference path="../../typings/lodash/lodash.d.ts" />
+/// <reference path="../../definitions/node-uuid/node-uuid.d.ts" />
+/// <reference path="../../definitions/lodash/lodash.d.ts" />
 import _ = require("lodash");
 import uuid = require("node-uuid");
 import PUL = require("../updates/PUL");
