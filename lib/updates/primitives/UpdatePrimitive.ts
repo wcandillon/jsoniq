@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/lodash/lodash.d.ts" />
-//import _ = require("lodash");
 import jerr = require("../../errors");
 
 import Transaction = require("../../stores/Transaction");

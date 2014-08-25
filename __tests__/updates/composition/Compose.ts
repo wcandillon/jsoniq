@@ -1,13 +1,11 @@
-///<reference path='../../../typings/jest/jest.d.ts'/>
-/// <reference path="../../../typings/node-uuid/node-uuid.d.ts" />
-/// <reference path="../../../typings/lodash/lodash.d.ts" />
-jest.autoMockOff();
+///<reference path='../../../definitions/jest/jest.d.ts'/>
+///<reference path="../../../definitions/node-uuid/node-uuid.d.ts" />
+///<reference path="../../../definitions/lodash/lodash.d.ts" />
 import _ = require("lodash");
 import PUL = require("../../../lib/updates/PUL");
 import PULComposition = require("../../../lib/updates/composition/PULComposition");
-//import jerr = require("../../lib/errors");
-//import MemoryStore = require("../../../lib/stores/MemoryStore");
-//import Transaction = require("../../../lib/stores/Transaction");
+
+jest.autoMockOff();
 
 describe("Composition", () => {
 

@@ -1,6 +1,6 @@
-///<reference path='../../../typings/jest/jest.d.ts'/>
-/// <reference path="../../../typings/node-uuid/node-uuid.d.ts" />
-/// <reference path="../../../typings/lodash/lodash.d.ts" />
+///<reference path='../../../definitions/jest/jest.d.ts'/>
+///<reference path="../../../definitions/node-uuid/node-uuid.d.ts" />
+///<reference path="../../../definitions/lodash/lodash.d.ts" />
 jest.autoMockOff();
 
 import PUL = require("../../../lib/updates/PUL");

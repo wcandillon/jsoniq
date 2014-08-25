@@ -1,5 +1,3 @@
-//import jerr = require("../errors");
-
 import Store = require("./Store");
 
 class Transaction {

@@ -15,8 +15,7 @@ var paths = {
 var tsProject = ts.createProject({
     target: 'ES5',
     module: 'commonjs',
-    noExternalResolve: true,
-    sortOutput: true
+    noExternalResolve: true
 });
 
 gulp.task('clean', function () {
@@ -25,7 +24,7 @@ gulp.task('clean', function () {
         .pipe(rimraf());
 });
 
-gulp.task('lint', function(){
+gulp.task('lint', function() {
     var jsonlint = require('gulp-jsonlint');
     var jshint = require('gulp-jshint');
     var tslint = require('gulp-tslint');
@@ -43,13 +42,13 @@ gulp.task('lint', function(){
         .pipe(tslint.report('verbose'));
 });
 
-gulp.task('compile', function(){
+gulp.task('compile', function() {
     return gulp.src(paths.ts)
         .pipe(ts(tsProject)).js
         .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('test-build', function(){
+gulp.task('test-build', function() {
     return browserify().require('./dist/lib/updates/PUL.js', { expose: 'PUL' }).bundle()
         .pipe(source('jsoniq.js'))
         .pipe(gulp.dest('dist'));
@@ -60,7 +59,7 @@ gulp.task('jest', function () {
     return gulp.src('dist/__tests__/').pipe(jest({ rootDir: __dirname + '/dist' }));
 });
 
-gulp.task('karma', ['test-build'], function(done){
+gulp.task('karma', ['test-build'], function(done) {
     karma.start({
         configFile: __dirname + '/tests/conf/karma.conf.js',
         singleRun: true
