@@ -1,15 +1,19 @@
-///<reference path='../definitions/jest/jest.d.ts'/>
-///<reference path='../lib/updates/PUL.ts' />
-var PUL = require("PUL");
+///<reference path='../definitions/jasmine/jasmine.d.ts'/>
+///<reference path='../lib/stores/IndexedDBStore.ts' />
+var IndexedDBStore = require("IndexedDBStore");
 
-describe("PUL", () => {
-    it("Should build a simple PUL", () => {
-        var pul = new PUL();
-        pul
-            .insertIntoObject("1", [], { b: 2 })
-            .insertIntoArray("1", [], 0, ["a"])
-            .deleteFromObject("1", [], ["a", "b"])
-            .replaceInObject("1", [], "a", 1);
-        expect(true).toBe(true);
+describe("IndexedDBStore", () => {
+
+    beforeEach(function(done) {
+        this.store = new IndexedDBStore();
+        this.store.open("myapp", 1).then(() => {
+            done();
+        }).catch((error) => {
+            console.error(error);
+        });
+    });
+
+    it("Opens a database", function() {
+        expect(this.store.collections().length).toBe(0);
     });
 });

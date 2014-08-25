@@ -32,6 +32,10 @@ class PUL implements IPUL {
         return JSON.stringify(this);
     }
 
+    setCollectionPrefix(prefix: string): PUL {
+        return this;
+    }
+
     invert(transaction: Transaction): PUL {
         var pul = new PUL();
         this.normalize();

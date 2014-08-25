@@ -6,3 +6,5 @@ script:
 - gulp
 before_script:
 - npm install -g gulp
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
