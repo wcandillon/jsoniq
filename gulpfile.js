@@ -48,8 +48,8 @@ gulp.task('compile', function(){
         .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('test-build', function(){
-    return browserify().require('./dist/lib/updates/PUL.js', { expose: 'PUL' }).bundle()
+gulp.task('test-build', ['compile'], function(){
+    return browserify().require('./dist/lib/stores/IndexedDBStore.js', { expose: 'IndexedDBStore' }).bundle()
         .pipe(source('jsoniq.js'))
         .pipe(gulp.dest('dist'));
 });
@@ -59,18 +59,18 @@ gulp.task('jest', function () {
     return gulp.src('dist/__tests__/').pipe(jest({ rootDir: __dirname + '/dist' }));
 });
 
-gulp.task('karma', ['test-build'], function(done){
+gulp.task('karma', function(done){
     karma.start({
         configFile: __dirname + '/tests/conf/karma.conf.js',
         singleRun: true
     }, done);
 });
 
-gulp.task('watch', ['compile'], function() {
-    gulp.watch(paths.ts, ['compile']);
+gulp.task('watch', ['test-build'], function() {
+    gulp.watch(paths.ts, ['test-build']);
 });
 
 gulp.task('default', ['clean', 'lint'], function(){
     var runSequence = require('run-sequence');
-    return runSequence('compile', 'jest', 'karma');
+    return runSequence('test-build', 'jest', 'karma');
 });

@@ -2,7 +2,7 @@ module.exports = function (config) {
     config.set({
         basePath: '../../',
         frameworks: ['jasmine'],
-        browsers: ['PhantomJS'],//'Firefox',
+        browsers: ['Firefox'],//'PhantomJS',
         files: [
             'dist/jsoniq.js',
             'dist/tests/**.spec.js'
@@ -13,8 +13,8 @@ module.exports = function (config) {
         logLevel: config.LOG_INFO,
         port: 9876,
         plugins: [
-            //'karma-chrome-launcher',
-            //'karma-firefox-launcher',
+            'karma-chrome-launcher',
+            'karma-firefox-launcher',
             'karma-phantomjs-launcher',
             'karma-jasmine',
             'karma-coverage'
