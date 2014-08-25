@@ -1,5 +1,5 @@
-///<reference path='../../../typings/jest/jest.d.ts'/>
-/// <reference path="../../../typings/lodash/lodash.d.ts" />
+///<reference path='../../../definitions/jest/jest.d.ts'/>
+/// <reference path="../../../definitions/lodash/lodash.d.ts" />
 jest.autoMockOff();
 import _ = require("lodash");
 import PUL = require("../../../lib/updates/PUL");
