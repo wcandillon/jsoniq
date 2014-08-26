@@ -14,7 +14,7 @@ class IndexedDBStore implements IStore {
     private db: IDBDatabase;
     private pul: PUL = new PUL();
 
-    open(name: string, version?: number): Promise<IDBDatabase> {
+    open(name: string, version?: number, onUpgrade?: (IDBVersionChangeEvent, IDBDatabase) => void): Promise<IDBDatabase> {
         return new es6Promise.Promise((resolve, reject) => {
             var request = indexedDB.open(name, version);
 
@@ -22,8 +22,10 @@ class IndexedDBStore implements IStore {
                 reject(request.error);
             };
 
-            request.onupgradeneeded = () => {
-                console.log("Error: We need an upgrade!!");
+            request.onupgradeneeded = (event) => {
+                if(onUpgrade) {
+                    onUpgrade(event, request.result);
+                }
             };
 
             request.onsuccess = () => {
