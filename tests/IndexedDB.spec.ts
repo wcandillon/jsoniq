@@ -8,14 +8,15 @@ describe("IndexedDBStore", () => {
         this.store = new IndexedDBStore();
         this.store
         .open("myapp", 4, (event, db) => {
+            var store;
             if(event.newVersion > 3) {
-                var store = db.createObjectStore("books", { keyPath: "id" });
+                store = db.createObjectStore("books", { keyPath: "id" });
                 store.put({ id: "80ac7430-2d1b-11e4-8c21-0800200c9a66", title: "XQuery 3.0" });
                 store.put({ id: "86b80010-2d1b-11e4-8c21-0800200c9a66", title: "NoSQL" });
                 store.put({ id: "93f98e10-2d1b-11e4-8c21-0800200c9a66", title: "JavaScript" });
             }
             if(event.newVersion >= 4) {
-                var store = db.createObjectStore("users", { keyPath: "id" });
+                store = db.createObjectStore("users", { keyPath: "id" });
                 store.put({ id: "wcandillon" });
             }
         })
