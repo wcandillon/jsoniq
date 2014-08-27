@@ -5,7 +5,7 @@ jest.autoMockOff();
 import _ = require("lodash");
 import PUL = require("../../lib/updates/PUL");
 import jerr = require("../../lib/errors");
-import MemoryStore = require("../../lib/stores/MemoryStore");
+import MemoryStore = require("../../lib/stores/memory/MemoryStore");
 
 describe("Memory Store", () => {
 
@@ -34,7 +34,7 @@ describe("Memory Store", () => {
         var pul = new PUL();
         pul.insert("hello", { z: 1 });
         pul.remove(id);
-        store.commit(pul);
+        store.commitWith(pul);
 
         expect(_.isEqual(store.get("hello"), { z: 1 })).toBe(true);
         expect(() => { store.get(id); }).toThrow();
@@ -53,7 +53,7 @@ describe("Memory Store", () => {
         expect(obj.b.c).toBe(1);
 
         var serializedPUL = pul.serialize();
-        store.commit(pul);
+        store.commitWith(pul);
 
         obj = store.get(id);
         expect(obj.b["d"]).toBe(1);
@@ -64,7 +64,7 @@ describe("Memory Store", () => {
         store.put(obj, id);
         pul = new PUL();
         pul.parse(serializedPUL);
-        store.commit(pul);
+        store.commitWith(pul);
 
         obj = store.get(id);
         expect(obj.b["d"]).toBe(1);
@@ -78,7 +78,7 @@ describe("Memory Store", () => {
 
         var pul = new PUL();
         pul.renameInObject(id, [], "a", "z");
-        store.commit(pul);
+        store.commitWith(pul);
 
         obj = store.get(id);
         expect(obj["z"]).toBe(1);
@@ -94,7 +94,7 @@ describe("Memory Store", () => {
         pul.renameInObject(id, [], "a", "z")
             .insertIntoObject(id, [], { a: 2 });
 
-        store.commit(pul);
+        store.commitWith(pul);
 
         obj = store.get(id);
         expect(obj.a).toBe(2);
@@ -113,7 +113,7 @@ describe("Memory Store", () => {
         //throws [JNUP0006] "a": pair to insert already exists in object
         expect(() => {
             try {
-                store.commit(pul);
+                store.commitWith(pul);
             } catch(e) {
                 expect(e instanceof jerr.JNUP0006).toBe(true);
                 throw e;
@@ -146,7 +146,7 @@ describe("Memory Store", () => {
             .renameInObject(id, ["0"], "complete", "completed")
             .insertIntoObject(id, ["0"], { title: "More figures" })
             .deleteFromObject(id, ["0"], ["title"]);
-        store.commit(pul);
+        store.commitWith(pul);
 
         todos = store.get(id);
         expect(todos[0]["completed"]).toBe(true);
@@ -167,7 +167,7 @@ describe("Memory Store", () => {
 
         expect(() => {
             try {
-                store.commit(pul);
+                store.commitWith(pul);
             } catch(e) {
                 expect(e instanceof jerr.JNUP0008).toBe(true);
                 throw e;
@@ -185,7 +185,7 @@ describe("Memory Store", () => {
         pul
             .insertIntoObject(id, ["b"], { a: 1 })
             .renameInObject(id, [], "b", "z");
-        store.commit(pul);
+        store.commitWith(pul);
 
         obj = store.get(id);
         expect(obj["z"]["a"]).toBe(1);
@@ -203,7 +203,7 @@ describe("Memory Store", () => {
             .renameInObject(id, [], "a", "b")
             .insert("myID", { z: 1 });
 
-        store.commit(pul);
+        store.commitWith(pul);
 
         obj = store.get(id);
         expect(obj.a).toBe(1);
@@ -224,7 +224,7 @@ describe("Memory Store", () => {
 
         expect(() => {
             try {
-                store.commit(pul);
+                store.commitWith(pul);
             } catch(e) {
                 expect(e instanceof jerr.JNUP0016).toBe(true);
                 throw e;
@@ -242,10 +242,10 @@ describe("Memory Store", () => {
 
         var store = new MemoryStore();
         store.put({}, "1");
-        store.commit(d0);
+        store.commitWith(d0);
         expect(() => {
             try {
-                store.commit(d1);
+                store.commitWith(d1);
             } catch(e) {
                 expect(e instanceof jerr.JNUP0006).toBe(true);
                 throw e;
@@ -262,8 +262,8 @@ describe("Memory Store", () => {
 
         var store = new MemoryStore();
         store.put({ a: {} }, "1");
-        store.commit(d0);
-        store.commit(d1);
+        store.commitWith(d0);
+        store.commitWith(d1);
         expect(_.isEqual(store.snapshot, {
             "1": {
                 "a": {
@@ -282,8 +282,8 @@ describe("Memory Store", () => {
 
         var store = new MemoryStore();
         store.put({ a: { b: { c: 1 } } }, "1");
-        store.commit(d0);
-        store.commit(d1);
+        store.commitWith(d0);
+        store.commitWith(d1);
         expect(_.isEqual(store.snapshot, {
             "1": {
                 "a": {

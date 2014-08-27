@@ -1,10 +1,14 @@
-/// <reference path="../../definitions/lodash/lodash.d.ts" />
+/// <reference path="../../../definitions/lodash/lodash.d.ts" />
 import es6Promise = require("es6-promise");
 import _ = require("lodash");
 
-import PUL = require("../updates/PUL");
-import UpdatePrimitives = require("../updates/UpdatePrimitives");
-import IStore = require("./IStore");
+import PUL = require("../../updates/PUL");
+import UpdatePrimitives = require("../../updates/UpdatePrimitives");
+import IStore = require("../IStore");
+import ICollection = require("../ICollection");
+import ICollections = require("../ICollections");
+import Collection = require("../Collection");
+import IndexedDBTransaction = require("./IndexedDBTransaction");
 
 var indexedDB = indexedDB || window["indexedDB"] || window["webkitIndexedDB"] ||
     window["mozIndexedDB"] || window["OIndexedDB"] || window["msIndexedDB"];
@@ -13,6 +17,7 @@ class IndexedDBStore implements IStore {
 
     private db: IDBDatabase;
     private pul: PUL = new PUL();
+    private collections: ICollections = {};
 
     open(name: string, version?: number, onUpgrade?: (IDBVersionChangeEvent, IDBDatabase) => void): Promise<IDBDatabase> {
         return new es6Promise.Promise((resolve, reject) => {
@@ -30,6 +35,9 @@ class IndexedDBStore implements IStore {
 
             request.onsuccess = () => {
                 this.db = request.result;
+                _.forEach(this.db.objectStoreNames, name => {
+                    this.collections[name] = new Collection(name, this.pul);
+                });
                 resolve(this.db);
             };
         });
@@ -41,22 +49,17 @@ class IndexedDBStore implements IStore {
         }
     }
 
-    collections(): string[] {
+    getCollections(): string[] {
         this.mustBeOpened();
-        var names = [];
-        _.forEach(this.db.objectStoreNames, name => {
-            names.push(name);
-        });
-        return names;
+        return Object.keys(this.collections);
     }
 
-    collection(name: string): PUL {
+    collection(name: string): ICollection {
         this.mustBeOpened();
-        if(!this.db.objectStoreNames.contains(name)) {
+        if(!this.collections[name]) {
             throw new Error("Collection " + name + " doesn't exist.");
         }
-        this.pul.setCollectionPrefix(name);
-        return this.pul;
+        return this.collections[name];
     }
 
     status(): UpdatePrimitives {
@@ -67,7 +70,9 @@ class IndexedDBStore implements IStore {
     commit(): Promise<IStore> {
         this.mustBeOpened();
         return new es6Promise.Promise((resolve, reject) => {
-            resolve(this);
+            var collections = this.getCollections();
+            var tx = new IndexedDBTransaction(this.db.transaction(collections, "readwrite"));
+            this.pul.apply(tx);
         });
     }
 }

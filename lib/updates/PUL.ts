@@ -2,7 +2,6 @@
 import _ = require("lodash");
 
 import jerr = require("../errors");
-import Transaction = require("../stores/Transaction");
 
 import UpdatePrimitive  = require("./primitives/UpdatePrimitive");
 import InsertIntoObject = require("./primitives/InsertIntoObject");
@@ -18,6 +17,8 @@ import Remove           = require("./primitives/Remove");
 import UpdatePrimitives = require("./UpdatePrimitives");
 import IPUL             = require("./IPUL");
 
+import ITransaction = require("../stores/ITransaction");
+
 class PUL implements IPUL {
 
     udps = new UpdatePrimitives();
@@ -32,11 +33,7 @@ class PUL implements IPUL {
         return JSON.stringify(this);
     }
 
-    setCollectionPrefix(prefix: string): PUL {
-        return this;
-    }
-
-    invert(transaction: Transaction): PUL {
+    invert(transaction: ITransaction): PUL {
         var pul = new PUL();
         this.normalize();
         this.udps.getAll().forEach((udp) => {
@@ -76,7 +73,7 @@ class PUL implements IPUL {
         return pul.normalize();
     }
 
-    apply(transaction: Transaction): PUL {
+    apply(transaction: ITransaction): PUL {
         //Normalize PUL
         this.normalize();
 

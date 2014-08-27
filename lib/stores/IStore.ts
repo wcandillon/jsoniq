@@ -1,10 +1,10 @@
 /// <reference path="../../definitions/es6-promise/es6-promise.d.ts" />
-import PUL = require("../updates/PUL");
 import UpdatePrimitives = require("../updates/UpdatePrimitives");
+import ICollection = require("./ICollection");
 
 interface IStore {
-    collections(): string[];
-    collection(name: string): PUL;
+    getCollections(): string[];
+    collection(name: string): ICollection;
     status(): UpdatePrimitives;
     commit(): Promise<IStore>;
 }

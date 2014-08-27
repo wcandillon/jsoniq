@@ -4,8 +4,7 @@ jest.autoMockOff();
 import _ = require("lodash");
 import PUL = require("../../../lib/updates/PUL");
 import PULComposition = require("../../../lib/updates/composition/PULComposition");
-import Store = require("../../../lib/stores/Store");
-import MemoryStore = require("../../../lib/stores/MemoryStore");
+import MemoryStore = require("../../../lib/stores/memory/MemoryStore");
 
 class Common {
     private static debug(pul: PUL, snapshot: {}, show: boolean) {
@@ -19,7 +18,7 @@ class Common {
         }
     }
 
-    private static loadSnapshot(store: Store, snapshot: {}) {
+    private static loadSnapshot(store: MemoryStore, snapshot: {}) {
         Object.keys(snapshot).forEach(key => {
             store.put(snapshot[key], key);
         });
@@ -46,14 +45,14 @@ class Common {
         var store1 = new MemoryStore();
         Common.loadSnapshot(store1, snapshot);
         Common.debug(d0, store1.snapshot, false);
-        store1.commit(d0);
+        store1.commitWith(d0);
         Common.debug(d1, store1.snapshot, false);
-        store1.commit(d1);
+        store1.commitWith(d1);
         Common.debug(undefined, store1.snapshot, false);
 
         var store2 = new MemoryStore();
         Common.loadSnapshot(store2, snapshot);
-        store2.commit(delta);
+        store2.commitWith(delta);
 
         return Common.isEqual(store1.snapshot, store2.snapshot);
     }
