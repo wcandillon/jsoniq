@@ -2,7 +2,7 @@
 //import _ = require("lodash");
 import jerr = require("../../errors");
 
-import Transaction = require("../../stores/Transaction");
+import ITransaction = require("../../stores/ITransaction");
 
 import IPUL = require("../IPUL");
 
@@ -24,7 +24,7 @@ class UpdatePrimitive {
         }
     }
 
-    lockTarget(transaction: Transaction): UpdatePrimitive {
+    lockTarget(transaction: ITransaction): UpdatePrimitive {
         var item = this.goTo(transaction.get(this.id), this.ordPath);
         if(!item) {
             throw new jerr.JNUP0008();

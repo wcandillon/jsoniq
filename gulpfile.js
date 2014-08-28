@@ -49,7 +49,7 @@ gulp.task('compile', function(){
 });
 
 gulp.task('test-build', ['compile'], function(){
-    return browserify().require('./dist/lib/stores/IndexedDBStore.js', { expose: 'IndexedDBStore' }).bundle()
+    return browserify().require('./dist/lib/stores/indexeddb/IndexedDBStore.js', { expose: 'IndexedDBStore' }).bundle()
         .pipe(source('jsoniq.js'))
         .pipe(gulp.dest('dist'));
 });

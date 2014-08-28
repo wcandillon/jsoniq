@@ -5,8 +5,8 @@ jest.autoMockOff();
 import _ = require("lodash");
 import PUL = require("../../lib/updates/PUL");
 //import jerr = require("../lib/errors");
-import MemoryStore = require("../../lib/stores/MemoryStore");
-import Transaction = require("../../lib/stores/Transaction");
+import MemoryStore = require("../../lib/stores/memory/MemoryStore");
+import MemoryTransaction = require("../../lib/stores/memory/MemoryTransaction");
 
 describe("Invert Operator", () => {
 
@@ -25,15 +25,15 @@ describe("Invert Operator", () => {
             .insertIntoObject(id, ["0"], { title: "More figures" })
             .deleteFromObject(id, ["0"], ["title"]);
 
-        var invert = pul.invert(new Transaction(store));
+        var invert = pul.invert(new MemoryTransaction(store.snapshot));
 
-        store.commit(pul);
+        store.commitWith(pul);
         var d1 = store.get(id);
         expect(d1[0].id).toBe(0);
         expect(d1[0].title).toBe("More figures");
         expect(d1[1].id).toBe(1);
 
-        store.commit(invert);
+        store.commitWith(invert);
         var d0 = store.get(id);
         expect(_.isEqual(d0, todos));
     });
@@ -51,14 +51,14 @@ describe("Invert Operator", () => {
         pul.replaceInObject(id, ["0"], "complete", true);
         pul.renameInObject(id, ["0"], "complete", "completed");
 
-        var invert = pul.invert(new Transaction(store));
+        var invert = pul.invert(new MemoryTransaction(store.snapshot));
         //console.log(JSON.stringify(JSON.parse(invert.serialize()), null, 2));
 
-        store.commit(pul);
+        store.commitWith(pul);
         var d1 = store.get(id);
         expect(d1[0].completed).toBe(true);
 
-        store.commit(invert);
+        store.commitWith(invert);
         var d0 = store.get(id);
         expect(_.isEqual(d0, todos)).toBe(true);
     });
@@ -83,10 +83,10 @@ describe("Invert Operator", () => {
         pul.insert("hello", { user: "foo" });
         pul.remove(ref);
 
-        var invert = pul.invert(new Transaction(store));
+        var invert = pul.invert(new MemoryTransaction(store.snapshot));
         //console.log(JSON.stringify(JSON.parse(invert.serialize()), null, 2));
 
-        store.commit(pul);
+        store.commitWith(pul);
         var d1 = store.get(id);
         expect(d1[0]["completed"]).toBe(true);
         expect(d1[0].complete).toBe(undefined);
@@ -96,7 +96,7 @@ describe("Invert Operator", () => {
         expect(_.isEqual(store.get("hello"), { user: "foo" })).toBe(true);
         expect(() => { store.get(ref); }).toThrow();
 
-        store.commit(invert);
+        store.commitWith(invert);
         var d0 = store.get(id);
         //console.log(JSON.stringify(d0, null, 2));
         //console.log("=======");

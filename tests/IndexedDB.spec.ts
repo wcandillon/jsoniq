@@ -1,5 +1,5 @@
 ///<reference path='../definitions/jasmine/jasmine.d.ts'/>
-///<reference path='../lib/stores/IndexedDBStore.ts' />
+///<reference path='../lib/stores/indexeddb/IndexedDBStore.ts' />
 var IndexedDBStore = require("IndexedDBStore");
 
 describe("IndexedDBStore", () => {
@@ -25,6 +25,16 @@ describe("IndexedDBStore", () => {
     });
 
     it("Check collection names", function() {
-        expect(this.store.collections().length).toBe(2);
+        expect(this.store.getCollections().length).toBe(2);
     });
+/*
+    it("Inserts a document", function(done) {
+        var id = this.store.collection("books").insert({ id: "7bacf2b0-2e2f-11e4-8c21-0800200c9a66", title: "PHP for the Experts" });
+        this.store.commit().then(() => {
+            var item = this.store.db.transaction(["books", "read"]).get(id);
+            console.log(item);
+            done();
+        });
+    });
+    */
 });
