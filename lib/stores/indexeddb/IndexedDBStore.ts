@@ -7,7 +7,7 @@ import UpdatePrimitives = require("../../updates/UpdatePrimitives");
 import IStore = require("../IStore");
 import ICollection = require("../ICollection");
 import ICollections = require("../ICollections");
-import Collection = require("../Collection");
+import IndexedDBCollection = require("./IndexedDBCollection");
 import IndexedDBTransaction = require("./IndexedDBTransaction");
 
 var indexedDB = indexedDB || window["indexedDB"] || window["webkitIndexedDB"] ||
@@ -36,7 +36,7 @@ class IndexedDBStore implements IStore {
             request.onsuccess = () => {
                 this.db = request.result;
                 _.forEach(this.db.objectStoreNames, name => {
-                    this.collections[name] = new Collection(name, this.pul);
+                    this.collections[name] = new IndexedDBCollection(this.db.transaction(name, "readonly").objectStore(name), this.pul);
                 });
                 resolve(this.db);
             };
@@ -73,6 +73,8 @@ class IndexedDBStore implements IStore {
             var collections = this.getCollections();
             var tx = new IndexedDBTransaction(this.db.transaction(collections, "readwrite"));
             this.pul.apply(tx);
+            tx.getTransaction().oncomplete = event => { resolve(event); };
+            tx.getTransaction().onerror = event => { reject(event); };
         });
     }
 }

@@ -8,6 +8,10 @@ class IndexedDBTransaction implements ITransaction {
         this.tx = tx;
     }
 
+    getTransaction(): IndexedDBTransaction {
+        return this.tx;
+    }
+
     get(id: string): any {
         var segments = id.split(":");
         var objectStoreName = segments[0];
@@ -19,7 +23,8 @@ class IndexedDBTransaction implements ITransaction {
         var segments = id.split(":");
         var objectStoreName = segments[0];
         var key = segments[1];
-        this.tx.objectStore(objectStoreName).put(item, key);
+        var objectStore = this.tx.objectStore(objectStoreName);
+        objectStore.put(item, !objectStore.keyPath && objectStore["autoIncrement"] !== true ? key : undefined);
         return this;
     }
 

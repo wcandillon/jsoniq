@@ -1,10 +1,10 @@
-/// <reference path="../../definitions/node-uuid/node-uuid.d.ts" />
+/// <reference path="../../../definitions/node-uuid/node-uuid.d.ts" />
 import uuid = require("node-uuid");
 
-import ICollection = require("./ICollection");
-import IPUL = require("../updates/IPUL");
+import ICollection = require("../ICollection");
+import IPUL = require("../../updates/IPUL");
 
-class Collection implements ICollection {
+class MemoryCollection implements ICollection {
 
     private name: string;
     private pul: IPUL;
@@ -18,12 +18,12 @@ class Collection implements ICollection {
         this.pul = pul;
     }
 
-    insert(document: any, id?: string): string {
+    insert(document: any, id?: string): ICollection {
         if(!id) {
             id = uuid.v4();
         }
         this.pul.insert(this.getId(id), document);
-        return id;
+        return this;
     }
 
     remove(id: string): ICollection {
@@ -67,4 +67,4 @@ class Collection implements ICollection {
     }
 }
 
-export = Collection;
+export = MemoryCollection;
