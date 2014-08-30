@@ -8,7 +8,7 @@ import UpdatePrimitives = require("../../updates/UpdatePrimitives");
 import IStore = require("../IStore");
 import ICollection = require("../ICollection");
 import ICollections = require("../ICollections");
-import Collection = require("../Collection");
+import MemoryCollection = require("./MemoryCollection");
 import MemoryTransaction = require("./MemoryTransaction");
 
 class MemoryStore implements IStore {
@@ -20,7 +20,7 @@ class MemoryStore implements IStore {
     private collections: ICollections = {};
 
     constructor() {
-        this.collections["main"] = new Collection("main", this.pul);
+        this.collections["main"] = new MemoryCollection("main", this.pul);
     }
 
     get(id: string): any {
