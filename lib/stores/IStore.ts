@@ -6,7 +6,7 @@ interface IStore {
     getCollections(): string[];
     collection(name: string): ICollection;
     status(): UpdatePrimitives;
-    commit(): Promise<IStore>;
+    commit(): Promise<any>;
 }
 
 export = IStore;

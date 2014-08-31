@@ -1,13 +1,5 @@
-///<reference path='../../../definitions/jest/jest.d.ts'/>
-/// <reference path="../../../definitions/node-uuid/node-uuid.d.ts" />
-/// <reference path="../../../definitions/lodash/lodash.d.ts" />
-jest.autoMockOff();
-import _ = require("lodash");
-import PUL = require("../../../lib/updates/PUL");
-import PULComposition = require("../../../lib/updates/composition/PULComposition");
-//import jerr = require("../../lib/errors");
-//import MemoryStore = require("../../../lib/stores/MemoryStore");
-//import Transaction = require("../../../lib/stores/Transaction");
+import PUL = require("../../../../lib/updates/PUL");
+import PULComposition = require("../../../../lib/updates/composition/PULComposition");
 
 describe("Composition", () => {
 
@@ -20,7 +12,7 @@ describe("Composition", () => {
 
         delta = PULComposition.compose(d0, d1, true);
         expect(delta === d0).toBe(false);
-        expect(_.isEqual(delta, d0)).toBe(true);
+        expect(delta).toEqual(d0);
     });
 
     it("delete & insert (1)", () => {
@@ -56,7 +48,7 @@ describe("Composition", () => {
         var delta = PULComposition.compose(d0, d1);
         expect(delta.udps.insertIntoObject.length).toBe(0);
         expect(delta.udps.insert.length).toBe(1);
-        expect(_.isEqual(delta.udps.insert[0].item.a.b, { c: 1, d: 1, e: 1 })).toBe(true);
+        expect(delta.udps.insert[0].item.a.b).toEqual({ c: 1, d: 1, e: 1 });
     });
 
     it("insert (2)", () => {
@@ -69,7 +61,7 @@ describe("Composition", () => {
 
         var delta = PULComposition.compose(d0, d1);
         expect(delta.udps.insertIntoObject.length).toBe(1);
-        expect(_.isEqual(delta.udps.insertIntoObject[0].pairs, { c: 1, d: 1, e: 1 })).toBe(true);
+        expect(delta.udps.insertIntoObject[0].pairs).toEqual({ c: 1, d: 1, e: 1 });
     });
 
     it("insert (3)", () => {
@@ -122,7 +114,7 @@ describe("Composition", () => {
         var delta = PULComposition.compose(d0, d1);
         expect(delta.udps.replaceInObject.length).toBe(1);
         expect(delta.udps.insertIntoObject.length).toBe(0);
-        expect(_.isEqual(delta.udps.replaceInObject[0].item.d, { e: 1, f: 1 })).toBe(true);
+        expect(delta.udps.replaceInObject[0].item.d).toEqual({ e: 1, f: 1 });
     });
 
     it("delete (1)", () => {
@@ -135,7 +127,7 @@ describe("Composition", () => {
         var delta = PULComposition.compose(d0, d1);
         expect(delta.udps.deleteFromObject.length).toBe(0);
         expect(delta.udps.insert.length).toBe(1);
-        expect(_.isEqual(delta.udps.insert[0].item.a.b, { e: 1 })).toBe(true);
+        expect(delta.udps.insert[0].item.a.b).toEqual({ e: 1 });
     });
 
     it("delete (2)", () => {
@@ -147,9 +139,8 @@ describe("Composition", () => {
         d1.deleteFromObject("1", ["a", "b"], ["c", "d"]);
 
         var delta = PULComposition.compose(d0, d1);
-        //console.log(JSON.stringify(delta.udps.deleteFromObject[0].keys, null, 2));
         expect(delta.udps.deleteFromObject.length).toBe(1);
-        expect(_.isEqual(delta.udps.deleteFromObject[0].keys, ["e", "c", "d"])).toBe(true);
+        expect(delta.udps.deleteFromObject[0].keys).toEqual(["e", "c", "d"]);
     });
 
     it("delete (3)", () => {
@@ -163,6 +154,6 @@ describe("Composition", () => {
         var delta = PULComposition.compose(d0, d1);
         expect(delta.udps.insertIntoObject.length).toBe(1);
         expect(delta.udps.deleteFromObject.length).toBe(0);
-        expect(_.isEqual(delta.udps.insertIntoObject[0].pairs, { e: 1 })).toBe(true);
+        expect(delta.udps.insertIntoObject[0].pairs).toEqual({ e: 1 });
     });
 });

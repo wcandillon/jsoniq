@@ -1,4 +1,6 @@
 /// <reference path="../../definitions/lodash/lodash.d.ts" />
+/// <reference path="../../definitions/es6-promise/es6-promise.d.ts" />
+import es6Promise = require("es6-promise");
 import _ = require("lodash");
 
 import jerr = require("../errors");
@@ -33,101 +35,113 @@ class PUL implements IPUL {
         return JSON.stringify(this);
     }
 
-    invert(transaction: ITransaction): PUL {
+    invert(transaction: ITransaction): Promise<PUL> {
+        var promises = [];
         var pul = new PUL();
         this.normalize();
         this.udps.getAll().forEach((udp) => {
             var lPUL = new PUL();
             var target;
             if(udp instanceof Remove) {
-                target = transaction.get(udp.id);
+                target = transaction.get(udp.id).then((item) => { return item; });
             } else if(!(udp instanceof Insert)) {
-                udp.lockTarget(transaction);
-                target = udp.getTarget();
+                target = udp.lockTarget(transaction).then(() => { return udp.getTarget(); });
+            } else {
+		//TODO: remove setTimeout
+                target = new es6Promise.Promise((resolve, reject) => { setTimeout(resolve, 1); });
             }
-            udp.invert(target, lPUL);
-            lPUL.udps.insert.forEach((udp) => {
-                pul.insert(udp.id, udp.item);
+            target.then((target) => {
+                udp.invert(target, lPUL);
+                lPUL.udps.insert.forEach((udp) => {
+                    pul.insert(udp.id, udp.item);
+                });
+                lPUL.udps.remove.forEach((udp) => {
+                    pul.remove(udp.id);
+                });
+                lPUL.udps.deleteFromArray.forEach((udp) => {
+                    pul.deleteFromArray(udp.id, udp.ordPath, udp.position);
+                });
+                lPUL.udps.deleteFromObject.forEach((udp) => {
+                    pul.deleteFromObject(udp.id, udp.ordPath, udp.keys);
+                });
+                lPUL.udps.insertIntoArray.forEach((udp) => {
+                    pul.insertIntoArray(udp.id, udp.ordPath, udp.position, udp.items);
+                });
+                lPUL.udps.insertIntoObject.forEach((udp) => {
+                    var idx = _.findIndex(pul.udps.insertIntoObject, { id: udp.id, ordPath: udp.ordPath });
+                    if(idx > -1) {
+                        _.merge(pul.udps.insertIntoObject[idx].pairs, udp.pairs);
+                    } else {
+                        pul.udps.insertIntoObject.push(udp);
+                    }
+                });
             });
-            lPUL.udps.remove.forEach((udp) => {
-                pul.remove(udp.id);
-            });
-            lPUL.udps.deleteFromArray.forEach((udp) => {
-                pul.deleteFromArray(udp.id, udp.ordPath, udp.position);
-            });
-            lPUL.udps.deleteFromObject.forEach((udp) => {
-                pul.deleteFromObject(udp.id, udp.ordPath, udp.keys);
-            });
-            lPUL.udps.insertIntoArray.forEach((udp) => {
-                pul.insertIntoArray(udp.id, udp.ordPath, udp.position, udp.items);
-            });
-            lPUL.udps.insertIntoObject.forEach((udp) => {
-                var idx = _.findIndex(pul.udps.insertIntoObject, { id: udp.id, ordPath: udp.ordPath });
-                if(idx > -1) {
-                    _.merge(pul.udps.insertIntoObject[idx].pairs, udp.pairs);
-                } else {
-                    pul.udps.insertIntoObject.push(udp);
-                }
-            });
+            promises.push(target);
         });
-        return pul.normalize();
+        return es6Promise.Promise.all(promises).then(() => {
+            return pul.normalize();
+        });
     }
 
-    apply(transaction: ITransaction): PUL {
+    apply(transaction: ITransaction): Promise<any> {
         //Normalize PUL
         this.normalize();
 
         //Lock targets
+        var promises = [];
         this.udps.getAll().forEach((udp) => {
             if(!(udp instanceof Insert) && !(udp instanceof Remove)) {
-                udp.lockTarget(transaction);
+                var p = udp.lockTarget(transaction);
+                promises.push(p);
             }
         });
 
-        var apply = (udp: UpdatePrimitive) => {
-            var id = udp.id;
-            var item = transaction.get(id);
-            udp.apply();
-            transaction.put(id, item);
-        };
+        return es6Promise.Promise.all(promises).then(() => {
 
-        //Apply updates
-        _.forEach(this.udps.insert, (udp) => {
-            transaction.put(udp.id, udp.item);
+            var apply = (udp: UpdatePrimitive) => {
+                var id = udp.id;
+                udp.apply();
+                transaction.put(id, udp.getDocument());
+            };
+
+            //Apply updates
+            _.forEach(this.udps.insert, (udp) => {
+                transaction.put(udp.id, udp.item);
+            });
+
+            _.forEach(this.udps.remove, (udp) => {
+                transaction.remove(udp.id);
+            });
+
+            //1. jupd:replace-in-object
+            _.forEach(this.udps.replaceInObject, apply);
+
+            //2. jupd:delete-from-object
+            _.forEach(this.udps.deleteFromObject, apply);
+
+            //3. jupd:rename-in-object
+            _.forEach(this.udps.renameInObject, apply);
+
+            //4. jupd:insert-into-object
+            _.forEach(this.udps.insertIntoObject, apply);
+
+            //The array update primitives, furthermore, are applied right-to-left with re- gard to their index.
+            //This obviates the problem of indexes being shifted and/or becoming invalid due to deletions or insertions.
+            //TODO: test
+            //5. jupd:replace-in-array
+            _.sortBy(this.udps.replaceInArray, "position");
+            _.forEach(this.udps.replaceInArray, apply);
+
+            //6. jupd:delete-from-array
+            _.sortBy(this.udps.deleteFromArray, "position");
+            _.forEach(this.udps.deleteFromArray, apply);
+
+            //7. jupd:insert-into-array
+            _.sortBy(this.udps.insertIntoArray, "position");
+            _.forEach(this.udps.insertIntoArray, apply);
+
+            return transaction.done();
         });
-
-        _.forEach(this.udps.remove, (udp) => {
-            transaction.remove(udp.id);
-        });
-
-        //1. jupd:replace-in-object
-        _.forEach(this.udps.replaceInObject, apply);
-
-        //2. jupd:delete-from-object
-        _.forEach(this.udps.deleteFromObject, apply);
-
-        //3. jupd:rename-in-object
-        _.forEach(this.udps.renameInObject, apply);
-
-        //4. jupd:insert-into-object
-        _.forEach(this.udps.insertIntoObject, apply);
-
-        //The array update primitives, furthermore, are applied right-to-left with re- gard to their index.
-        //This obviates the problem of indexes being shifted and/or becoming invalid due to deletions or insertions.
-        //TODO: test
-        //5. jupd:replace-in-array
-        _.sortBy(this.udps.replaceInArray, "position");
-        _.forEach(this.udps.replaceInArray, apply);
-
-        //6. jupd:delete-from-array
-        _.sortBy(this.udps.deleteFromArray, "position");
-        _.forEach(this.udps.deleteFromArray, apply);
-
-        //7. jupd:insert-into-array
-        _.sortBy(this.udps.insertIntoArray, "position");
-        _.forEach(this.udps.insertIntoArray, apply);
-
-        return this;
     }
 
     normalize(): PUL {

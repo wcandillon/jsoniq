@@ -37,10 +37,11 @@ describe("IndexedDBStore", () => {
         var item = { id: "7bacf2b0-2e2f-11e4-8c21-0800200c9a66", title: "PHP for the Experts" };
         this.store.collection("books").insert(item);
         this.store.commit().then(() => {
-            //var request = this.store.db.transaction("books", "readonly").objectStore("books").get(item.id);
-            //var item = this.store.db.transaction("books", "readonly").get("7bacf2b0-2e2f-11e4-8c21-0800200c9a66");
-            //console.log(item);
-            done();
+            var request = this.store.db.transaction("books", "readonly").objectStore("books").get(item.id);
+            request.onsuccess = () => {
+                expect(request.result).toEqual(item);
+                done();
+            };
         }).catch((error) => {
             console.error(error);
         });
