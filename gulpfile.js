@@ -54,9 +54,9 @@ gulp.task('test-build', ['compile'], function(){
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('jest', function () {
-    var jest = require('gulp-jest');
-    return gulp.src('dist/__tests__/').pipe(jest({ rootDir: __dirname + '/dist' }));
+gulp.task('jasmine', function () {
+    var jasmine = require('gulp-jasmine');
+    return gulp.src('dist/tests/node/**/*.js').pipe(jasmine());
 });
 
 gulp.task('karma', function(done){
@@ -72,5 +72,5 @@ gulp.task('watch', ['test-build'], function() {
 
 gulp.task('default', ['clean', 'lint'], function(){
     var runSequence = require('run-sequence');
-    return runSequence('test-build', 'jest', 'karma');
+    return runSequence('test-build', 'jasmine', 'karma');
 });

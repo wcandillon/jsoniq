@@ -1,5 +1,5 @@
 /// <reference path="../../../definitions/lodash/lodash.d.ts" />
-//import _ = require("lodash");
+/// <reference path="../../../definitions/es6-promise/es6-promise.d.ts" />
 import jerr = require("../../errors");
 
 import ITransaction = require("../../stores/ITransaction");
@@ -10,6 +10,7 @@ class UpdatePrimitive {
     public id: string;
     public ordPath: string[];
     private target: any;
+    private document: any;
 
     constructor(id: string, ordPath: string[]) {
         this.id = id;
@@ -24,14 +25,20 @@ class UpdatePrimitive {
         }
     }
 
-    lockTarget(transaction: ITransaction): UpdatePrimitive {
-        var item = this.goTo(transaction.get(this.id), this.ordPath);
-        if(!item) {
-            throw new jerr.JNUP0008();
-        } else {
-            this.target = item;
-        }
-        return this;
+    lockTarget(transaction: ITransaction): Promise<any> {
+        return transaction.get(this.id).then(document => {
+            this.document = document;
+            var item = this.goTo(this.document, this.ordPath);
+            if(!item) {
+                throw new jerr.JNUP0008();
+            } else {
+                this.target = item;
+            }
+        });
+    }
+
+    getDocument(): any {
+        return this.document;
     }
 
     getTarget(): any {

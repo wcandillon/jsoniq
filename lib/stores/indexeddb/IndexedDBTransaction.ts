@@ -1,30 +1,49 @@
+/// <reference path="../../../definitions/es6-promise/es6-promise.d.ts" />
+
+import es6Promise = require("es6-promise");
+
 import ITransaction = require("../ITransaction");
 
 class IndexedDBTransaction implements ITransaction {
 
-    private tx: IDBTransaction;
+    private db: IDBDatabase;
+    private txs: Promise<any>[] = [];
 
-    constructor(tx: IDBTransaction) {
-        this.tx = tx;
+    constructor(db: IDBDatabase) {
+        this.db = db;
     }
 
-    getTransaction(): IndexedDBTransaction {
-        return this.tx;
+    done(): Promise<any> {
+        return es6Promise.Promise.all(this.txs);
     }
 
-    get(id: string): any {
-        var segments = id.split(":");
-        var objectStoreName = segments[0];
-        var key = segments[1];
-        return this.tx.objectStore(objectStoreName).get(key);
+    get(id: string): Promise<any> {
+        return new es6Promise.Promise((resolve, reject) => {
+            var segments = id.split(":");
+            var objectStoreName = segments[0];
+            var key = segments[1];
+            var tx = this.db.transaction(objectStoreName, "readonly");
+            var req =  tx.objectStore(objectStoreName).get(key);
+            req.onsuccess = (event) => {
+                resolve(event);
+            };
+            req.onerror = (event) => {
+                reject(event);
+            };
+        });
     }
 
     put(id: string, item: any): ITransaction {
         var segments = id.split(":");
         var objectStoreName = segments[0];
         var key = segments[1];
-        var objectStore = this.tx.objectStore(objectStoreName);
-        objectStore.put(item, !objectStore.keyPath && objectStore["autoIncrement"] !== true ? key : undefined);
+        var tx = this.db.transaction(objectStoreName, "readwrite");
+        this.txs.push(new es6Promise.Promise((resolve, reject) => {
+            var objectStore = tx.objectStore(objectStoreName);
+            objectStore.put(item, !objectStore.keyPath && objectStore["autoIncrement"] !== true ? key : undefined);
+            tx.oncomplete = event => { resolve(event); };
+            tx.onerror = event => { reject(event); };
+        }));
         return this;
     }
 
@@ -32,7 +51,12 @@ class IndexedDBTransaction implements ITransaction {
         var segments = id.split(":");
         var objectStoreName = segments[0];
         var key = segments[1];
-        this.tx.objectStore(objectStoreName).delete(key);
+        var tx = this.db.transaction(objectStoreName, "readwrite");
+        this.txs.push(new es6Promise.Promise((resolve, reject) => {
+            tx.objectStore(objectStoreName).delete(key);
+            tx.oncomplete = event => { resolve(event); };
+            tx.onerror = event => { reject(event); };
+        }));
         return this;
     }
 }

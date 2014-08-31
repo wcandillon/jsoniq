@@ -67,15 +67,10 @@ class IndexedDBStore implements IStore {
         return this.pul.udps;
     }
 
-    commit(): Promise<IStore> {
+    commit(): Promise<any> {
         this.mustBeOpened();
-        return new es6Promise.Promise((resolve, reject) => {
-            var collections = this.getCollections();
-            var tx = new IndexedDBTransaction(this.db.transaction(collections, "readwrite"));
-            this.pul.apply(tx);
-            tx.getTransaction().oncomplete = event => { resolve(event); };
-            tx.getTransaction().onerror = event => { reject(event); };
-        });
+        var tx = new IndexedDBTransaction(this.db);
+        return this.pul.apply(tx);
     }
 }
 

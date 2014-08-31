@@ -1,10 +1,10 @@
-///<reference path='../../../definitions/jest/jest.d.ts'/>
-/// <reference path="../../../definitions/lodash/lodash.d.ts" />
-jest.autoMockOff();
+/// <reference path="../../../../definitions/lodash/lodash.d.ts" />
+/// <reference path="../../../../definitions/es6-promise/es6-promise.d.ts" />
+
 import _ = require("lodash");
-import PUL = require("../../../lib/updates/PUL");
-import PULComposition = require("../../../lib/updates/composition/PULComposition");
-import MemoryStore = require("../../../lib/stores/memory/MemoryStore");
+import PUL = require("../../../../lib/updates/PUL");
+import PULComposition = require("../../../../lib/updates/composition/PULComposition");
+import MemoryStore = require("../../../../lib/stores/memory/MemoryStore");
 
 class Common {
     private static debug(pul: PUL, snapshot: {}, show: boolean) {
@@ -36,7 +36,7 @@ class Common {
         return result;
     }
 
-    static checkCompositionIntegrity(d0: PUL, d1: PUL, snapshot: {}): boolean {
+    static checkCompositionIntegrity(d0: PUL, d1: PUL, snapshot: {}): Promise<boolean> {
         d0.normalize();
         d1.normalize();
 
@@ -45,16 +45,15 @@ class Common {
         var store1 = new MemoryStore();
         Common.loadSnapshot(store1, snapshot);
         Common.debug(d0, store1.snapshot, false);
-        store1.commitWith(d0);
-        Common.debug(d1, store1.snapshot, false);
-        store1.commitWith(d1);
-        Common.debug(undefined, store1.snapshot, false);
-
-        var store2 = new MemoryStore();
-        Common.loadSnapshot(store2, snapshot);
-        store2.commitWith(delta);
-
-        return Common.isEqual(store1.snapshot, store2.snapshot);
+        return store1.commitWith(d0).then(() => {
+            return store1.commitWith(d1);
+        }).then(() => {
+            var store2 = new MemoryStore();
+            Common.loadSnapshot(store2, snapshot);
+            return store2.commitWith(delta).then(() => {
+                return Common.isEqual(store1.snapshot, store2.snapshot);
+            });
+        });
     }
 }
 

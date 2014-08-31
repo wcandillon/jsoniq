@@ -60,14 +60,14 @@ class MemoryStore implements IStore {
         return this.pul.udps;
     }
 
-    commitWith(pul: PUL): IStore {
+    commitWith(pul: PUL): Promise<any> {
         var transaction = new MemoryTransaction(_.cloneDeep(this.snapshot));
-        pul.apply(transaction);
-        this.snapshot = transaction.snapshot;
-        return this;
+        return pul.apply(transaction).then(() => {
+            this.snapshot = transaction.snapshot;
+        });
     }
 
-    commit(): Promise<IStore> {
+    commit(): Promise<any> {
         throw new Error("Not implemented!");
     }
 }

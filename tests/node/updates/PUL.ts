@@ -1,15 +1,13 @@
-///<reference path='../../definitions/jest/jest.d.ts'/>
-/// <reference path="../../definitions/node-uuid/node-uuid.d.ts" />
-/// <reference path="../../definitions/lodash/lodash.d.ts" />
-jest.autoMockOff();
+/// <reference path="../../../definitions/node-uuid/node-uuid.d.ts" />
+/// <reference path="../../../definitions/lodash/lodash.d.ts" />
+///<reference path='../../../definitions/jasmine/jasmine.d.ts'/>
 import _ = require("lodash");
 import uuid = require("node-uuid");
-import PUL = require("../../lib/updates/PUL");
-import jerr = require("../../lib/errors");
+import PUL = require("../../../lib/updates/PUL");
+import jerr = require("../../../lib/errors");
 
 describe("PUL", () => {
     it("Should build a simple PUL", () => {
-
         var pul = new PUL();
         pul
             .insertIntoObject(uuid.v4(), [], { b: 2 })

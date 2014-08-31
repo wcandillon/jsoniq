@@ -1,11 +1,9 @@
-///<reference path='../../definitions/jest/jest.d.ts'/>
-/// <reference path="../../definitions/node-uuid/node-uuid.d.ts" />
-/// <reference path="../../definitions/lodash/lodash.d.ts" />
-jest.autoMockOff();
-import _ = require("lodash");
-import PUL = require("../../lib/updates/PUL");
-import jerr = require("../../lib/errors");
-import MemoryStore = require("../../lib/stores/memory/MemoryStore");
+/// <reference path="../../../definitions/node-uuid/node-uuid.d.ts" />
+///<reference path='../../../definitions/jasmine/jasmine.d.ts'/>
+require("jasmine2-pit");
+import PUL = require("../../../lib/updates/PUL");
+import jerr = require("../../../lib/errors");
+import MemoryStore = require("../../../lib/stores/memory/MemoryStore");
 
 describe("Memory Store", () => {
 
@@ -23,10 +21,10 @@ describe("Memory Store", () => {
 
         var id = store.put(object);
         var obj = store.get(id);
-        expect(_.isEqual(obj, object)).toBe(true);
+        expect(obj).toEqual(object);
     });
 
-    it("Insert & delete", () => {
+    pit("Insert & delete", () => {
         var obj = { a: 1, b: { c: 1 } };
         var store = new MemoryStore();
         var id = store.put(obj);
@@ -34,13 +32,13 @@ describe("Memory Store", () => {
         var pul = new PUL();
         pul.insert("hello", { z: 1 });
         pul.remove(id);
-        store.commitWith(pul);
-
-        expect(_.isEqual(store.get("hello"), { z: 1 })).toBe(true);
-        expect(() => { store.get(id); }).toThrow();
+        return store.commitWith(pul).then(() => {
+            expect(store.get("hello")).toEqual({ z: 1 });
+            expect(() => { store.get(id); }).toThrow();
+        });
     });
 
-    it("simple update (1)", () => {
+    pit("simple update (1)", () => {
         var obj = { a: 1, b: { c: 1 } };
         var store = new MemoryStore();
         var id = store.put(obj);
@@ -53,39 +51,39 @@ describe("Memory Store", () => {
         expect(obj.b.c).toBe(1);
 
         var serializedPUL = pul.serialize();
-        store.commitWith(pul);
-
-        obj = store.get(id);
-        expect(obj.b["d"]).toBe(1);
-        expect(obj.b.c).toBe(undefined);
-
-        obj = { a: 1, b: { c: 1 } };
-        store = new MemoryStore();
-        store.put(obj, id);
-        pul = new PUL();
-        pul.parse(serializedPUL);
-        store.commitWith(pul);
-
-        obj = store.get(id);
-        expect(obj.b["d"]).toBe(1);
-        expect(obj.b.c).toBe(undefined);
+        return store.commitWith(pul).then(() => {
+            obj = store.get(id);
+            expect(obj.b["d"]).toBe(1);
+            expect(obj.b.c).toBe(undefined);
+            obj = { a: 1, b: { c: 1 } };
+            store = new MemoryStore();
+            store.put(obj, id);
+            pul = new PUL();
+            pul.parse(serializedPUL);
+            return store.commitWith(pul).then(() => {
+                obj = store.get(id);
+                expect(obj.b["d"]).toBe(1);
+                expect(obj.b.c).toBe(undefined);
+                //done();
+            });
+        });
     });
 
-    it("simple update (2)", () => {
+    pit("simple update (2)", () => {
         var obj = { a: 1, b: { c: 1 } };
         var store = new MemoryStore();
         var id = store.put(obj);
 
         var pul = new PUL();
         pul.renameInObject(id, [], "a", "z");
-        store.commitWith(pul);
-
-        obj = store.get(id);
-        expect(obj["z"]).toBe(1);
-        expect(obj.a).toBe(undefined);
+        return store.commitWith(pul).then(() => {
+            obj = store.get(id);
+            expect(obj["z"]).toBe(1);
+            expect(obj.a).toBe(undefined);
+        });
     });
 
-    it("simple update (3)", () => {
+    pit("simple update (3)", () => {
         var obj = { a: 1, b: { c: 1 } };
         var store = new MemoryStore();
         var id = store.put(obj);
@@ -94,14 +92,14 @@ describe("Memory Store", () => {
         pul.renameInObject(id, [], "a", "z")
             .insertIntoObject(id, [], { a: 2 });
 
-        store.commitWith(pul);
-
-        obj = store.get(id);
-        expect(obj.a).toBe(2);
-        expect(obj["z"]).toBe(1);
+        return store.commitWith(pul).then(() => {
+            obj = store.get(id);
+            expect(obj.a).toBe(2);
+            expect(obj["z"]).toBe(1);
+        });
     });
 
-    it("simple update (4)", () => {
+    pit("simple update (4)", () => {
         var obj = { a: 1, b: { c: 1 } };
         var store = new MemoryStore();
         var id = store.put(obj);
@@ -111,26 +109,20 @@ describe("Memory Store", () => {
             .insertIntoObject(id, [], { a: 2 });
 
         //throws [JNUP0006] "a": pair to insert already exists in object
-        expect(() => {
-            try {
-                store.commitWith(pul);
-            } catch(e) {
-                expect(e instanceof jerr.JNUP0006).toBe(true);
-                throw e;
-            }
-        }).toThrow();
-
-        //"An individual function may create an invalid JSON instance;
-        // however, an updating query must produce a valid JSON instance once the entire query is evaluated,
-        // or an error is raised and the entire update fails, leaving the instance in its original state."
-        obj = store.get(id);
-        expect(obj.a).toBe(1);
-        expect(obj["z"]).toBe(undefined);
+        return store.commitWith(pul).catch(e => {
+            expect(e instanceof jerr.JNUP0006).toBe(true);
+            //"An individual function may create an invalid JSON instance;
+            // however, an updating query must produce a valid JSON instance once the entire query is evaluated,
+            // or an error is raised and the entire update fails, leaving the instance in its original state."
+            obj = store.get(id);
+            expect(obj.a).toBe(1);
+            expect(obj["z"]).toBe(undefined);
+        });
     });
 
     //http://try.zorba.io/queries/xquery/YLem0q2eDKwF7Yb9GyBKIwdUA20%3D
     //http://try.zorba.io/queries/xquery/J5QX9GgI64MnJlJ3IJ9vCUcCG8o%3D
-    it("example", () => {
+    pit("example", () => {
         var todos = [{
             id: 0,
             title: "Write thesis",
@@ -146,17 +138,17 @@ describe("Memory Store", () => {
             .renameInObject(id, ["0"], "complete", "completed")
             .insertIntoObject(id, ["0"], { title: "More figures" })
             .deleteFromObject(id, ["0"], ["title"]);
-        store.commitWith(pul);
-
-        todos = store.get(id);
-        expect(todos[0]["completed"]).toBe(true);
-        expect(todos[0].complete).toBe(undefined);
-        expect(todos[0].id).toBe(0);
-        expect(todos[0].title).toBe("More figures");
-        expect(todos[1].id).toBe(1);
+        return store.commitWith(pul).then(() => {
+            todos = store.get(id);
+            expect(todos[0]["completed"]).toBe(true);
+            expect(todos[0].complete).toBe(undefined);
+            expect(todos[0].id).toBe(0);
+            expect(todos[0].title).toBe("More figures");
+            expect(todos[1].id).toBe(1);
+        });
     });
 
-    it("JNUP0008", () => {
+    pit("JNUP0008", () => {
         var obj = { a: 1, b: {} };
 
         var store = new MemoryStore();
@@ -165,34 +157,28 @@ describe("Memory Store", () => {
         var pul = new PUL();
         pul.insertIntoObject(id, ["c"], { a: 1 });
 
-        expect(() => {
-            try {
-                store.commitWith(pul);
-            } catch(e) {
-                expect(e instanceof jerr.JNUP0008).toBe(true);
-                throw e;
-            }
-        }).toThrow();
+        return store.commitWith(pul).catch(e => {
+            expect(e instanceof jerr.JNUP0008).toBe(true);
+        });
     });
 
     //http://try.zorba.io/queries/xquery/ggGUhCUEuOUaVmfxjTOJ4ygDdas%3D
-    it("rename & insert (1)", () => {
+    pit("rename & insert (1)", () => {
         var obj = { a: 1, b: {} };
-
         var store = new MemoryStore();
         var id = store.put(obj);
         var pul = new PUL();
         pul
             .insertIntoObject(id, ["b"], { a: 1 })
             .renameInObject(id, [], "b", "z");
-        store.commitWith(pul);
-
-        obj = store.get(id);
-        expect(obj["z"]["a"]).toBe(1);
+        return store.commitWith(pul).then(() => {
+            obj = store.get(id);
+            expect(obj["z"]["a"]).toBe(1);
+        });
     });
 
     //http://try.zorba.io/queries/xquery/HdaN8mUvpAIlifs1CgBmz8gZhQo=
-    it("rename & insert (2)", () => {
+    pit("rename & insert (2)", () => {
         var obj = { a: 1 };
 
         var store = new MemoryStore();
@@ -203,18 +189,18 @@ describe("Memory Store", () => {
             .renameInObject(id, [], "a", "b")
             .insert("myID", { z: 1 });
 
-        store.commitWith(pul);
+        return store.commitWith(pul).then(() => {
+            obj = store.get(id);
+            expect(obj.a).toBe(1);
+            expect(obj["b"]).toBe(1);
 
-        obj = store.get(id);
-        expect(obj.a).toBe(1);
-        expect(obj["b"]).toBe(1);
-
-        obj = store.get("myID");
-        expect(obj["z"]).toBe(1);
+            obj = store.get("myID");
+            expect(obj["z"]).toBe(1);
+        });
     });
 
     //http://try.zorba.io/queries/xquery/D4xY%2FX8P10C1bTKtz6ZNnVRIwWs%3D
-    it("[JNUP0016] selector cannot be resolved against supplied object", () => {
+    pit("[JNUP0016] selector cannot be resolved against supplied object", () => {
         var obj = { completed: true };
         var store = new MemoryStore();
         var id = store.put(obj);
@@ -222,18 +208,13 @@ describe("Memory Store", () => {
         pul.renameInObject(id, [], "completed", "complete");
         pul.replaceInObject(id, [], "complete", false);
 
-        expect(() => {
-            try {
-                store.commitWith(pul);
-            } catch(e) {
-                expect(e instanceof jerr.JNUP0016).toBe(true);
-                throw e;
-            }
-        }).toThrow();
+        return store.commitWith(pul).catch(e => {
+            expect(e instanceof jerr.JNUP0016).toBe(true);
+        });
     });
 
     //http://try.zorba.io/queries/xquery/tzcZsn7c8sI82o45LJUo3SgkENM%3D
-    it("[JNUP0006] b: pair to insert already exists in object", () => {
+    pit("[JNUP0006] b: pair to insert already exists in object", () => {
         var d0 = new PUL();
         d0.insertIntoObject("1", [], { a: 1, b: 1 });
 
@@ -242,15 +223,11 @@ describe("Memory Store", () => {
 
         var store = new MemoryStore();
         store.put({}, "1");
-        store.commitWith(d0);
-        expect(() => {
-            try {
-                store.commitWith(d1);
-            } catch(e) {
-                expect(e instanceof jerr.JNUP0006).toBe(true);
-                throw e;
-            }
-        }).toThrow();
+        return store.commitWith(d0).then(() => {
+            return store.commitWith(d1);
+        }).catch(e => {
+            expect(e instanceof jerr.JNUP0006).toBe(true);
+        });
     });
 
     it("ReplaceInObject (1)", () => {
@@ -262,18 +239,20 @@ describe("Memory Store", () => {
 
         var store = new MemoryStore();
         store.put({ a: {} }, "1");
-        store.commitWith(d0);
-        store.commitWith(d1);
-        expect(_.isEqual(store.snapshot, {
-            "1": {
-                "a": {
-                    "c": 1
+        return store.commitWith(d0).then(() => {
+            return store.commitWith(d1);
+        }).then(() => {
+            expect(_.isEqual(store.snapshot, {
+                "1": {
+                    "a": {
+                        "c": 1
+                    }
                 }
-            }
-        })).toBe(true);
+            })).toBe(true);
+        });
     });
 
-    it("RenameInObject (2)", () => {
+    pit("RenameInObject (2)", () => {
         var d0 = new PUL();
         d0.replaceInObject("1", ["a"], "b", { c: 1 });
 
@@ -282,16 +261,18 @@ describe("Memory Store", () => {
 
         var store = new MemoryStore();
         store.put({ a: { b: { c: 1 } } }, "1");
-        store.commitWith(d0);
-        store.commitWith(d1);
-        expect(_.isEqual(store.snapshot, {
-            "1": {
-                "a": {
-                    "b": {
-                        d: 1
+        return store.commitWith(d0).then(() => {
+            return store.commitWith(d1);
+        }).then(() => {
+            expect(store.snapshot).toEqual({
+                "1": {
+                    "a": {
+                        "b": {
+                            d: 1
+                        }
                     }
                 }
-            }
-        })).toBe(true);
+            });
+        });
     });
 });

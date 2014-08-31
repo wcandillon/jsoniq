@@ -1,16 +1,12 @@
-///<reference path='../../../definitions/jest/jest.d.ts'/>
-/// <reference path="../../../definitions/node-uuid/node-uuid.d.ts" />
-/// <reference path="../../../definitions/lodash/lodash.d.ts" />
-jest.autoMockOff();
-//import _ = require("lodash");
-import PUL = require("../../../lib/updates/PUL");
-import PULComposition = require("../../../lib/updates/composition/PULComposition");
+require("jasmine2-pit");
+
+import PUL = require("../../../../lib/updates/PUL");
+import PULComposition = require("../../../../lib/updates/composition/PULComposition");
 import Common = require("./Common");
-//import jerr = require("../../lib/errors");
 
 describe("InsertIntoObject Composition", () => {
 
-    it("Tests Aggregation with Insert", () => {
+    pit("Tests Aggregation with Insert", () => {
         var d0 = new PUL();
         d0.insert("1", { a: 1 });
 
@@ -23,12 +19,12 @@ describe("InsertIntoObject Composition", () => {
         expect(delta.udps.insert[0].item["a"]).toBe(1);
         expect(delta.udps.insert[0].item["b"]).toBe(1);
 
-        expect(
-            Common.checkCompositionIntegrity(d0, d1, {})
-        ).toBe(true);
+        return Common.checkCompositionIntegrity(d0, d1, {}).then(result => {
+            expect(result).toBe(true);
+        });
     });
 
-    it("Tests Aggregation with InsertIntoObject", () => {
+    pit("Tests Aggregation with InsertIntoObject", () => {
         var d0 = new PUL();
         d0.insertIntoObject("1", ["a"], { b: 1 });
 
@@ -40,12 +36,12 @@ describe("InsertIntoObject Composition", () => {
         expect(delta.udps.insertIntoObject[0].pairs["b"]).toBe(1);
         expect(delta.udps.insertIntoObject[0].pairs["c"]).toBe(1);
 
-        expect(
-            Common.checkCompositionIntegrity(d0, d1, { "1": { a: {} } })
-        ).toBe(true);
+        return Common.checkCompositionIntegrity(d0, d1, { "1": { a: {} } }).then(result => {
+            expect(result).toBe(true);
+        });
     });
 
-    it("Tests Aggregation with ReplaceInObject", () => {
+    pit("Tests Aggregation with ReplaceInObject", () => {
         var d0 = new PUL();
         d0.replaceInObject("1", [], "a", { b: 1 });
 
@@ -60,12 +56,12 @@ describe("InsertIntoObject Composition", () => {
         expect(delta.udps.replaceInObject[0].item["b"]).toBe(1);
         expect(delta.udps.replaceInObject[0].item["c"]).toBe(1);
 
-        expect(
-            Common.checkCompositionIntegrity(d0, d1, { "1": { a: {} } })
-        ).toBe(true);
+        return Common.checkCompositionIntegrity(d0, d1, { "1": { a: {} } }).then(result => {
+            expect(result).toBe(true);
+        });
     });
 
-    it("Test Aggregation with RenameInObject", () => {
+    pit("Test Aggregation with RenameInObject", () => {
         var d0 = new PUL();
         d0.renameInObject("1", [], "a", "b");
 
@@ -77,12 +73,12 @@ describe("InsertIntoObject Composition", () => {
         expect(delta.udps.insertIntoObject.length).toBe(1);
         expect(delta.udps.insertIntoObject[0].ordPath.join(".")).toBe("a");
 
-        expect(
-            Common.checkCompositionIntegrity(d0, d1, { "1": { a: {} } })
-        ).toBe(true);
+        return Common.checkCompositionIntegrity(d0, d1, { "1": { a: {} } }).then(result => {
+            expect(result).toBe(true);
+        });
     });
 
-    it("Test Accumulation (1)", () => {
+    pit("Test Accumulation (1)", () => {
         var d0 = new PUL();
         d0.renameInObject("1", [], "c", "d");
 
@@ -94,9 +90,9 @@ describe("InsertIntoObject Composition", () => {
         expect(delta.udps.insertIntoObject.length).toBe(1);
         expect(delta.udps.insertIntoObject[0].ordPath.join(".")).toBe("a");
 
-        expect(
-            Common.checkCompositionIntegrity(d0, d1, { "1": { a: {}, c: 1 } })
-        ).toBe(true);
+        return Common.checkCompositionIntegrity(d0, d1, { "1": { a: {}, c: 1 } }).then(result => {
+            expect(result).toBe(true);
+        });
     });
 
 });
