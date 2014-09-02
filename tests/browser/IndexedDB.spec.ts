@@ -1,5 +1,5 @@
-///<reference path='../definitions/jasmine/jasmine.d.ts'/>
-///<reference path='../lib/stores/indexeddb/IndexedDBStore.ts' />
+///<reference path='../../definitions/jasmine/jasmine.d.ts'/>
+///<reference path='../../lib/stores/indexeddb/IndexedDBStore.ts' />
 var IndexedDBStore = require("IndexedDBStore");
 
 describe("IndexedDBStore", () => {
