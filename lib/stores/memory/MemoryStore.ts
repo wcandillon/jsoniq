@@ -8,6 +8,7 @@ import UpdatePrimitives = require("../../updates/UpdatePrimitives");
 import IStore = require("../IStore");
 import ICollection = require("../ICollection");
 import ICollections = require("../ICollections");
+import LogEntry = require("../LogEntry");
 import MemoryCollection = require("./MemoryCollection");
 import MemoryTransaction = require("./MemoryTransaction");
 
@@ -71,7 +72,27 @@ class MemoryStore implements IStore {
         throw new Error("Not implemented");
     }
 
-    reset(): MemoryStore {
+    resetLocal(): MemoryStore {
+        throw new Error("Not implemented");
+    }
+
+    init(): Promise<any> {
+        throw new Error("Not implemented");
+    }
+
+    clone(url: string): Promise<any> {
+        throw new Error("Not implemented");
+    }
+
+    log(from?: number, to?: number): Promise<LogEntry> {
+        throw new Error("Not implemented");
+    }
+
+    rebase(from: string, to?: string): Promise<any> {
+        throw new Error("Not implemented");
+    }
+
+    reset(to: string): Promise<any> {
         throw new Error("Not implemented");
     }
 }

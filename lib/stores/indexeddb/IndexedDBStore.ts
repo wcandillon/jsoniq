@@ -7,6 +7,7 @@ import UpdatePrimitives = require("../../updates/UpdatePrimitives");
 import IStore = require("../IStore");
 import ICollection = require("../ICollection");
 import ICollections = require("../ICollections");
+import LogEntry = require("../LogEntry");
 import IndexedDBCollection = require("./IndexedDBCollection");
 import IndexedDBTransaction = require("./IndexedDBTransaction");
 
@@ -73,11 +74,31 @@ class IndexedDBStore implements IStore {
         return this.pul.apply(tx);
     }
 
-    reset(): IndexedDBStore {
+    resetLocal(): IndexedDBStore {
         _.forEach(this.collections, collection => {
             collection.reset();
         });
         return this;
+    }
+
+    init(): Promise<any> {
+        throw new Error("Not implemented");
+    }
+
+    clone(url: string): Promise<any> {
+        throw new Error("Not implemented");
+    }
+
+    log(from?: number, to?: number): Promise<LogEntry> {
+        throw new Error("Not implemented");
+    }
+
+    rebase(from: string, to?: string): Promise<any> {
+        throw new Error("Not implemented");
+    }
+
+    reset(to: string): Promise<any> {
+        throw new Error("Not implemented");
     }
 }
 
