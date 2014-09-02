@@ -7,6 +7,7 @@ import ITransaction = require("../../stores/ITransaction");
 import IPUL = require("../IPUL");
 
 class UpdatePrimitive {
+
     public id: string;
     public ordPath: string[];
     private target: any;
