@@ -46,4 +46,13 @@ describe("IndexedDBStore", () => {
             console.error(error);
         });
     });
+
+    it("test reset", function() {
+        this.store.collection("books").insertIntoObject("7bacf2b0-2e2f-11e4-8c21-0800200c9a66", [], { author: "Chuck" });
+        var status = this.store.status();
+        expect(status.insertIntoObject.length).toBe(1);
+        this.store.reset();
+        status = this.store.status();
+        expect(status.insertIntoObject.length).toBe(0);
+    });
 });

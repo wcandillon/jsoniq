@@ -7,6 +7,7 @@ interface IStore {
     collection(name: string): ICollection;
     status(): UpdatePrimitives;
     commit(): Promise<any>;
+    reset(): IStore;
 }
 
 export = IStore;

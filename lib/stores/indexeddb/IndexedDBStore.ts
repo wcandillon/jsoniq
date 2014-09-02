@@ -72,6 +72,13 @@ class IndexedDBStore implements IStore {
         var tx = new IndexedDBTransaction(this.db);
         return this.pul.apply(tx);
     }
+
+    reset(): IndexedDBStore {
+        _.forEach(this.collections, collection => {
+            collection.reset();
+        });
+        return this;
+    }
 }
 
 export = IndexedDBStore;

@@ -5,7 +5,7 @@ module.exports = function (config) {
         browsers: ['Firefox'],//'PhantomJS',
         files: [
             'dist/jsoniq.js',
-            'dist/tests/browser/**.spec.js'
+            'dist/tests/browser/**/*.spec.js'
         ],
         captureTimeout: 60000,
         colors: true,

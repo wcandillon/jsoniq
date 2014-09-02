@@ -68,7 +68,11 @@ class MemoryStore implements IStore {
     }
 
     commit(): Promise<any> {
-        throw new Error("Not implemented!");
+        throw new Error("Not implemented");
+    }
+
+    reset(): MemoryStore {
+        throw new Error("Not implemented");
     }
 }
 
