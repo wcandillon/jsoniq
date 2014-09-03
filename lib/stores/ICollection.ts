@@ -8,6 +8,7 @@ interface ICollection {
     replaceInArray(id: string, ordPath: string[], position: number, item: any): ICollection;
     replaceInObject(id: string, ordPath: string[], key: string, item: any): ICollection;
     renameInObject(id: string, ordPath: string[], key: string, newKey: string): ICollection;
+    reset(): ICollection;
 }
 
 export = ICollection;

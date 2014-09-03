@@ -2,18 +2,18 @@
 import uuid = require("node-uuid");
 
 import ICollection = require("../ICollection");
-import IPUL = require("../../updates/IPUL");
+import PUL = require("../../updates/PUL");
 
 class MemoryCollection implements ICollection {
 
     private name: string;
-    private pul: IPUL;
+    private pul: PUL;
 
     private getId(id: string): string {
         return this.name + ":" + id;
     }
 
-    constructor(name: string, pul: IPUL) {
+    constructor(name: string, pul: PUL) {
         this.name = name;
         this.pul = pul;
     }
@@ -63,6 +63,18 @@ class MemoryCollection implements ICollection {
 
     renameInObject(id: string, ordPath: string[], key: string, newKey: string): ICollection {
         this.pul.renameInObject(this.getId(id), ordPath, key, newKey);
+        return this;
+    }
+
+    reset(): ICollection {
+        this.pul.udps.forEach((udp, udps, index) => {
+            if(index === 0) {
+                _.remove(udps, value => {
+                    var prefix = this.name + ":";
+                    return value.substring(0, prefix.length) === prefix;
+                });
+            }
+        });
         return this;
     }
 }

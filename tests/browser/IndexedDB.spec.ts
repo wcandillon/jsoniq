@@ -1,5 +1,5 @@
-///<reference path='../definitions/jasmine/jasmine.d.ts'/>
-///<reference path='../lib/stores/indexeddb/IndexedDBStore.ts' />
+///<reference path='../../definitions/jasmine/jasmine.d.ts'/>
+///<reference path='../../lib/stores/indexeddb/IndexedDBStore.ts' />
 var IndexedDBStore = require("IndexedDBStore");
 
 describe("IndexedDBStore", () => {
@@ -43,6 +43,29 @@ describe("IndexedDBStore", () => {
                 done();
             };
         }).catch((error) => {
+            console.error(error);
+        });
+    });
+
+    it("test reset", function(done) {
+        var id = "7bacf2b0-2e2f-11e4-8c21-0800200c9a66";
+        this.store.collection("books").insertIntoObject(id, [], { author: "Chuck" });
+        var status = this.store.status();
+        expect(status.insertIntoObject.length).toBe(1);
+        this.store.resetLocal();
+        status = this.store.status();
+        expect(status.insertIntoObject.length).toBe(0);
+        this.store
+            .collection("books")
+            .insertIntoObject(id, [], { author: "Chuck" })
+        ;
+        this.store.commit().then(() => {
+            var request = this.store.db.transaction("books", "readonly").objectStore("books").get(id);
+            request.onsuccess = () => {
+                expect(request.result.author).toEqual("Chuck");
+                done();
+            };
+        }).catch(error => {
             console.error(error);
         });
     });

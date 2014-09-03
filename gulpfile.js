@@ -61,7 +61,7 @@ gulp.task('jasmine', function () {
 
 gulp.task('karma', function(done){
     karma.start({
-        configFile: __dirname + '/tests/conf/karma.conf.js',
+        configFile: __dirname + '/tests/browser/karma.conf.js',
         singleRun: true
     }, done);
 });

@@ -24,11 +24,11 @@ class IndexedDBTransaction implements ITransaction {
             var key = segments[1];
             var tx = this.db.transaction(objectStoreName, "readonly");
             var req =  tx.objectStore(objectStoreName).get(key);
-            req.onsuccess = (event) => {
-                resolve(event);
+            req.onsuccess = () => {
+                resolve(req.result);
             };
-            req.onerror = (event) => {
-                reject(event);
+            req.onerror = () => {
+                reject(req.error);
             };
         });
     }

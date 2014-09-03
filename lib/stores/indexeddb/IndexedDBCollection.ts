@@ -2,13 +2,13 @@
 import _ = require("lodash");
 
 import ICollection = require("../ICollection");
-import IPUL = require("../../updates/IPUL");
+import PUL = require("../../updates/PUL");
 
 class IndexedDBCollection implements ICollection {
 
     private name: string;
     private keyPath: string;
-    private pul: IPUL;
+    private pul: PUL;
 
     private keyMustBeProvided(): boolean {
         return !this.keyPath;
@@ -39,7 +39,7 @@ class IndexedDBCollection implements ICollection {
     }
 
     private getId(id?: string, value?: any): string {
-        if(id && this.keyCannotBeProvided()) {
+        if(id && value && this.keyCannotBeProvided()) {
             throw new Error("Key cannot be provided");
         } else if(!id && this.keyMustBeProvided()) {
             throw new Error("Key must be provided");
@@ -56,7 +56,7 @@ class IndexedDBCollection implements ICollection {
         return this.name + ":" + id;
     }
 
-    constructor(store: IDBObjectStore, pul: IPUL) {
+    constructor(store: IDBObjectStore, pul: PUL) {
         if(store["autoIncrement"] === true) {
             throw new Error("Auto-generated keys are not supported.");
         }
@@ -107,6 +107,18 @@ class IndexedDBCollection implements ICollection {
 
     renameInObject(id: string, ordPath: string[], key: string, newKey: string): ICollection {
         this.pul.renameInObject(this.getId(id), ordPath, key, newKey);
+        return this;
+    }
+
+    reset(): ICollection {
+        this.pul.udps.forEach((udp, udps, index) => {
+            if(index === 0) {
+                _.remove(udps, udp => {
+                    var prefix = this.name + ":";
+                    return udp.id.substring(0, prefix.length) === prefix;
+                });
+            }
+        });
         return this;
     }
 }

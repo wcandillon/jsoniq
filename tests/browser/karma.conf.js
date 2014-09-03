@@ -2,10 +2,10 @@ module.exports = function (config) {
     config.set({
         basePath: '../../',
         frameworks: ['jasmine'],
-        browsers: ['Firefox'],//'PhantomJS',
+        browsers: ['Firefox'],
         files: [
             'dist/jsoniq.js',
-            'dist/tests/**.spec.js'
+            'dist/tests/browser/**/*.spec.js'
         ],
         captureTimeout: 60000,
         colors: true,

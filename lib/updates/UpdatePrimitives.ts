@@ -66,6 +66,19 @@ class UpdatePrimitives {
         });
         return this;
     }
+
+    forEach(fn: (udp: UpdatePrimitive, udps: UpdatePrimitive[], index: number) => void): UpdatePrimitives {
+        var containers = [
+            this.insertIntoObject, this.insertIntoArray, this.deleteFromObject, this.renameInObject,
+            this.deleteFromArray, this.replaceInArray, this.insert, this.remove
+        ];
+        containers.forEach(udps => {
+            udps.forEach((udp, index) => {
+                fn(udp, udps, index);
+            });
+        });
+        return this;
+    }
 }
 
 export = UpdatePrimitives;
