@@ -2,7 +2,7 @@ module.exports = function (config) {
     config.set({
         basePath: '../../',
         frameworks: ['jasmine'],
-        browsers: ['Chrome'],//'PhantomJS',
+        browsers: ['Firefox'],
         files: [
             'dist/jsoniq.js',
             'dist/tests/browser/**/*.spec.js'
