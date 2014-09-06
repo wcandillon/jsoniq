@@ -2,6 +2,8 @@
 
 var gulp = require('gulp');
 var ts = require('gulp-type');
+//var concat = require('gulp-concat-sourcemap');
+var sourcemaps = require('gulp-sourcemaps');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var karma = require('karma').server;
@@ -44,7 +46,9 @@ gulp.task('lint', function(){
 
 gulp.task('compile', function(){
     return gulp.src(paths.ts)
+        .pipe(sourcemaps.init())
         .pipe(ts(tsProject)).js
+        .pipe(sourcemaps.write())
         .pipe(gulp.dest('dist/'));
 });
 
