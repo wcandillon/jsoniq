@@ -20,10 +20,6 @@ var tsProject = ts.createProject({
     noExternalResolve: true
 });
 
-var failOnError = map(function(){
-    process.exit(1);
-});
-
 gulp.task('clean', function () {
     var rimraf = require('gulp-rimraf');
     return gulp.src('dist', {read: false})
@@ -36,7 +32,12 @@ gulp.task('jsonlint', function(){
     return gulp.src(paths.json)
         .pipe(jsonlint())
         .pipe(jsonlint.reporter())
-        .pipe(failOnError);
+        .pipe(map(function(file, cb){
+            if (!file.jshint.success) {
+                process.exit(1);
+            }
+            cb(null, file);
+	}));
 });
 
 gulp.task('jslint', function(){
