@@ -2,11 +2,11 @@
 
 var gulp = require('gulp');
 var ts = require('gulp-type');
-//var concat = require('gulp-concat-sourcemap');
 var sourcemaps = require('gulp-sourcemaps');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var karma = require('karma').server;
+var map = require('map-stream');
 
 var paths = {
     json: ['*.json', 'lib/**/*.json'],
@@ -26,23 +26,37 @@ gulp.task('clean', function () {
         .pipe(rimraf());
 });
 
-gulp.task('lint', function(){
+gulp.task('jsonlint', function(){
     var jsonlint = require('gulp-jsonlint');
-    var jshint = require('gulp-jshint');
-    var tslint = require('gulp-tslint');
 
-    gulp.src(paths.json)
+    return gulp.src(paths.json)
         .pipe(jsonlint())
-        .pipe(jsonlint.reporter());
+        .pipe(jsonlint.reporter())
+        .pipe(map(function(file, cb){
+            if (!file.jsonlint.success) {
+                process.exit(1);
+            }
+            cb(null, file);
+	}));
+});
 
-    gulp.src(paths.js)
+gulp.task('jslint', function(){
+    var jshint = require('gulp-jshint');
+
+    return gulp.src(paths.js)
         .pipe(jshint())
         .pipe(jshint.reporter());
+});
 
-    gulp.src(paths.ts.concat('!definitions/**/*.ts'))
+gulp.task('tslint', function(){
+    var tslint = require('gulp-tslint');
+
+    return gulp.src(paths.ts.concat('!definitions/**/*.ts'))
         .pipe(tslint(require('./tslint.json')))
         .pipe(tslint.report('verbose'));
 });
+
+gulp.task('lint', ['jsonlint', 'jslint', 'tslint']);
 
 gulp.task('compile', function(){
     return gulp.src(paths.ts)
