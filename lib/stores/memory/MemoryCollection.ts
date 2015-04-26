@@ -1,4 +1,4 @@
-/// <reference path="../../../definitions/node-uuid/node-uuid.d.ts" />
+/// <reference path="../../../typings/node-uuid/node-uuid.d.ts" />
 import uuid = require("node-uuid");
 
 import ICollection = require("../ICollection");

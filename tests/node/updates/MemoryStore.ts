@@ -1,9 +1,10 @@
-/// <reference path="../../../definitions/node-uuid/node-uuid.d.ts" />
-///<reference path='../../../definitions/jasmine/jasmine.d.ts'/>
+/// <reference path="../../../typings/tsd.d.ts" />
 require("jasmine2-pit");
 import PUL = require("../../../lib/updates/PUL");
 import jerr = require("../../../lib/errors");
 import MemoryStore = require("../../../lib/stores/memory/MemoryStore");
+
+declare function pit(expectation: string, assertion?: (done: () => void) => any): void;
 
 describe("Memory Store", () => {
 

@@ -1,4 +1,4 @@
-/// <reference path="../../../definitions/lodash/lodash.d.ts" />
+/// <reference path="../../../typings/lodash/lodash.d.ts" />
 import es6Promise = require("es6-promise");
 import _ = require("lodash");
 

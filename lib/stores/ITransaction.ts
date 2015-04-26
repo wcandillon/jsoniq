@@ -1,4 +1,4 @@
-/// <reference path="../../definitions/es6-promise/es6-promise.d.ts" />
+/// <reference path="../../typings/es6-promise/es6-promise.d.ts" />
 interface ITransaction {
     done(): Promise<any>;
     get(id: string): Promise<any>;

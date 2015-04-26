@@ -1,6 +1,4 @@
-/// <reference path="../../../../definitions/lodash/lodash.d.ts" />
-/// <reference path="../../../../definitions/es6-promise/es6-promise.d.ts" />
-
+/// <reference path="../../../../typings/tsd.d.ts" />
 import _ = require("lodash");
 import PUL = require("../../../../lib/updates/PUL");
 import PULComposition = require("../../../../lib/updates/composition/PULComposition");

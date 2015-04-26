@@ -1,4 +1,4 @@
-/// <reference path="../../definitions/es6-promise/es6-promise.d.ts" />
+/// <reference path="../../typings/tsd.d.ts" />
 import UpdatePrimitives = require("../updates/UpdatePrimitives");
 import ICollection = require("./ICollection");
 import LogEntry = require("./LogEntry");

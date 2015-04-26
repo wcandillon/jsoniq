@@ -28,7 +28,7 @@ gulp.task('lint:js', function(){
 });
 
 gulp.task('lint:ts', function(){
-    return gulp.src(Config.ts.concat('!definitions/**/*.ts'))
+    return gulp.src(Config.ts)
         .pipe($.tslint(require('../tslint.json')))
         .pipe($.tslint.report('verbose'));
 });

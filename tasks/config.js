@@ -3,7 +3,8 @@
 var config = {
     json: ['*.json', 'lib/**/*.json'],
     js: ['gulpfile.js'],
-    ts: ['**/*.ts', '!./node_modules/**/*.ts']
+    ts: ['**/*.ts', '!./node_modules/**/*.ts', '!typings/**/*.ts'],
+    dist: 'dist'
 };
 
 module.exports = config;
