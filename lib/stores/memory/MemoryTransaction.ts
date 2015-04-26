@@ -1,4 +1,4 @@
-/// <reference path="../../../definitions/es6-promise/es6-promise.d.ts" />
+/// <reference path="../../../typings/es6-promise/es6-promise.d.ts" />
 import es6Promise = require("es6-promise");
 
 import ITransaction = require("../ITransaction");
