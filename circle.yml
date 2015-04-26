@@ -5,3 +5,4 @@ dependencies:
   post:
     - npm install -g tsd
     - tsd reinstall
+    - tsd rebundle
