@@ -3,6 +3,6 @@ machine:
     version: 0.10.33
 dependencies:
   post:
-    - npm install -g tsd
+    - npm install -g tsd@next
     - tsd reinstall
     - tsd rebundle
