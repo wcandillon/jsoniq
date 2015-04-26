@@ -4,7 +4,7 @@
   "description": "JSONiq implementation for JavaScript",
   "main": "lib/jsoniq.js",
   "scripts": {
-    "test": "grunt"
+    "test": "gulp"
   },
   "repository": {
     "type": "git",
@@ -37,15 +37,15 @@
   },
   "devDependencies": {
     "browserify": "5.11.0",
+    "del": "^1.1.1",
     "gulp": "~3.8.7",
     "gulp-concat-sourcemap": "^1.3.1",
     "gulp-jasmine": "^1.0.0",
     "gulp-jshint": "~1.8.4",
     "gulp-jsonlint": "0.1.0",
-    "gulp-rimraf": "~0.1.0",
     "gulp-sourcemaps": "^1.1.4",
     "gulp-tslint": "~1.3.0",
-    "gulp-type": "~0.3.0",
+    "gulp-typescript": "2.0.0",
     "jasmine2-pit": "^0.2.0",
     "karma": "~0.12.22",
     "karma-chrome-launcher": "~0.1.4",

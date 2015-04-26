@@ -20,10 +20,9 @@ var tsProject = ts.createProject({
     noExternalResolve: true
 });
 
-gulp.task('clean', function () {
-    var rimraf = require('gulp-rimraf');
-    return gulp.src('dist', {read: false})
-        .pipe(rimraf());
+gulp.task('clean', function (done) {
+    var del = require('del');
+    del(['dist'], done);
 });
 
 gulp.task('jsonlint', function(){
