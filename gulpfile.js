@@ -1,8 +1,6 @@
 'use strict';
 
 var gulp = require('gulp');
-var ts = require('gulp-type');
-var sourcemaps = require('gulp-sourcemaps');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var karma = require('karma').server;
@@ -11,23 +9,10 @@ var $ = require('gulp-load-plugins')();
 var Config = require('./tasks/config');
 
 require('./tasks/lint');
-
-var tsProject = ts.createProject({
-    target: 'ES5',
-    module: 'commonjs',
-    noExternalResolve: true
-});
+require('./tasks/compile');
 
 gulp.task('clean', function () {
     return gulp.src('dist').pipe($.clean());
-});
-
-gulp.task('compile', function(){
-    return gulp.src(Config.ts)
-        .pipe(sourcemaps.init())
-        .pipe(ts(tsProject)).js
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest('dist/'));
 });
 
 gulp.task('test-build', ['compile'], function(){
