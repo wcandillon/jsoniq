@@ -7,11 +7,10 @@ var merge = require('merge2');
 var Config = require('./config');
 
 gulp.task('compile:typescript', function() {
-    var tsResult = gulp.src(Config.ts)
+    var tsResult = gulp.src(Config.ts.concat(['typings/**/*.ts']))
         //.pipe($.sourcemaps.init())
         .pipe($.typescript({
             declarationFiles: true,
-            noExternalResolve: true,
             target: 'ES5',
             module: 'commonjs'
         }))

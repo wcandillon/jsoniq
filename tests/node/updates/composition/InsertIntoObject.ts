@@ -4,6 +4,8 @@ import PUL = require("../../../../lib/updates/PUL");
 import PULComposition = require("../../../../lib/updates/composition/PULComposition");
 import Common = require("./Common");
 
+declare function pit(expectation: string, assertion?: (done: () => void) => any): void;
+
 describe("InsertIntoObject Composition", () => {
 
     pit("Tests Aggregation with Insert", () => {
