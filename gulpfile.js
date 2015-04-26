@@ -12,7 +12,7 @@ require('./tasks/lint');
 require('./tasks/compile');
 
 gulp.task('clean', function () {
-    return gulp.src('dist').pipe($.clean());
+    return gulp.src(Config.dist, { read: false }).pipe($.clean({ force: true }));
 });
 
 gulp.task('test-build', ['compile'], function(){
