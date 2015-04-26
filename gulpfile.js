@@ -6,13 +6,11 @@ var sourcemaps = require('gulp-sourcemaps');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var karma = require('karma').server;
-var map = require('map-stream');
+var $ = require('gulp-load-plugins')();
 
-var paths = {
-    json: ['*.json', 'lib/**/*.json'],
-    js: ['gulpfile.js'],
-    ts: ['**/*.ts', '!./node_modules/**/*.ts']
-};
+var Config = require('./tasks/config');
+
+require('./tasks/lint');
 
 var tsProject = ts.createProject({
     target: 'ES5',
@@ -20,45 +18,12 @@ var tsProject = ts.createProject({
     noExternalResolve: true
 });
 
-gulp.task('clean', function (done) {
-    var del = require('del');
-    del(['dist'], done);
+gulp.task('clean', function () {
+    return gulp.src('dist').pipe($.clean());
 });
-
-gulp.task('jsonlint', function(){
-    var jsonlint = require('gulp-jsonlint');
-
-    return gulp.src(paths.json)
-        .pipe(jsonlint())
-        .pipe(jsonlint.reporter())
-        .pipe(map(function(file, cb){
-            if (!file.jsonlint.success) {
-                process.exit(1);
-            }
-            cb(null, file);
-	}));
-});
-
-gulp.task('jslint', function(){
-    var jshint = require('gulp-jshint');
-
-    return gulp.src(paths.js)
-        .pipe(jshint())
-        .pipe(jshint.reporter());
-});
-
-gulp.task('tslint', function(){
-    var tslint = require('gulp-tslint');
-
-    return gulp.src(paths.ts.concat('!definitions/**/*.ts'))
-        .pipe(tslint(require('./tslint.json')))
-        .pipe(tslint.report('verbose'));
-});
-
-gulp.task('lint', ['jsonlint', 'jslint', 'tslint']);
 
 gulp.task('compile', function(){
-    return gulp.src(paths.ts)
+    return gulp.src(Config.ts)
         .pipe(sourcemaps.init())
         .pipe(ts(tsProject)).js
         .pipe(sourcemaps.write())
@@ -84,7 +49,7 @@ gulp.task('karma', function(done){
 });
 
 gulp.task('watch', ['test-build'], function() {
-    gulp.watch(paths.ts, ['test-build']);
+    gulp.watch(Config.ts, ['test-build']);
 });
 
 gulp.task('default', ['clean', 'lint'], function(){
