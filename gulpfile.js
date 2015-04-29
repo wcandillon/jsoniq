@@ -10,6 +10,7 @@ var Config = require('./tasks/config');
 
 require('./tasks/lint');
 require('./tasks/compile');
+require('./tasks/rex');
 
 gulp.task('clean', function () {
     return gulp.src(Config.dist, { read: false }).pipe($.clean({ force: true }));
@@ -37,7 +38,7 @@ gulp.task('watch', ['test-build'], function() {
     gulp.watch(Config.ts, ['test-build']);
 });
 
-gulp.task('default', ['clean', 'lint'], function(){
+gulp.task('default', ['clean', 'lint', 'rex'], function(){
     var runSequence = require('run-sequence');
     return runSequence('test-build', 'jasmine', 'karma');
 });
