@@ -5,9 +5,10 @@ var gulp = require('gulp');
 
 var fs = require('fs');
 var request = require('request');
-var FormData = require('form-data');
 var path = require('path');
 var Q = require('q');
+
+request = request.defaults({'proxy':'http://127.0.0.1:8888'});
 
 gulp.task('rex', function(){
     var promises = [];
@@ -25,12 +26,17 @@ gulp.task('rex', function(){
     grammars.forEach(function(parser){
         var deferred = Q.defer();
         var grammar = fs.readFileSync(parser.source);
-        var form = new FormData();
-        form.append('tz', parser.tz, { knownLength: new Buffer(parser.tz).length, contentType: 'text/plain'  });
-        form.append('command', parser.command, { knownLength: new Buffer(parser.command).length, contentType: 'text/plain' });
-        form.append('input', grammar, { knownLength : new Buffer(grammar).length, contentType: 'text/plain', filename: path.basename(parser.source )});
-        var length = form.getLengthSync();
-        var r = request.post('http://www.bottlecaps.de/rex/', function(err, res, body) {
+        request.post({ url: 'http://www.bottlecaps.de/rex/', formData: {
+            tz: parser.tz,
+            command: parser.command,
+            input: {
+                value: grammar,
+                options: {
+                    filename: path.basename(parser.source),
+                    contentType: 'application/octet-stream'
+                }
+            }
+        } }, function(err, res, body) {
             if(err) {
                 deferred.reject(err);
             } else {
@@ -38,8 +44,6 @@ gulp.task('rex', function(){
                 deferred.resolve();
             }
         });
-        r._form = form;
-        r.setHeader('content-length', length);
         promises.push(deferred.promise);
     });
     return Q.all(promises);
