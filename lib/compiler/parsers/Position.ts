@@ -8,10 +8,10 @@ class Position {
     static convertPosition(code: string, begin: number, end: number) {
         var before = code.substring(0, begin);
         var after = code.substring(0, end);
-        var startline = before.split('\n').length;
-        var startcolumn = begin - before.lastIndexOf('\n');
-        var endline = after.split('\n').length;
-        var endcolumn = end - after.lastIndexOf('\n');
+        var startline = before.split("\n").length;
+        var startcolumn = begin - before.lastIndexOf("\n");
+        var endline = after.split("\n").length;
+        var endcolumn = end - after.lastIndexOf("\n");
         return new Position(startline - 1, startcolumn - 1, endline - 1, endcolumn - 1);
     }
 

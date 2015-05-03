@@ -47,7 +47,7 @@
     "gulp-load-plugins": "^0.10.0",
     "gulp-sequence": "^0.3.2",
     "gulp-sourcemaps": "^1.1.4",
-    "gulp-tslint": "~1.3.0",
+    "gulp-tslint": "2.0.0",
     "gulp-typescript": "^2.6.0",
     "gulp-util": "^3.0.4",
     "jasmine2-pit": "^0.2.0",

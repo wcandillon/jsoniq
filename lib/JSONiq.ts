@@ -34,8 +34,13 @@ class JSONiq {
         } catch (e) {
             if (e instanceof JSONiqParser.ParseException) {
                 h.closeParseTree();
+                var message: string;
+                if(parser instanceof JSONiqParser.Parser) {
+                    message = (<JSONiqParser.Parser>parser).getErrorMessage(e);
+                } else if(parser instanceof XQueryParser.Parser) {
+                    message = (<XQueryParser.Parser>parser).getErrorMessage(e);
+                }
                 var pos = Position.convertPosition(this.source, e.getBegin(), e.getEnd());
-                var message = parser.getErrorMessage(e);
                 if (pos.getStartColumn() === pos.getEndColumn() && pos.getStartLine() === pos.getEndLine()) {
                     pos.setEndColumn(pos.getEndColumn() + 1);
                 }
