@@ -56,7 +56,6 @@ class JSONiq {
         this.markers = this.markers.concat(translator.getMarkers());
         return this;
     }
-
 }
 
 var jsoniq = new JSONiq("((1 to 10), 11)");

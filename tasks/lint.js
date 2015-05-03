@@ -10,7 +10,7 @@ var Config = require('./config');
 gulp.task('lint:json', function(){
     var jsonlint = require('gulp-jsonlint');
 
-    return gulp.src(Config.json)
+    return gulp.src(Config.json.concat(['!./dist/**/*']))
         .pipe(jsonlint())
         .pipe(jsonlint.reporter())
         .pipe(map(function(file, cb){
@@ -22,13 +22,13 @@ gulp.task('lint:json', function(){
 });
 
 gulp.task('lint:js', function(){
-    return gulp.src(Config.js)
+    return gulp.src(Config.js.concat(['!./dist/**/*']))
         .pipe($.jshint())
         .pipe($.jshint.reporter());
 });
 
 gulp.task('lint:ts', function(){
-    return gulp.src(Config.ts.concat(['!./lib/compiler/parsers/XQueryParser.ts', '!./lib/compiler/parsers/JSONiqParser.ts']))
+    return gulp.src(Config.ts.concat(['!./lib/compiler/parsers/XQueryParser.ts', '!./lib/compiler/parsers/JSONiqParser.ts', '!./dist/**/*']))
         .pipe($.tslint(require('../tslint.json')))
         .pipe($.tslint.report('verbose'));
 });

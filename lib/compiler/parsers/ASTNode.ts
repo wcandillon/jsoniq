@@ -68,12 +68,13 @@ class ASTNode {
         indent = indent ? indent : "";
         if(this.value) {
             result += (indent + "<" + this.name + ">" + this.value + "</" + this.name + ">\n");
+        } else {
+            result += indent + "<" + this.name + ">\n";
+            this.children.forEach(function (child) {
+                result += child.toXML(indent + "  ");
+            });
+            result += indent + "</" + this.name + ">\n";
         }
-        result += indent + "<" + this.name + ">\n";
-        this.children.forEach(function(child) {
-            result += child.toXML(indent + "  ");
-        });
-        result += indent + "</" + this.name + ">\n";
         return result;
     }
 
