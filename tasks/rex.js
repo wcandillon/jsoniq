@@ -8,7 +8,7 @@ var request = require('request');
 var path = require('path');
 var Q = require('q');
 
-request = request.defaults({'proxy':'http://127.0.0.1:8888'});
+//request = request.defaults({'proxy':'http://127.0.0.1:8888'});
 
 gulp.task('rex', function(){
     var promises = [];

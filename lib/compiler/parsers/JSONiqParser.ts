@@ -1,8 +1,6 @@
 // This file was generated on Sat May 2, 2015 23:07 (UTC+01) by REx v5.33 which is Copyright (c) 1979-2015 by Gunther Rademacher <grd@gmx.net>
 // REx command line: JSONiqParser.ebnf -ll 2 -backtrack -tree -typescript
 
-module JSONiqParser
-{
   export interface ParsingEventHandler
   {
     reset(source: string): void;
@@ -41979,6 +41977,5 @@ module JSONiqParser
       "'}}'"
     ];
   }
-}
 
 // End
