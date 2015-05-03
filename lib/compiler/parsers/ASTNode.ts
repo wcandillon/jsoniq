@@ -1,3 +1,4 @@
+/// <reference path="../../../typings/tsd.d.ts" />
 import Position = require("./Position");
 
 class ASTNode {
@@ -60,6 +61,39 @@ class ASTNode {
     addChild(child: ASTNode): ASTNode {
         this.children.push(child);
         return this;
+    }
+
+    toXML(indent?: string): string {
+        var result =  "";
+        indent = indent ? indent : "";
+        if(this.value) {
+            result += (indent + "<" + this.name + ">" + this.value + "</" + this.name + ">\n");
+        }
+        result += indent + "<" + this.name + ">\n";
+        this.children.forEach(function(child) {
+            result += child.toXML(indent + "  ");
+        });
+        result += indent + "</" + this.name + ">\n";
+        return result;
+    }
+
+    toJSON(root?: boolean): string {
+        var result =  "";
+        root = root ? root : true;
+        result += "{ ";
+        result += "  \"name\": \"" + this.name + "\"";
+        if(this.value) {
+            result += (", " + "  \"value\": \"" + this.value + "\"");
+        }
+        if(this.children.length > 0) {
+            result += ", " + "  \"children\": [" + (this.children.map(function(child) { return child.toJSON(false); }).join(", ")) + "]";
+        }
+        result += " } ";
+        if(root) {
+            return JSON.stringify(JSON.parse(result), null, 2);
+        } else {
+            return result;
+        }
     }
 }
 

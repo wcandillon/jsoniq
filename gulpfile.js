@@ -38,7 +38,6 @@ gulp.task('watch', ['test-build'], function() {
     gulp.watch(Config.ts, ['test-build']);
 });
 
-gulp.task('default', ['clean', 'lint', 'rex'], function(){
-    var runSequence = require('run-sequence');
-    return runSequence('test-build', 'jasmine', 'karma');
+gulp.task('default', ['clean', 'lint'], function(){
+    return $.sequence('test-build', 'jasmine', 'karma');
 });

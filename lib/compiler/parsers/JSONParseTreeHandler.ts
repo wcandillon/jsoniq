@@ -30,7 +30,7 @@ class JSONParseTreeHandler implements JSONiqParser.ParsingEventHandler {
 
     pushNode(name: string): JSONParseTreeHandler { //begin
         var node = new ASTNode(name, this.ast, new Position(0, 0, 0, 0), undefined, []);
-        if (this.ast === null) {
+        if (this.ast === undefined) {
             this.ast = node;
             this.ast.index = [];
             this.ptr = node;
@@ -81,9 +81,6 @@ class JSONParseTreeHandler implements JSONiqParser.ParsingEventHandler {
         if (this.ptr.getParent() !== undefined) {
             this.ptr = this.ptr.getParent();
         }
-        //else {
-            //delete ptr.getParent;
-        //}
 
         //Parse tree size optimization
         if (this.ptr.getChildren().length > 0) {
@@ -99,7 +96,18 @@ class JSONParseTreeHandler implements JSONiqParser.ParsingEventHandler {
         return this.ast;
     }
 
-    reset(source: string): void {}
+    closeParseTree(): JSONParseTreeHandler {
+        while (this.ptr.getParent() !== undefined) {
+            this.popNode();
+        }
+        this.popNode();
+        return this;
+    }
+
+    reset(source: string): void {
+        this.source = source;
+        this.remains = source;
+    }
 
     startNonterminal(name: string, begin: number): void {
         this.pushNode(name);
