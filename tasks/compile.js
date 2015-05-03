@@ -14,13 +14,11 @@ var tsProject = $.typescript.createProject({
 
 gulp.task('compile:typescript', function() {
     var tsResult = gulp.src(Config.ts.concat(['typings/**/*.ts']))
-        //.pipe($.sourcemaps.init())
-        .pipe($.typescript(tsProject))
-        //.pipe($.sourcemaps.write());
-        ;
+        .pipe($.sourcemaps.init())
+        .pipe($.typescript(tsProject));
     return merge([
         tsResult.dts.pipe(gulp.dest(Config.dist)),
-        tsResult.js.pipe(gulp.dest(Config.dist))
+        tsResult.js.pipe($.sourcemaps.write()).pipe(gulp.dest(Config.dist))
     ]);
 });
 
