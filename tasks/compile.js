@@ -7,6 +7,7 @@ var merge = require('merge2');
 var Config = require('./config');
 
 var tsProject = $.typescript.createProject({
+    typescript: require('typescript'),
     declarationFiles: true,
     target: 'ES5',
     module: 'commonjs'

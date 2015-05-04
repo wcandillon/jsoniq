@@ -1,21 +1,19 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-import es6 = require("es6-promise");
-
+import utils = require("./utils");
 import Iterator = require("./Iterator");
 
-class ItemIterator extends Iterator {
+class ItemIterator implements Iterator {
 
-    private item: any;
+    private g: any;
 
     constructor(item: any) {
-        super();
-        this.item = item;
+        this.g = utils.generator<any>(async (yield) => {
+            await yield(item);
+        });
     }
 
-    next(): Promise<any> {
-        super.next();
-        this.closed = true;
-        return es6.Promise.resolve(this.item);
+    next(): { value?: any; done: boolean } {
+        return this.g.next();
     }
 };
 
