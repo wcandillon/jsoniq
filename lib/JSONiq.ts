@@ -60,34 +60,9 @@ class JSONiq {
     }
 }
 
-var jsoniq = new JSONiq("(1 + 3, 1, (2, 3), 4)");
+var jsoniq = new JSONiq("1 + 1");
 var it = jsoniq.compile();
-
-//console.log(it);
-it.next().then(item => {
-    console.log(item);
-    return it.next().then(item => {
-        console.log(item);
-        return it.next().then(item => {
-            console.log(item);
-            return it.next().then(item => {
-                console.log(item);
-                return it.next().then(item => {
-                    console.log(item);
-                    return it.next().then(item => {
-                        console.log(item);
-                        return it.next().then(item => {
-                            console.log(item);
-                            return it.next().then(item => {
-                                console.log(item);
-                                return it.next().then(item => {
-                                    console.log(item);
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        });
-    });
-});
+console.log(it);
+for (var r; r = it.next(), !r.done;) {
+    console.log(r.value);
+}
