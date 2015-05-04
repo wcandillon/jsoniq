@@ -1,29 +1,21 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-import es6Promise = require("es6-promise");
+import es6 = require("es6-promise");
 
 import Iterator = require("./Iterator");
 
-class ItemIterator implements Iterator {
+class ItemIterator extends Iterator {
 
-    private isClosed: boolean = false;
     private item: any;
 
     constructor(item: any) {
+        super();
         this.item = item;
     }
 
     next(): Promise<any> {
-        if(this.isClosed) {
-            throw new Error("Iterator is closed.");
-        }
-        return new es6Promise.Promise((resolve) => {
-            this.isClosed = true;
-            resolve(item);
-        });
-    }
-
-    closed(): boolean {
-        return this.isClosed;
+        super.next();
+        this.closed = true;
+        return es6.Promise.resolve(this.item);
     }
 };
 

@@ -3,30 +3,29 @@
 
 import Iterator = require("./Iterator");
 
-class SequenceIterator implements Iterator {
+class SequenceIterator extends Iterator {
 
-    private isClosed: boolean = false;
     private its: any[];
 
     constructor(its: Iterator[]) {
+        super();
         this.its = its;
         if(this.its.length === 0) {
-            this.isClosed = true;
+            this.closed = true;
         }
     }
 
     next(): Promise<any> {
-        if(this.isClosed) {
-            throw new Error("Iterator is closed.");
+        super.next();
+        if(this.its[0].isClosed()) {
+            this.its.splice(0, 1);
         }
-        if(this.its.length === 1) {
-            this.isClosed = true;
-        }
-        return this.its.splice(0, 1)[0].next();
-    }
-
-    closed(): boolean {
-        return this.isClosed;
+        return this.its[0].next().then(item => {
+            if(this.its[0].isClosed() && this.its.length[1]) {
+                this.closed = true;
+            }
+            return item;
+        });
     }
 };
 

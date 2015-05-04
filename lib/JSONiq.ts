@@ -7,6 +7,8 @@ import JSONiqParser = require("./compiler/parsers/JSONiqParser");
 import XQueryParser = require("./compiler/parsers/XQueryParser");
 import JSONParseTreeHandler = require("./compiler/parsers/JSONParseTreeHandler");
 
+import Iterator = require("./runtime/iterators/Iterator");
+
 class JSONiq {
 
     private source: string;
@@ -22,7 +24,7 @@ class JSONiq {
         return this;
     }
 
-    compile(): JSONiq {
+    compile(): Iterator {
         var isJSONiq = (
             (this.fileName.substring(this.fileName.length - ".jq".length).indexOf(".jq") !== -1) &&
             this.source.indexOf("xquery version") !== 0
@@ -51,12 +53,41 @@ class JSONiq {
         }
         var ast = h.getParseTree();
         var translator = new Translator();
+        //console.log(ast.toXML());
         translator.visit(ast);
-        console.log(ast.toXML());
         this.markers = this.markers.concat(translator.getMarkers());
-        return this;
+        return translator.getIterator();
     }
 }
 
-var jsoniq = new JSONiq("((1 to 10), 11, 11 + 1)");
-jsoniq.compile();
+var jsoniq = new JSONiq("(1 + 3, 1, (2, 3), 4)");
+var it = jsoniq.compile();
+
+//console.log(it);
+it.next().then(item => {
+    console.log(item);
+    return it.next().then(item => {
+        console.log(item);
+        return it.next().then(item => {
+            console.log(item);
+            return it.next().then(item => {
+                console.log(item);
+                return it.next().then(item => {
+                    console.log(item);
+                    return it.next().then(item => {
+                        console.log(item);
+                        return it.next().then(item => {
+                            console.log(item);
+                            return it.next().then(item => {
+                                console.log(item);
+                                return it.next().then(item => {
+                                    console.log(item);
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+});

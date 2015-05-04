@@ -10,21 +10,27 @@ import SequenceIterator = require("../runtime/iterators/SequenceIterator");
 class Translator {
 
     private marker: Marker[];
-    private iterators: Iterator[];
+    private iterators: Iterator[] = [];
 
     getMarkers(): Marker[] {
         return this.marker;
     }
 
+    getIterator(): Iterator {
+        return this.iterators[0];
+    }
+
     Expr(node: ASTNode): boolean {
         this.visitChildren(node);
-        this.iterators.push(new SequenceIterator(this.iterators));
+        this.iterators.push(new SequenceIterator(this.iterators.splice(0, this.iterators.length)));
         return true;
     }
 
     RangeExpr(node: ASTNode): boolean {
         this.visitChildren(node);
-        this.iterators.push(new RangeIterator(this.iterators.pop(), this.iterators.pop()));
+        var to = this.iterators.pop();
+        var f = this.iterators.pop();
+        this.iterators.push(new RangeIterator(f, to));
         return true;
     }
 
@@ -54,7 +60,7 @@ class Translator {
     }
 
     visitChildren(node: ASTNode): Translator {
-        node.getChildren().forEach(function(child){
+        node.getChildren().forEach(child => {
             this.visit(child);
         });
         return this;
