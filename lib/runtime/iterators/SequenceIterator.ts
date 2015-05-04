@@ -1,34 +1,32 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-import es6Promise = require("es6-promise");
+//import es6Promise = require("es6-promise");
 
 import Iterator = require("./Iterator");
 
 class SequenceIterator implements Iterator {
 
-    private closed: boolean = false;
+    private isClosed: boolean = false;
     private its: any[];
 
     constructor(its: Iterator[]) {
         this.its = its;
         if(this.its.length === 0) {
-            this.closed = true;
+            this.isClosed = true;
         }
     }
 
     next(): Promise<any> {
-        if(this.closed) {
+        if(this.isClosed) {
             throw new Error("Iterator is closed.");
         }
-        var result = this.its[0].next();
-        this.its.splice(0, 1);
-        if(this.its.length === 0) {
-            this.closed = true;
+        if(this.its.length === 1) {
+            this.isClosed = true;
         }
-        return result;
+        return this.its.splice(0, 1)[0].next();
     }
 
     closed(): boolean {
-        return this.closed;
+        return this.isClosed;
     }
 };
 

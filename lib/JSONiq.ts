@@ -58,5 +58,5 @@ class JSONiq {
     }
 }
 
-var jsoniq = new JSONiq("((1 to 10), 11)");
+var jsoniq = new JSONiq("((1 to 10), 11, 11 + 1)");
 jsoniq.compile();

@@ -5,7 +5,7 @@ import Iterator = require("./Iterator");
 
 class ItemIterator implements Iterator {
 
-    private closed: boolean = false;
+    private isClosed: boolean = false;
     private item: any;
 
     constructor(item: any) {
@@ -13,14 +13,17 @@ class ItemIterator implements Iterator {
     }
 
     next(): Promise<any> {
+        if(this.isClosed) {
+            throw new Error("Iterator is closed.");
+        }
         return new es6Promise.Promise((resolve) => {
-            this.closed = true;
+            this.isClosed = true;
             resolve(item);
         });
     }
 
     closed(): boolean {
-        return this.closed;
+        return this.isClosed;
     }
 };
 
