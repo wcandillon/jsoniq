@@ -34,9 +34,18 @@ class Translator {
         return true;
     }
 
+    //AdditiveExpr ::= MultiplicativeExpr ( ( '+' | '-' ) MultiplicativeExpr )*
     AdditiveExpr(node: ASTNode): boolean {
         this.visitChildren(node);
-        this.iterators.push(new AdditiveIterator(this.iterators.pop(), this.iterators.pop()));
+        node.find(['TOKEN']).forEach((token: ASTNode) => {
+            this.iterators.push(
+                new AdditiveIterator(
+                    this.iterators.pop(),
+                    this.iterators.pop(),
+                    token.getValue() === '+'
+                )
+            );
+        });
         return true;
     }
 

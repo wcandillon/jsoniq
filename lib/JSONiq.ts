@@ -53,41 +53,24 @@ class JSONiq {
         }
         var ast = h.getParseTree();
         var translator = new Translator();
-        //console.log(ast.toXML());
+        console.log(ast.toXML());
         translator.visit(ast);
         this.markers = this.markers.concat(translator.getMarkers());
         return translator.getIterator();
     }
 }
 
-var jsoniq = new JSONiq("(1 + 3, 1, (2, 3), 4)");
+var jsoniq = new JSONiq("1 + 1 + 1 - 1 - 1 + 10 - 1, (1 to 5), (1, (), 2, 3)");
+//var jsoniq = new JSONiq("0, (1, (), 2, 3), 4");
 var it = jsoniq.compile();
-
-//console.log(it);
-it.next().then(item => {
-    console.log(item);
-    return it.next().then(item => {
-        console.log(item);
-        return it.next().then(item => {
-            console.log(item);
-            return it.next().then(item => {
-                console.log(item);
-                return it.next().then(item => {
-                    console.log(item);
-                    return it.next().then(item => {
-                        console.log(item);
-                        return it.next().then(item => {
-                            console.log(item);
-                            return it.next().then(item => {
-                                console.log(item);
-                                return it.next().then(item => {
-                                    console.log(item);
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        });
+console.log(it);
+function iterate(it: Iterator) {
+    it.next().then(value => {
+        console.log(value);
+        if(!it.isClosed()) {
+            return iterate(it);
+        }
     });
-});
+}
+
+iterate(it);

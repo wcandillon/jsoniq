@@ -19,9 +19,9 @@ class RangeIterator extends Iterator {
         if(this.state === undefined) {
             return es6.Promise.all([this.from.next(), this.to.next()]).then((values) => {
                 this.state = {
-                    from: values[0].item,
-                    to: values[1].item,
-                    index: values[0].item
+                    from: values[0],
+                    to: values[1],
+                    index: values[0]
                 };
                 if(this.state.from === this.state.to) {
                     this.closed = true;
@@ -30,7 +30,7 @@ class RangeIterator extends Iterator {
             });
         } else {
             this.state.index++;
-            if(this.state.from === this.state.to) {
+            if(this.state.index === this.state.to) {
                 this.closed = true;
             }
             return es6.Promise.resolve(this.state.index);

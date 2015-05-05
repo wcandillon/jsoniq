@@ -1,5 +1,4 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-//import es6Promise = require("es6-promise");
 
 import Iterator = require("./Iterator");
 
@@ -21,7 +20,7 @@ class SequenceIterator extends Iterator {
             this.its.splice(0, 1);
         }
         return this.its[0].next().then(item => {
-            if(this.its[0].isClosed() && this.its.length[1]) {
+            if(this.its[0].isClosed() && this.its.length === 1) {
                 this.closed = true;
             }
             return item;

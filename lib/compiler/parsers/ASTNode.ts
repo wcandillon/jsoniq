@@ -96,6 +96,25 @@ class ASTNode {
             return result;
         }
     }
+
+    find(path: string[]): ASTNode[] {
+        var current = path.splice(0, 1)[0];
+        var result: ASTNode[] = [];
+        this.children.forEach(child => {
+            if(child.getName() === current) {
+                result.push(child);
+            }
+        });
+        /*
+        if(path.length > 0) {
+
+            result.forEach(child => {
+                child.find(path);
+            });
+        }
+        */
+        return result;
+    }
 }
 
 export = ASTNode;
