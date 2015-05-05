@@ -6,6 +6,7 @@ import ItemIterator = require("../runtime/iterators/ItemIterator");
 import AdditiveIterator = require("../runtime/iterators/AdditiveIterator");
 import RangeIterator = require("../runtime/iterators/RangeIterator");
 import SequenceIterator = require("../runtime/iterators/SequenceIterator");
+import MultiplicativeIterator = require("../runtime/iterators/MultiplicativeIterator");
 
 class Translator {
 
@@ -46,6 +47,26 @@ class Translator {
                 )
             );
         });
+        return true;
+    }
+
+    //MultiplicativeExpr ::= UnionExpr ( ( '*' | 'div' | 'idiv' | 'mod' ) UnionExpr )*
+    MultiplicativeExpr(node: ASTNode): boolean {
+        this.visitChildren(node);
+        node.find(['TOKEN']).forEach((token: ASTNode) => {
+            this.iterators.push(
+                new MultiplicativeIterator(
+                    this.iterators.pop(),
+                    this.iterators.pop(),
+                    token.getValue()
+                )
+            );
+        });
+        return true;
+    }
+
+    DecimalLiteral(node: ASTNode): boolean {
+        this.iterators.push(new ItemIterator(parseFloat(node.getValue())));
         return true;
     }
 

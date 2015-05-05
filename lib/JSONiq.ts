@@ -60,7 +60,7 @@ class JSONiq {
     }
 }
 
-var jsoniq = new JSONiq("1 + 1 + 1 - 1 - 1 + 10 - 1, (1 to 5), (1, (), 2, 3)");
+var jsoniq = new JSONiq("1 + 1 + 1 - 1 - 1 + 10 - 1, (1 to 5), (1, (), 2, 3), 20.1 idiv 1.678, 10 div 2, 2 * 5");
 //var jsoniq = new JSONiq("0, (1, (), 2, 3), 4");
 var it = jsoniq.compile();
 console.log(it);
