@@ -10,8 +10,18 @@ class Iterator {
         return null;
     }
 
-    public isClosed(): boolean {
+    isClosed(): boolean {
         return this.closed;
+    }
+
+    forEach(callback:  (item: any) => void): Iterator {
+        this.next().then(item => {
+            callback(item);
+            if(!this.isClosed()) {
+                this.forEach(callback);
+            }
+        });
+        return this;
     }
 }
 

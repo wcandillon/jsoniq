@@ -8,6 +8,8 @@ import RangeIterator = require("../runtime/iterators/RangeIterator");
 import SequenceIterator = require("../runtime/iterators/SequenceIterator");
 import MultiplicativeIterator = require("../runtime/iterators/MultiplicativeIterator");
 
+//import FLWORIterator = require("../runtime/iterators/flowr/FLWORIterator");
+
 class Translator {
 
     private marker: Marker[];
@@ -27,6 +29,17 @@ class Translator {
         return true;
     }
 
+    //FLWORExpr ::= InitialClause IntermediateClause* ReturnClause
+    /*
+    FLWORExpr(node: ASTNode): boolean {
+        var returnClause = this.iterators.pop();
+        var intermediateClause = this.iterators.pop();
+        var initialClause = this.iterators.pop();
+        this.iterators.push(new FLWORIterator(initialClause, intermediateClause, returnClause));
+        return true;
+    }
+    */
+
     RangeExpr(node: ASTNode): boolean {
         this.visitChildren(node);
         var to = this.iterators.pop();
@@ -38,12 +51,12 @@ class Translator {
     //AdditiveExpr ::= MultiplicativeExpr ( ( '+' | '-' ) MultiplicativeExpr )*
     AdditiveExpr(node: ASTNode): boolean {
         this.visitChildren(node);
-        node.find(['TOKEN']).forEach((token: ASTNode) => {
+        node.find(["TOKEN"]).forEach((token: ASTNode) => {
             this.iterators.push(
                 new AdditiveIterator(
                     this.iterators.pop(),
                     this.iterators.pop(),
-                    token.getValue() === '+'
+                    token.getValue() === "+"
                 )
             );
         });
@@ -53,7 +66,7 @@ class Translator {
     //MultiplicativeExpr ::= UnionExpr ( ( '*' | 'div' | 'idiv' | 'mod' ) UnionExpr )*
     MultiplicativeExpr(node: ASTNode): boolean {
         this.visitChildren(node);
-        node.find(['TOKEN']).forEach((token: ASTNode) => {
+        node.find(["TOKEN"]).forEach((token: ASTNode) => {
             this.iterators.push(
                 new MultiplicativeIterator(
                     this.iterators.pop(),
