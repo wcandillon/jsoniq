@@ -70,20 +70,15 @@ class JSONiq {
 
 //var jsoniq = new JSONiq("1 + 1 + 1 - 1 - 1 + 10 - 1, (1 to 5), (1, (), 2, 3), 20.1 idiv 1.678, 10 div 2, 2 * 5");
 /*
-var jsoniq = new JSONiq("for $i in (1 to 10) return 1");
-var it = jsoniq.compile();
 it.forEach(item => {
    console.log(item);
 });
 */
 //(parent: Clause, varName: string, allowEmpty: boolean, positionalVar: string, expr: Iterator)
 
-var it = new flwor.ReturnIterator(
-    new flwor.ForClause(
-        new flwor.ForClause(new flwor.EmptyClause(), "i", false, "a", new RangeIterator(new ItemIterator(1), new ItemIterator(2)))
-        , "i", false, "a", new RangeIterator(new ItemIterator(1), new ItemIterator(10))),
-    new ItemIterator(1)
-);
+
+var jsoniq = new JSONiq("for $a in (1 to 2) for $i in (1 to 10) return 1");
+var it = jsoniq.compile();
 it.forEach(item => {
     console.log(item);
 });

@@ -14,7 +14,7 @@ class Translator {
 
     private marker: Marker[];
     private iterators: Iterator[] = [];
-    private lastClause: flwor.Clause;
+    private lastClause: flwor.Clause = new flwor.EmptyClause();
 
     getMarkers(): Marker[] {
         return this.marker;
@@ -39,7 +39,7 @@ class Translator {
     ReturnClause(node: ASTNode): boolean {
         this.visitChildren(node);
         this.iterators.push(new flwor.ReturnIterator(this.lastClause, this.iterators.pop()));
-        this.lastClause = undefined;
+        this.lastClause = new flwor.EmptyClause();
         return true;
     }
 
