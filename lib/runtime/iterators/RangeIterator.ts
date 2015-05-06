@@ -1,5 +1,4 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-import es6 = require("es6-promise");
 
 import Iterator = require("./Iterator");
 
@@ -17,7 +16,7 @@ class RangeIterator extends Iterator {
     next(): Promise<any> {
         super.next();
         if(this.state === undefined) {
-            return es6.Promise.all([this.from.next(), this.to.next()]).then((values) => {
+            return Promise.all([this.from.next(), this.to.next()]).then((values) => {
                 this.state = {
                     from: values[0],
                     to: values[1],
@@ -26,15 +25,21 @@ class RangeIterator extends Iterator {
                 if(this.state.from === this.state.to) {
                     this.closed = true;
                 }
-                return es6.Promise.resolve(this.state.index);
+                return Promise.resolve(this.state.index);
             });
         } else {
             this.state.index++;
             if(this.state.index === this.state.to) {
                 this.closed = true;
             }
-            return es6.Promise.resolve(this.state.index);
+            return Promise.resolve(this.state.index);
         }
+    }
+
+    reset(): Iterator {
+        this.from.reset();
+        this.to.reset();
+        return super.reset();
     }
 };
 

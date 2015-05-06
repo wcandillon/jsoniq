@@ -26,6 +26,13 @@ class SequenceIterator extends Iterator {
             return item;
         });
     }
+
+    reset(): Iterator {
+        this.its.forEach(it => {
+            it.reset();
+        });
+        return super.reset();
+    }
 };
 
 export = SequenceIterator;

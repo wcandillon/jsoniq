@@ -9,6 +9,14 @@ import JSONParseTreeHandler = require("./compiler/parsers/JSONParseTreeHandler")
 
 import Iterator = require("./runtime/iterators/Iterator");
 
+import ItemIterator = require("./runtime/iterators/ItemIterator");
+import AdditiveIterator = require("./runtime/iterators/AdditiveIterator");
+import RangeIterator = require("./runtime/iterators/RangeIterator");
+import SequenceIterator = require("./runtime/iterators/SequenceIterator");
+import MultiplicativeIterator = require("./runtime/iterators/MultiplicativeIterator");
+
+import flwor = require("./runtime/iterators/flwor");
+
 class JSONiq {
 
     private source: string;
@@ -60,7 +68,22 @@ class JSONiq {
     }
 }
 
-var jsoniq = new JSONiq("1 + 1 + 1 - 1 - 1 + 10 - 1, (1 to 5), (1, (), 2, 3), 20.1 idiv 1.678, 10 div 2, 2 * 5");
-jsoniq.compile().forEach(item => {
+//var jsoniq = new JSONiq("1 + 1 + 1 - 1 - 1 + 10 - 1, (1 to 5), (1, (), 2, 3), 20.1 idiv 1.678, 10 div 2, 2 * 5");
+/*
+var jsoniq = new JSONiq("for $i in (1 to 10) return 1");
+var it = jsoniq.compile();
+it.forEach(item => {
    console.log(item);
+});
+*/
+//(parent: Clause, varName: string, allowEmpty: boolean, positionalVar: string, expr: Iterator)
+
+var it = new flwor.ReturnIterator(
+    new flwor.ForClause(
+        new flwor.ForClause(new flwor.EmptyClause(), "i", false, "a", new RangeIterator(new ItemIterator(1), new ItemIterator(2)))
+        , "i", false, "a", new RangeIterator(new ItemIterator(1), new ItemIterator(10))),
+    new ItemIterator(1)
+);
+it.forEach(item => {
+    console.log(item);
 });

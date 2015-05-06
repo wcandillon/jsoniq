@@ -1,6 +1,4 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-import es6 = require("es6-promise");
-
 import Iterator = require("./Iterator");
 
 class MultiplicativeIterator extends Iterator {
@@ -18,18 +16,24 @@ class MultiplicativeIterator extends Iterator {
 
     next(): Promise<any> {
         super.next();
-        return es6.Promise.all([this.left.next(), this.right.next()]).then((values) => {
+        return Promise.all([this.left.next(), this.right.next()]).then((values) => {
             this.closed = true;
             if(this.operator === "*") {
-                return es6.Promise.resolve(values[0] * values[1]);
+                return Promise.resolve(values[0] * values[1]);
             } else if(this.operator === "div") {
-                return es6.Promise.resolve(values[0] / values[1]);
+                return Promise.resolve(values[0] / values[1]);
             } else if(this.operator === "idiv") {
-                return es6.Promise.resolve(Math.floor(values[0] / values[1]));
+                return Promise.resolve(Math.floor(values[0] / values[1]));
             } else if(this.operator === "mod") {
-                return es6.Promise.resolve(values[0] % values[1]);
+                return Promise.resolve(values[0] % values[1]);
             }
         });
+    }
+
+    reset(): Iterator {
+        this.left.reset();
+        this.right.reset();
+        return super.reset();
     }
 };
 

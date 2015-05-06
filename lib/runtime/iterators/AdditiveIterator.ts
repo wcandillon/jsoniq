@@ -1,6 +1,4 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-import es6 = require("es6-promise");
-
 import Iterator = require("./Iterator");
 
 class AdditiveIterator extends Iterator {
@@ -18,10 +16,16 @@ class AdditiveIterator extends Iterator {
 
     next(): Promise<any> {
         super.next();
-        return es6.Promise.all([this.left.next(), this.right.next()]).then((values) => {
+        return Promise.all([this.left.next(), this.right.next()]).then((values) => {
             this.closed = true;
-            return es6.Promise.resolve(values[0] + (this.isPlus ? values[1] : (- values[1])));
+            return Promise.resolve(values[0] + (this.isPlus ? values[1] : (- values[1])));
         });
+    }
+
+    reset(): Iterator {
+        this.left.reset();
+        this.right.reset();
+        return super.reset();
     }
 };
 

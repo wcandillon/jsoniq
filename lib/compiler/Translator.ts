@@ -8,12 +8,13 @@ import RangeIterator = require("../runtime/iterators/RangeIterator");
 import SequenceIterator = require("../runtime/iterators/SequenceIterator");
 import MultiplicativeIterator = require("../runtime/iterators/MultiplicativeIterator");
 
-//import FLWORIterator = require("../runtime/iterators/flowr/FLWORIterator");
+import flwor = require("../runtime/iterators/flwor");
 
 class Translator {
 
     private marker: Marker[];
     private iterators: Iterator[] = [];
+    private lastClause: flwor.Clause;
 
     getMarkers(): Marker[] {
         return this.marker;
@@ -29,16 +30,18 @@ class Translator {
         return true;
     }
 
-    //FLWORExpr ::= InitialClause IntermediateClause* ReturnClause
-    /*
-    FLWORExpr(node: ASTNode): boolean {
-        var returnClause = this.iterators.pop();
-        var intermediateClause = this.iterators.pop();
-        var initialClause = this.iterators.pop();
-        this.iterators.push(new FLWORIterator(initialClause, intermediateClause, returnClause));
+    ForBinding(node: ASTNode): boolean {
+        this.visitChildren(node);
+        this.lastClause = new flwor.ForClause(this.lastClause, "i", false, "a", this.iterators.pop());
         return true;
     }
-    */
+
+    ReturnClause(node: ASTNode): boolean {
+        this.visitChildren(node);
+        this.iterators.push(new flwor.ReturnIterator(this.lastClause, this.iterators.pop()));
+        this.lastClause = undefined;
+        return true;
+    }
 
     RangeExpr(node: ASTNode): boolean {
         this.visitChildren(node);

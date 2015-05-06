@@ -1,5 +1,6 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 class Iterator {
+
     protected closed: boolean = false;
     protected state: any;
 
@@ -10,8 +11,10 @@ class Iterator {
         return null;
     }
 
-    isClosed(): boolean {
-        return this.closed;
+    reset(): Iterator {
+        this.state = undefined;
+        this.closed = false;
+        return this;
     }
 
     forEach(callback:  (item: any) => void): Iterator {
@@ -22,6 +25,10 @@ class Iterator {
             }
         });
         return this;
+    }
+
+    isClosed(): boolean {
+        return this.closed;
     }
 }
 
