@@ -2,6 +2,7 @@
 import Marker = require("./compiler/Marker");
 import Translator = require("./compiler/Translator");
 import Position = require("./compiler/parsers/Position");
+import RootStaticContext = require("./compiler/RootStaticContext");
 //import ASTNode = require("./compiler/parsers/ASTNode");
 import JSONiqParser = require("./compiler/parsers/JSONiqParser");
 import XQueryParser = require("./compiler/parsers/XQueryParser");
@@ -19,12 +20,14 @@ import flwor = require("./runtime/iterators/flwor");
 
 class JSONiq {
 
+    private rootSctx: RootStaticContext;
     private source: string;
     private fileName: string = "";
     private markers: Marker[] = [];
 
     constructor(source: string) {
         this.source = source;
+        this.rootSctx = new RootStaticContext();
     }
 
     setFileName(fileName: string): JSONiq {
@@ -60,11 +63,11 @@ class JSONiq {
             }
         }
         var ast = h.getParseTree();
-        var translator = new Translator();
         console.log(ast.toXML());
-        translator.visit(ast);
+        var translator = new Translator(this.rootSctx, ast);
+        var it = translator.compile();
         this.markers = this.markers.concat(translator.getMarkers());
-        return translator.getIterator();
+        return it;
     }
 }
 
@@ -76,8 +79,8 @@ it.forEach(item => {
 */
 //(parent: Clause, varName: string, allowEmpty: boolean, positionalVar: string, expr: Iterator)
 
-
-var jsoniq = new JSONiq("for $a in (1 to 2) for $i in (1 to 10) return 1");
+//for $a in (1 to 100) where $a le 10 for $b in (1 to 10) where $a * $b ge 50 return $a * $b
+var jsoniq = new JSONiq("for $a in (1 to 10) for $b in (1 to 10) return $a * $b");
 var it = jsoniq.compile();
 it.forEach(item => {
     console.log(item);

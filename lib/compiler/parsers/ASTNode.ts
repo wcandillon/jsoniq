@@ -97,6 +97,18 @@ class ASTNode {
         }
     }
 
+    toString(): string {
+        var value = '';
+        if (this.value === undefined) {
+            this.children.forEach(child => {
+                value += child.toString();
+            });
+        } else {
+            value += this.value;
+        }
+        return value;
+    }
+
     find(path: string[]): ASTNode[] {
         var current = path.splice(0, 1)[0];
         var result: ASTNode[] = [];
@@ -105,14 +117,6 @@ class ASTNode {
                 result.push(child);
             }
         });
-        /*
-        if(path.length > 0) {
-
-            result.forEach(child => {
-                child.find(path);
-            });
-        }
-        */
         return result;
     }
 }

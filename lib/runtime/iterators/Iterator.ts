@@ -1,8 +1,22 @@
 /// <reference path="../../../typings/tsd.d.ts" />
+import Position = require("../../compiler/parsers/Position");
+import StaticContext = require("../../compiler/StaticContext");
+import DynamicContext = require("../DynamicContext");
+
 class Iterator {
+
+    protected position: Position;
+    protected sctx: StaticContext;
+    protected dctx: DynamicContext;
 
     protected closed: boolean = false;
     protected state: any;
+
+    constructor(position: Position, sctx: StaticContext, dctx: DynamicContext) {
+        this.position = position;
+        this.sctx = sctx;
+        this.dctx = dctx;
+    }
 
     next(): Promise<any> {
         if(this.closed) {

@@ -3,6 +3,8 @@
 import Iterator = require("./Iterator");
 import ItemIterator = require("./ItemIterator");
 
+import DynamicContext = require("../DynamicContext");
+
 export interface Tuple {
     [key: string]: Iterator;
 }
