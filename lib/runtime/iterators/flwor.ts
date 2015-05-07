@@ -1,9 +1,11 @@
 /// <reference path="../../../typings/tsd.d.ts" />
+import _ = require("lodash");
 
 import Iterator = require("./Iterator");
 import ItemIterator = require("./ItemIterator");
 
 import DynamicContext = require("../DynamicContext");
+import Position = require("../../compiler/parsers/Position");
 
 export interface Tuple {
     [key: string]: Iterator;
@@ -11,11 +13,16 @@ export interface Tuple {
 
 export class Clause {
 
-    protected closed: boolean = false;
-    protected state: any;
+    protected position: Position;
+    protected dctx: DynamicContext;
     protected parent: Clause;
 
-    constructor(parent: Clause) {
+    protected closed: boolean = false;
+    protected state: any;
+
+    constructor(position: Position, dctx: DynamicContext, parent: Clause) {
+        this.position = position;
+        this.dctx = dctx;
         this.parent = parent;
     }
 
@@ -24,6 +31,12 @@ export class Clause {
             throw new Error("Stream has stopped");
         }
         return null;
+    }
+
+    merge(tuple: Tuple) {
+        _.forEach(tuple, (value: Iterator, name: string) => {
+            this.dctx.setVariable('', name, value);
+        });
     }
 
     materialize(tuples: Tuple[]): Promise<Tuple[]> {
@@ -48,7 +61,7 @@ export class Clause {
 
 export class EmptyClause extends Clause {
     constructor() {
-        super(null);
+        super(null, null, null);
     }
 
     pull(): Promise<Tuple> {
@@ -65,8 +78,11 @@ export class ForClause extends Clause {
     private positionalVar: string;
     private expr: Iterator;
 
-    constructor(parent: Clause, varName: string, allowEmpty: boolean, positionalVar: string, expr: Iterator) {
-        super(parent);
+    constructor(
+        position: Position, dctx: DynamicContext, parent: Clause,
+        varName: string, allowEmpty: boolean, positionalVar: string, expr: Iterator
+    ) {
+        super(position, dctx, parent);
         this.varName = varName;
         this.allowEmpty = allowEmpty;
         this.positionalVar = positionalVar;
@@ -75,14 +91,19 @@ export class ForClause extends Clause {
 
     pull(): Promise<Tuple> {
         super.pull();
+        var needsMerge = false;
         if(this.state === undefined) {
             this.state = this.parent.pull();
-            this.expr.reset();
+            needsMerge = true;
         }
         return this.state.then(tuple => {
+            if(needsMerge) {
+                this.merge(tuple);
+            }
             return this.expr.next().then(item => {
                 if(this.expr.isClosed() && !this.parent.isClosed()) {
                     this.state = undefined;
+                    this.expr.reset();
                 } else if(this.expr.isClosed() && this.parent.isClosed()) {
                     this.closed = true;
                 } else {
@@ -100,8 +121,8 @@ export class ReturnIterator extends Iterator {
     private it: Iterator;
     private parent: Clause;
 
-    constructor(parent: Clause, it: Iterator) {
-        super();
+    constructor(position: Position, parent: Clause, it: Iterator) {
+        super(position);
         this.parent = parent;
         this.it = it;
     }
@@ -109,7 +130,7 @@ export class ReturnIterator extends Iterator {
     next(): Promise<any> {
         super.next();
         return this.parent.pull().then(tuple => {
-            return (new ItemIterator(1)).next();
+            return this.it.next();
         });
     }
 

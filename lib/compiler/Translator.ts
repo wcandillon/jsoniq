@@ -1,18 +1,20 @@
 import _ = require("lodash");
 
 import ASTNode = require("./parsers/ASTNode");
+import Position = require("./parsers/Position");
 import StaticContext = require("./StaticContext");
 import RootStaticContext = require("./RootStaticContext");
 
 import Marker = require("./Marker");
 
-import DynamicContext = require("../runtime/iterators/Iterator");
+import DynamicContext = require("../runtime/DynamicContext");
 import Iterator = require("../runtime/iterators/Iterator");
 import ItemIterator = require("../runtime/iterators/ItemIterator");
 import AdditiveIterator = require("../runtime/iterators/AdditiveIterator");
 import RangeIterator = require("../runtime/iterators/RangeIterator");
 import SequenceIterator = require("../runtime/iterators/SequenceIterator");
 import MultiplicativeIterator = require("../runtime/iterators/MultiplicativeIterator");
+import VarRefIterator = require("../runtime/iterators/VarRefIterator");
 import flwor = require("../runtime/iterators/flwor");
 
 
@@ -24,9 +26,9 @@ class Translator {
 
     private iterators: Iterator[] = [];
 
-    private clauses: flwor.Clause[];
+    private clauses: flwor.Clause[] = [];
     private clause: flwor.Clause;
-    private clausesCount: number[];
+    private clausesCount: number[] = [];
 
     private rootSctx: RootStaticContext;
 
@@ -36,7 +38,7 @@ class Translator {
     constructor(rootSctx: RootStaticContext, ast: ASTNode) {
         this.rootSctx = rootSctx;
         this.sctx = rootSctx;
-        this.dctx = new DynamicContext();
+        this.dctx = new DynamicContext(null);
         this.ast = ast;
     }
 
@@ -66,7 +68,7 @@ class Translator {
 
     Expr(node: ASTNode): boolean {
         this.visitChildren(node);
-        this.iterators.push(new SequenceIterator(this.iterators.splice(0, this.iterators.length)));
+        this.iterators.push(new SequenceIterator(node.getPosition(), this.iterators.splice(0, this.iterators.length)));
         return true;
     }
 
@@ -77,7 +79,7 @@ class Translator {
         this.visitChildren(node);
         this.clauses.pop();
         this.clause = this.clauses[this.clauses.length - 1];
-        var clauseCount = this.clauses.pop();
+        var clauseCount = this.clausesCount.pop();
         for(var i = 1; i <= clauseCount; i++) {
             this.popCtx(node.getPosition());
         }
@@ -89,19 +91,19 @@ class Translator {
         this.pushCtx(node.getPosition());
         this.visitChildren(node);
         this.clausesCount[this.clausesCount.length - 1]++;
-        this.clause = new flwor.ForClause(this.clause, "i", false, "a", this.iterators.pop());
+        this.clause = new flwor.ForClause(node.getPosition(), this.dctx, this.clause, "i", false, "a", this.iterators.pop());
         return true;
     }
 
     ReturnClause(node: ASTNode): boolean {
         this.visitChildren(node);
-        this.iterators.push(new flwor.ReturnIterator(this.clause, this.iterators.pop()));
+        this.iterators.push(new flwor.ReturnIterator(node.getPosition(), this.clause, this.iterators.pop()));
         return true;
     }
 
     VarRef(node: ASTNode): boolean {
         var varName = node.find(['VarName'])[0].toString();
-        this.iterators.push(new VarRefIterator(this.dctx, varName));
+        this.iterators.push(new VarRefIterator(node.getPosition(), this.dctx, varName));
         return true;
     }
 
@@ -109,7 +111,7 @@ class Translator {
         this.visitChildren(node);
         var to = this.iterators.pop();
         var f = this.iterators.pop();
-        this.iterators.push(new RangeIterator(f, to));
+        this.iterators.push(new RangeIterator(node.getPosition(), f, to));
         return true;
     }
 
@@ -119,6 +121,7 @@ class Translator {
         node.find(["TOKEN"]).forEach((token: ASTNode) => {
             this.iterators.push(
                 new AdditiveIterator(
+                    node.getPosition(),
                     this.iterators.pop(),
                     this.iterators.pop(),
                     token.getValue() === "+"
@@ -134,6 +137,7 @@ class Translator {
         node.find(["TOKEN"]).forEach((token: ASTNode) => {
             this.iterators.push(
                 new MultiplicativeIterator(
+                    node.getPosition(),
                     this.iterators.pop(),
                     this.iterators.pop(),
                     token.getValue()

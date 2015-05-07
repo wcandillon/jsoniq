@@ -8,7 +8,7 @@ class ItemIterator extends Iterator {
     private item: any;
 
     constructor(item: any) {
-        super();
+        super(null);
         this.item = item;
     }
 

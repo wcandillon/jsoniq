@@ -1,5 +1,6 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 import Iterator = require("./Iterator");
+import Position = require("../../compiler/parsers/Position");
 
 class MultiplicativeIterator extends Iterator {
 
@@ -7,8 +8,8 @@ class MultiplicativeIterator extends Iterator {
     private left: Iterator;
     private right: Iterator;
 
-    constructor(right: Iterator, left: Iterator, operator: string) {
-        super();
+    constructor(position: Position, right: Iterator, left: Iterator, operator: string) {
+        super(position);
         this.left = left;
         this.right = right;
         this.operator = operator;

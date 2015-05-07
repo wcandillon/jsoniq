@@ -1,14 +1,15 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 
 import Iterator = require("./Iterator");
+import Position = require("../../compiler/parsers/Position");
 
 class RangeIterator extends Iterator {
 
     private from: Iterator;
     private to: Iterator;
 
-    constructor(f: Iterator, to: Iterator) {
-        super();
+    constructor(position: Position, f: Iterator, to: Iterator) {
+        super(position);
         this.from = f;
         this.to = to;
     }

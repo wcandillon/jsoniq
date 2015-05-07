@@ -1,13 +1,14 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 
 import Iterator = require("./Iterator");
+import Position = require("../../compiler/parsers/Position");
 
 class SequenceIterator extends Iterator {
 
     private its: any[];
 
-    constructor(its: Iterator[]) {
-        super();
+    constructor(position: Position, its: Iterator[]) {
+        super(position);
         this.its = its;
         if(this.its.length === 0) {
             this.closed = true;

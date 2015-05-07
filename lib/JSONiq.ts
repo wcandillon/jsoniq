@@ -80,7 +80,8 @@ it.forEach(item => {
 //(parent: Clause, varName: string, allowEmpty: boolean, positionalVar: string, expr: Iterator)
 
 //for $a in (1 to 100) where $a le 10 for $b in (1 to 10) where $a * $b ge 50 return $a * $b
-var jsoniq = new JSONiq("for $a in (1 to 10) for $b in (1 to 10) return $a * $b");
+//var jsoniq = new JSONiq("for $a in (1 to 10) for $b in (1 to 10) return $a * $b");
+var jsoniq = new JSONiq("for $i in (1 to 10) return $i * $i");
 var it = jsoniq.compile();
 it.forEach(item => {
     console.log(item);
