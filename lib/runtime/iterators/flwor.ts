@@ -33,12 +33,6 @@ export class Clause {
         return null;
     }
 
-    merge(tuple: Tuple) {
-        _.forEach(tuple, (value: Iterator, name: string) => {
-            this.dctx.setVariable('', name, value);
-        });
-    }
-
     materialize(tuples: Tuple[]): Promise<Tuple[]> {
         return this.pull().then(tuple => {
             tuples.push(tuple);
@@ -91,15 +85,11 @@ export class ForClause extends Clause {
 
     pull(): Promise<Tuple> {
         super.pull();
-        var needsMerge = false;
         if(this.state === undefined) {
+            console.log(this.parent);
             this.state = this.parent.pull();
-            needsMerge = true;
         }
         return this.state.then(tuple => {
-            if(needsMerge) {
-                this.merge(tuple);
-            }
             return this.expr.next().then(item => {
                 if(this.expr.isClosed() && !this.parent.isClosed()) {
                     this.state = undefined;
@@ -109,7 +99,7 @@ export class ForClause extends Clause {
                 } else {
                     this.state = Promise.resolve(tuple);
                 }
-                tuple[this.varName] = new ItemIterator(item);
+                this.dctx.setVariable("", this.varName, new ItemIterator(item));
                 return Promise.resolve(tuple);
             });
         });

@@ -38,7 +38,7 @@ class Translator {
     constructor(rootSctx: RootStaticContext, ast: ASTNode) {
         this.rootSctx = rootSctx;
         this.sctx = rootSctx;
-        this.dctx = new DynamicContext(null);
+        this.dctx = new DynamicContext(undefined);
         this.ast = ast;
     }
 
@@ -75,10 +75,10 @@ class Translator {
     FLWORExpr(node: ASTNode): boolean {
         this.pushCtx(node.getPosition());
         this.clauses.push(new flwor.EmptyClause());
+        this.clause = this.clauses[this.clauses.length - 1];
         this.clausesCount.push(0);
         this.visitChildren(node);
         this.clauses.pop();
-        this.clause = this.clauses[this.clauses.length - 1];
         var clauseCount = this.clausesCount.pop();
         for(var i = 1; i <= clauseCount; i++) {
             this.popCtx(node.getPosition());

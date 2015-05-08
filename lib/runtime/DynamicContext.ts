@@ -11,6 +11,10 @@ class DynamicContext {
         this.parent = parent;
     }
 
+    getParent(): DynamicContext {
+        return this.parent;
+    }
+
     createContext(): DynamicContext {
         return new DynamicContext(this);
     }
