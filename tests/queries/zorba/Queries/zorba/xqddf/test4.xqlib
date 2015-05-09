@@ -1,0 +1,31 @@
+xquery version "3.0";
+
+module namespace n = "http://www.28msec.com/test";
+
+import module namespace ddl = "http://zorba.io/modules/store/static/collections/ddl";
+import module namespace dml = "http://zorba.io/modules/store/static/collections/dml";
+import module namespace index_ddl = "http://zorba.io/modules/store/static/indexes/ddl";
+
+declare namespace d = "http://www.28msec.com/d/";
+
+declare namespace ann = "http://zorba.io/annotations";
+
+
+declare collection n:foo as node();
+
+
+declare %ann:automatic %ann:nonunique %ann:value-equality index n:index
+  on nodes dml:collection(xs:QName("n:foo"))
+  by (if (fn:data(d:userrecord/d:company))
+      then d:userrecord/d:company
+      else "none") as xs:string;
+
+
+declare %ann:sequential function n:foo()
+{
+  ddl:create(xs:QName("n:foo"));
+  index_ddl:create(xs:QName("n:index"));
+
+  dml:insert(xs:QName("n:foo"), <a/>);
+  1
+};

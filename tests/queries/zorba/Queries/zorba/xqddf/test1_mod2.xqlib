@@ -1,0 +1,31 @@
+xquery version "3.0";
+
+module namespace module2 = "http://www.zorba-xquery.com/module2";
+
+import module namespace ddl = "http://zorba.io/modules/store/static/collections/ddl";
+import module namespace dml = "http://zorba.io/modules/store/static/collections/dml";
+
+
+import module namespace module1 = "http://www.zorba-xquery.com/module1" at "test1_mod1.xqlib";
+
+declare namespace ann = "http://zorba.io/annotations";
+
+
+declare collection module2:coll as node()*;
+
+
+declare variable $module2:coll as xs:QName := xs:QName("module2:coll");
+
+
+declare %ann:sequential function module2:init()
+{
+  ddl:create(xs:QName("module2:coll"), (<a><test/></a>, <b><test/></b>));
+};
+
+
+declare %ann:sequential function module2:do()
+{
+  let $a := dml:collection($module2:coll)[1]
+  return module1:update($a, <b/>);
+  dml:collection($module2:coll);
+};

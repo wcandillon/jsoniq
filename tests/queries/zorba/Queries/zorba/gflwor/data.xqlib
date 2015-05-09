@@ -1,0 +1,5 @@
+module namespace data = "http://www.28msec.com/WindyCityDBDemo/lib/data";
+
+declare collection data:users as node()*;
+declare variable $data:users as xs:QName := xs:QName("data:users");
+
