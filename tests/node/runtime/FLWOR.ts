@@ -29,4 +29,10 @@ describe("Test FLWOR", () => {
             e.toEqual([2, 6, 12, 20, 2, 6, 12, 20]);
         });
     });
+
+    pit("for 5", () => {
+        return u.expectQuery("for $z in (for $i in (2 to 5) return $i) return $z").then(e => {
+            e.toEqual([2, 3, 4, 5]);
+        });
+    });
 });

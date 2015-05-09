@@ -108,7 +108,7 @@ export class ForClause extends Clause {
                 } else {
                     this.state.tuples = Promise.resolve(tuple);
                 }
-                return Promise.resolve(tuple);
+                return this.state.tuples;
             });
         });
     }

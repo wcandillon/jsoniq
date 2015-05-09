@@ -81,7 +81,7 @@ class Translator {
         this.visitChildren(node);
         this.clauses.pop();
         var clauseCount = this.clausesCount.pop();
-        for(var i = 1; i <= clauseCount; i++) {
+        for(var i = 0; i < clauseCount; i++) {
             this.popCtx(node.getPosition());
         }
         this.popCtx(node.getPosition());
