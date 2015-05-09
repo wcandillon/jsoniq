@@ -33,6 +33,9 @@ class Iterator {
             if(!this.isClosed()) {
                 return this.forEach(callback);
             }
+        })
+        .catch(error => {
+            console.error(error.stack);
         });
     }
 

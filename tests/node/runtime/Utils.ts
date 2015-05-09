@@ -8,7 +8,9 @@ export function expectQuery(query: string): Promise<jasmine.Matchers> {
         it.forEach(function(item){
             result.push(item.get());
         })
-        .catch(error => { reject(error); })
+        .catch(error => {
+            reject(error);
+        })
         .then(() => {
             resolve(expect(result));
         });

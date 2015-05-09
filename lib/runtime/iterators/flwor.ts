@@ -96,6 +96,10 @@ export class ForClause extends Clause {
         return this.state.tuples.then(tuple => {
             return this.expr.next().then(item => {
                 this.state.index++;
+                tuple[this.varName] = new ItemIterator(item);
+                if(this.positionalVar) {
+                    tuple[this.positionalVar] = new ItemIterator(new Item(this.state.index));
+                }
                 if(this.expr.isClosed() && !this.parent.isClosed()) {
                     this.state = undefined;
                     this.expr.reset();
@@ -103,10 +107,6 @@ export class ForClause extends Clause {
                     this.closed = true;
                 } else {
                     this.state.tuples = Promise.resolve(tuple);
-                }
-                tuple[this.varName] = new ItemIterator(item);
-                if(this.positionalVar) {
-                    tuple[this.positionalVar] = new ItemIterator(new Item(this.state.index));
                 }
                 return Promise.resolve(tuple);
             });
