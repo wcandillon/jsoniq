@@ -11,4 +11,16 @@ describe("Test Arithmetic Operation", () => {
             e.toEqual([2, 6, 12, 20]);
         });
     });
+
+    pit("for 2", () => {
+        return u.expectQuery("for $i at $a in (1 to 2) for $z at $y in (2 to 5) return $z * $y * $a").then(e => {
+            e.toEqual([2, 6, 12, 20, 4, 12, 24, 40]);
+        });
+    });
+
+    pit("for 3", () => {
+        return u.expectQuery("for $i in (1 to 2) for $z at $y in (for $i in (2 to 5) return $i) return $z * $y").then(e => {
+            e.toEqual([2, 6, 12, 20, 2, 6, 12, 20]);
+        });
+    });
 });
