@@ -9,6 +9,7 @@ class VarRefIterator extends Iterator {
 
     private dctx: DynamicContext;
     private varName: string;
+    private state: Iterator;
 
     constructor(position: Position, dctx: DynamicContext, varName: string) {
         super(position);

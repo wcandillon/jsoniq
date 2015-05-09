@@ -11,7 +11,6 @@ class Iterator {
     protected position: Position;
 
     protected closed: boolean = false;
-    protected state: any;
 
     constructor(position: Position) {
         this.position = position;
@@ -25,7 +24,6 @@ class Iterator {
     }
 
     reset(): Iterator {
-        this.state = undefined;
         this.closed = false;
         return this;
     }
@@ -41,6 +39,10 @@ class Iterator {
 
     isClosed(): boolean {
         return this.closed;
+    }
+
+    toString(): string {
+        return JSON.stringify(this, null, 2);
     }
 }
 

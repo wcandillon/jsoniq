@@ -5,10 +5,17 @@ import Position = require("../../compiler/parsers/Position");
 
 import Item = require("../items/Item");
 
+class RangeIteratorState {
+    from: number;
+    to: number;
+    index: number
+}
+
 class RangeIterator extends Iterator {
 
     private from: Iterator;
     private to: Iterator;
+    private state: RangeIteratorState;
 
     constructor(position: Position, f: Iterator, to: Iterator) {
         super(position);
@@ -42,6 +49,7 @@ class RangeIterator extends Iterator {
     reset(): Iterator {
         this.from.reset();
         this.to.reset();
+        this.state = undefined;
         return super.reset();
     }
 };
