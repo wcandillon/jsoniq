@@ -1,0 +1,11 @@
+module namespace test2="www.test2.com";
+
+import module namespace dml = "http://zorba.io/modules/store/static/collections/dml";
+
+declare namespace ann = "http://zorba.io/annotations";
+
+declare collection test2:foo as node()*;
+
+declare %ann:manual %ann:value-equality index test2:idx 
+on nodes dml:collection(xs:QName("test2:foo"))//node 
+by xs:decimal(./@val) as xs:decimal;

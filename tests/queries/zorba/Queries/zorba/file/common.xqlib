@@ -1,0 +1,143 @@
+module namespace commons = "http://expath.org/ns/file/tests/commons";
+
+import module namespace file = "http://expath.org/ns/file";
+
+import schema namespace output = "http://www.w3.org/2010/xslt-xquery-serialization";
+
+declare namespace ann = "http://zorba.io/annotations";
+
+
+declare function commons:error($messages as xs:string*) as xs:string* {
+  "
+************************************************************************
+ERROR:
+  Location:", file:resolve-path("."), "
+  Cause:",
+  $messages,
+  "
+************************************************************************
+"
+};
+
+(: ******************************** SIMPLE TESTS ******************************** :)
+
+declare %ann:nondeterministic %ann:sequential function commons:testExists($path as xs:string) as xs:string* {
+  if (file:exists($path)) then
+    "SUCCESS"
+  else
+    ("testExists failed for path:", $path)
+};
+
+declare %ann:sequential function commons:testCreateDirectory($path as xs:string) as xs:string* {
+  try {
+    file:create-directory($path);
+    exit returning "SUCCESS";
+  } catch * {
+    exit returning ("testCreateDirectory failed for path:", $path);
+  }
+};
+
+declare %ann:sequential function commons:testWriteXml($path as xs:string, $xml as node()) as xs:string* {
+  file:write-text($path, serialize($xml));
+  "SUCCESS"
+};
+
+declare %ann:nondeterministic %ann:sequential function commons:testReadAndCompareXml($path as xs:string, $xml as item()) as xs:string* {
+  let $x := fn:parse-xml(file:read-text($path))
+  return
+    if($x eq $xml) then 
+      "SUCCESS"
+    else
+      ("testReadXml failed for path:", $path, "compared with the reference xml:
+", fn:serialize($xml))
+};
+
+declare %ann:nondeterministic %ann:sequential function commons:testReadBinary($path as xs:string) as xs:base64Binary {
+  file:read-binary($path)
+};
+
+declare %ann:nondeterministic %ann:sequential function commons:testDelete($path as xs:string) as xs:string* {
+  try {
+    file:delete($path);
+    "SUCCESS";
+  } catch * {
+    exit returning ("testDelete failed for path:", $path);
+  }
+};
+
+declare %ann:sequential function commons:testWriteSerializeXml($path as xs:string, $xml as item()) as xs:string* {
+  file:write-text(
+    $path,
+    fn:serialize(
+      $xml,
+      <output:serialization-parameters>
+        <output:method value="xml"/>
+      </output:serialization-parameters>
+    )
+  );
+  "SUCCESS";
+};
+
+
+(: ****************************** COMPOSITE TESTS ******************************* :)
+
+declare %ann:nondeterministic %ann:sequential function commons:testInitDir($dir as xs:string) as xs:string* {
+  (: ==================================================================== :)
+  (: the test directory must not exist :)
+  (: ========= :)
+  variable $s1 := commons:testExists($dir);
+  if (commons:isSuccess($s1)) then
+    exit returning ("testInitDir failed - directory already exists:", $dir);
+  else ();
+
+  (: ==================================================================== :)
+  (: it must be able to create the test directory :)
+  (: ========= :)
+  variable $s2 := commons:testCreateDirectory($dir);
+  if (fn:not(commons:isSuccess($s2))) then
+    (: exit returning ("testInitDir failed - could not create directory:", $dir) :)
+    ();
+  else ();
+
+  (: ==================================================================== :)
+  (: the test directory must exist :)
+  (: ========= :)
+  variable $s3 := commons:testExists($dir);
+  if (fn:not(commons:isSuccess($s3))) then
+    exit returning ("testInitDir failed - directory must exists:", $dir);
+  else ();
+  (: ==================================================================== :)
+
+  "SUCCESS"
+};
+
+
+declare %ann:nondeterministic %ann:sequential function commons:testUnInitDir($dir as xs:string) as xs:string* 
+{
+  (: ==================================================================== :)
+  (: delete the directory :)
+  (: ========= :)
+  variable $dirFullPath := file:resolve-path($dir);
+  variable $s := commons:testDelete($dirFullPath);
+
+  if (fn:not(commons:isSuccess($s))) 
+  then
+    exit returning ("testUnInitDir failed - could not delete directory:", $dirFullPath);
+  else
+    ();
+  (: ==================================================================== :)
+
+  "SUCCESS"
+};
+
+
+(: ******************************* COMMON EXTRAS ******************************** :)
+
+declare function commons:isSuccess($status as xs:string*) as xs:boolean 
+{
+  if (fn:count($status) eq 0 or (fn:count($status) eq 1 and $status eq "SUCCESS")) then
+    fn:true()
+  else
+    fn:false()    
+};
+(: vim:set syntax=xquery et sw=2 ts=2: :)

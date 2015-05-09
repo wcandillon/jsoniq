@@ -1,0 +1,11 @@
+module namespace foo = "foo:bar";
+
+declare namespace ann = "http://zorba.io/annotations";
+
+declare variable $foo:foo external;
+
+declare %ann:sequential function foo:bar()
+{
+  variable $blub as xs:string := fn:concat("a", "b");
+  $blub
+};

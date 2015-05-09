@@ -28,7 +28,7 @@ gulp.task('lint:js', function(){
 });
 
 gulp.task('lint:ts', function(){
-    return gulp.src(Config.ts)
+    return gulp.src(Config.ts.concat(['!./lib/compiler/parsers/XQueryParser.ts', '!./lib/compiler/parsers/JSONiqParser.ts']))
         .pipe($.tslint(require('../tslint.json')))
         .pipe($.tslint.report('verbose'));
 });
