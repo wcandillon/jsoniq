@@ -19,19 +19,7 @@ class MultiplicativeIterator extends Iterator {
 
     next(): Promise<Item> {
         super.next();
-        return Promise.all([this.left.next(), this.right.next()]).then((values) => {
-            this.closed = true;
-            var left = values[0].get();
-            var right = values[1].get();
-            return Promise.resolve(new Item(left * right));
-        });
-    }
-
-    /*
-
-    next(): Promise<Item> {
-        super.next();
-        return Promise.all([this.left.next(), this.right.next()]).then((values) => {
+        return Promise.all([this.left.next(), this.right.next()]).then<Item>((values) => {
             this.closed = true;
             var left = values[0].get();
             var right = values[1].get();
@@ -39,7 +27,6 @@ class MultiplicativeIterator extends Iterator {
             if(this.operator === "*") {
                 result = left * right;
             } else if(this.operator === "div") {
-                return Promise.resolve(left / right);
                 result = left / right;
             } else if(this.operator === "idiv") {
                 result = Math.floor(left / right);
@@ -49,7 +36,7 @@ class MultiplicativeIterator extends Iterator {
             return Promise.resolve<Item>(new Item(result));
         });
     }
-*/
+
     reset(): Iterator {
         this.left.reset();
         this.right.reset();

@@ -66,7 +66,7 @@ class JSONiq {
             }
         }
         var ast = h.getParseTree();
-        console.log(ast.toXML());
+        //console.log(ast.toXML());
         var translator = new Translator(this.rootSctx, ast);
         var it = translator.compile();
         this.markers = this.markers.concat(translator.getMarkers());
