@@ -3,7 +3,7 @@ import StaticContext = require("./StaticContext");
 
 class RootStaticContext extends StaticContext {
 
-    constructor(){
+    constructor() {
         super(null, null);
     }
 }

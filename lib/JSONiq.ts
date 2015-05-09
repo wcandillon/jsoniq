@@ -1,5 +1,5 @@
 /// <reference path="../typings/tsd.d.ts" />
-require('source-map-support').install();
+require("source-map-support").install();
 import Marker = require("./compiler/Marker");
 import Translator = require("./compiler/Translator");
 import Position = require("./compiler/parsers/Position");
@@ -10,16 +10,6 @@ import XQueryParser = require("./compiler/parsers/XQueryParser");
 import JSONParseTreeHandler = require("./compiler/parsers/JSONParseTreeHandler");
 
 import Iterator = require("./runtime/iterators/Iterator");
-
-import ItemIterator = require("./runtime/iterators/ItemIterator");
-import AdditiveIterator = require("./runtime/iterators/AdditiveIterator");
-import RangeIterator = require("./runtime/iterators/RangeIterator");
-import SequenceIterator = require("./runtime/iterators/SequenceIterator");
-import MultiplicativeIterator = require("./runtime/iterators/MultiplicativeIterator");
-
-import flwor = require("./runtime/iterators/flwor");
-
-import Item = require("./runtime/items/Item");
 
 class JSONiq {
 
@@ -84,7 +74,7 @@ it.forEach(item => {
 
 //for $a in (1 to 100) where $a le 10 for $b in (1 to 10) where $a * $b ge 50 return $a * $b
 //var jsoniq = new JSONiq("for $a in (1 to 10) for $b in (1 to 10) return $a * $b");
-var jsoniq = new JSONiq("for $i in (2 to 5) return $i * $i");
+var jsoniq = new JSONiq("for $z at $y in (2 to 5) return $z * $y");
 var it = jsoniq.compile();
 //console.log(it.toString());
 it.forEach(item => {

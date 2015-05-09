@@ -1,8 +1,7 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 import Position = require("../../compiler/parsers/Position");
-import StaticContext = require("../../compiler/StaticContext");
-
-import DynamicContext = require("../DynamicContext");
+//import StaticContext = require("../../compiler/StaticContext");
+//import DynamicContext = require("../DynamicContext");
 
 import Item = require("../items/Item");
 

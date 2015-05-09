@@ -1,4 +1,4 @@
-import _ = require("lodash");
+//import _ = require("lodash");
 
 import ASTNode = require("./parsers/ASTNode");
 import Position = require("./parsers/Position");
@@ -92,7 +92,14 @@ class Translator {
         this.pushCtx(node.getPosition());
         this.visitChildren(node);
         this.clausesCount[this.clausesCount.length - 1]++;
-        this.clause = new flwor.ForClause(node.getPosition(), this.dctx, this.clause, "i", false, "a", this.iterators.pop());
+        var varName = node.find(["VarName"])[0].toString();
+        var allowingEmpty = node.find(["AllowingEmpty"])[0] !== undefined;
+        var pos = node.find(["PositionalVar"])[0];
+        var posVarName;
+        if(pos) {
+            posVarName = pos.find(["VarName"])[0].toString();
+        }
+        this.clause = new flwor.ForClause(node.getPosition(), this.dctx, this.clause, varName, allowingEmpty, posVarName, this.iterators.pop());
         return true;
     }
 
@@ -103,7 +110,7 @@ class Translator {
     }
 
     VarRef(node: ASTNode): boolean {
-        var varName = node.find(['VarName'])[0].toString();
+        var varName = node.find(["VarName"])[0].toString();
         this.iterators.push(new VarRefIterator(node.getPosition(), this.dctx, varName));
         return true;
     }

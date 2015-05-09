@@ -33,4 +33,4 @@ gulp.task('lint:ts', function(){
         .pipe($.tslint.report('verbose'));
 });
 
-gulp.task('lint', []);//['lint:json', 'lint:js', 'lint:ts']);
+gulp.task('lint', ['lint:json', 'lint:js', 'lint:ts']);

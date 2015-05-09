@@ -98,7 +98,7 @@ class ASTNode {
     }
 
     toString(): string {
-        var value = '';
+        var value = "";
         if (this.value === undefined) {
             this.children.forEach(child => {
                 value += child.toString();

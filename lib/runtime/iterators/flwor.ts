@@ -20,7 +20,6 @@ export class Clause {
     protected parent: Clause;
 
     protected closed: boolean = false;
-    protected state: any;
 
     constructor(position: Position, dctx: DynamicContext, parent: Clause) {
         this.position = position;
@@ -73,6 +72,7 @@ export class ForClause extends Clause {
     private allowEmpty: boolean;
     private positionalVar: string;
     private expr: Iterator;
+    private state: { tuples: Promise<Tuple>; index: number };
 
     constructor(
         position: Position, dctx: DynamicContext, parent: Clause,
@@ -88,19 +88,26 @@ export class ForClause extends Clause {
     pull(): Promise<Tuple> {
         super.pull();
         if(this.state === undefined) {
-            this.state = this.parent.pull();
+            this.state = {
+                tuples: this.parent.pull(),
+                index: 0
+            };
         }
-        return this.state.then(tuple => {
+        return this.state.tuples.then(tuple => {
             return this.expr.next().then(item => {
+                this.state.index++;
                 if(this.expr.isClosed() && !this.parent.isClosed()) {
                     this.state = undefined;
                     this.expr.reset();
                 } else if(this.expr.isClosed() && this.parent.isClosed()) {
                     this.closed = true;
                 } else {
-                    this.state = Promise.resolve(tuple);
+                    this.state.tuples = Promise.resolve(tuple);
                 }
                 tuple[this.varName] = new ItemIterator(item);
+                if(this.positionalVar) {
+                    tuple[this.positionalVar] = new ItemIterator(new Item(this.state.index));
+                }
                 return Promise.resolve(tuple);
             });
         });
