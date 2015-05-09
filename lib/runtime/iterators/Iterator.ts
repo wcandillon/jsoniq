@@ -31,7 +31,7 @@ class Iterator {
         return this.next().then(item => {
             callback(item);
             if(!this.isClosed()) {
-                this.forEach(callback);
+                return this.forEach(callback);
             }
         });
     }
