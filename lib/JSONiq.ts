@@ -18,6 +18,8 @@ import MultiplicativeIterator = require("./runtime/iterators/MultiplicativeItera
 
 import flwor = require("./runtime/iterators/flwor");
 
+import Item = require("./runtime/items/Item");
+
 class JSONiq {
 
     private rootSctx: RootStaticContext;
@@ -71,7 +73,7 @@ class JSONiq {
     }
 }
 
-//var jsoniq = new JSONiq("1 + 1 + 1 - 1 - 1 + 10 - 1, (1 to 5), (1, (), 2, 3), 20.1 idiv 1.678, 10 div 2, 2 * 5");
+var jsoniq = new JSONiq("1 + 1 + 1 - 1 - 1 + 10 - 1, (1 to 5), (1, (), 2, 3), 20.1 idiv 1.678, 10 div 2, 2 * 5");
 /*
 it.forEach(item => {
    console.log(item);
@@ -81,8 +83,10 @@ it.forEach(item => {
 
 //for $a in (1 to 100) where $a le 10 for $b in (1 to 10) where $a * $b ge 50 return $a * $b
 //var jsoniq = new JSONiq("for $a in (1 to 10) for $b in (1 to 10) return $a * $b");
-var jsoniq = new JSONiq("for $i in (1 to 10) return $i * $i");
+//var jsoniq = new JSONiq("for $i in (2 to 5) return $i * $i");
 var it = jsoniq.compile();
 it.forEach(item => {
-    console.log(item);
+    console.log(item.get());
+}).catch(error => {
+    console.error(error.stack);
 });

@@ -3,6 +3,8 @@
 import Iterator = require("./Iterator");
 import Position = require("../../compiler/parsers/Position");
 
+import Item = require("../items/Item");
+
 class RangeIterator extends Iterator {
 
     private from: Iterator;
@@ -14,26 +16,26 @@ class RangeIterator extends Iterator {
         this.to = to;
     }
 
-    next(): Promise<any> {
+    next(): Promise<Item> {
         super.next();
         if(this.state === undefined) {
             return Promise.all([this.from.next(), this.to.next()]).then((values) => {
                 this.state = {
-                    from: values[0],
-                    to: values[1],
-                    index: values[0]
+                    from: values[0].get(),
+                    to: values[1].get(),
+                    index: values[0].get()
                 };
                 if(this.state.from === this.state.to) {
                     this.closed = true;
                 }
-                return Promise.resolve(this.state.index);
+                return Promise.resolve(new Item(this.state.index));
             });
         } else {
             this.state.index++;
             if(this.state.index === this.state.to) {
                 this.closed = true;
             }
-            return Promise.resolve(this.state.index);
+            return Promise.resolve(new Item(this.state.index));
         }
     }
 

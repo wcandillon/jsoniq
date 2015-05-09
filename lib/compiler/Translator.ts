@@ -17,6 +17,7 @@ import MultiplicativeIterator = require("../runtime/iterators/MultiplicativeIter
 import VarRefIterator = require("../runtime/iterators/VarRefIterator");
 import flwor = require("../runtime/iterators/flwor");
 
+import Item = require("../runtime/items/Item");
 
 class Translator {
 
@@ -43,8 +44,8 @@ class Translator {
     }
 
     private pushCtx(pos: Position): Translator {
-        this.dctx = this.dctx.createContext();
         this.sctx = this.sctx.createContext();
+        this.dctx = this.dctx.createContext();
         return this;
     }
 
@@ -97,7 +98,7 @@ class Translator {
 
     ReturnClause(node: ASTNode): boolean {
         this.visitChildren(node);
-        this.iterators.push(new flwor.ReturnIterator(node.getPosition(), this.clause, this.iterators.pop()));
+        this.iterators.push(new flwor.ReturnIterator(node.getPosition(), this.dctx, this.clause, this.iterators.pop()));
         return true;
     }
 
@@ -148,21 +149,17 @@ class Translator {
     }
 
     DecimalLiteral(node: ASTNode): boolean {
-        this.iterators.push(new ItemIterator(parseFloat(node.getValue())));
+        var item = new Item(parseFloat(node.getValue()));
+        this.iterators.push(new ItemIterator(item));
         return true;
     }
 
     IntegerLiteral(node: ASTNode): boolean {
-        this.iterators.push(new ItemIterator(parseInt(node.getValue(), 10)));
+        var item = new Item(parseInt(node.getValue(), 10));
+        this.iterators.push(new ItemIterator(item));
         return true;
     }
-/*
-    VarRef(node: ASTNode): boolean {
-        var ns = '';
-        var varName = 'a';
-        this.iterators.push(new VarRefIterator(this.dctx, ns, varName));
-    }
-*/
+
     visit(node: ASTNode): Translator {
         var name = node.getName();
         var skip = false;

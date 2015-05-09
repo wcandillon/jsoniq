@@ -2,6 +2,8 @@
 import Iterator = require("./Iterator");
 import Position = require("../../compiler/parsers/Position");
 
+import Item = require("../items/Item");
+
 class AdditiveIterator extends Iterator {
 
     private isPlus: boolean;
@@ -15,11 +17,13 @@ class AdditiveIterator extends Iterator {
         this.isPlus = isPlus;
     }
 
-    next(): Promise<any> {
+    next(): Promise<Item> {
         super.next();
         return Promise.all([this.left.next(), this.right.next()]).then((values) => {
             this.closed = true;
-            return Promise.resolve(values[0] + (this.isPlus ? values[1] : (- values[1])));
+            var left = values[0].get();
+            var right = values[1].get();
+            return Promise.resolve(new Item(left + (this.isPlus ? right : (- right))));
         });
     }
 

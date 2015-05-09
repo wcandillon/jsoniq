@@ -2,6 +2,8 @@
 import Iterator = require("./Iterator");
 import Position = require("../../compiler/parsers/Position");
 
+import Item = require("../items/Item");
+
 class MultiplicativeIterator extends Iterator {
 
     private operator: string;
@@ -15,19 +17,24 @@ class MultiplicativeIterator extends Iterator {
         this.operator = operator;
     }
 
-    next(): Promise<any> {
+    next(): Promise<Item> {
         super.next();
         return Promise.all([this.left.next(), this.right.next()]).then((values) => {
             this.closed = true;
+            var left = values[0].get();
+            var right = values[1].get();
+            var result;
             if(this.operator === "*") {
-                return Promise.resolve(values[0] * values[1]);
+                result = left * right;
             } else if(this.operator === "div") {
-                return Promise.resolve(values[0] / values[1]);
+                return Promise.resolve(left / right);
+                result = left / right;
             } else if(this.operator === "idiv") {
-                return Promise.resolve(Math.floor(values[0] / values[1]));
+                result = Math.floor(left / right);
             } else if(this.operator === "mod") {
-                return Promise.resolve(values[0] % values[1]);
+                result = left % right;
             }
+            return Promise.resolve(result);
         });
     }
 

@@ -5,7 +5,7 @@ import Iterator = require("./iterators/Iterator");
 class DynamicContext {
 
     private parent: DynamicContext;
-    private variables: { [index: string]: Iterator };
+    private variables: { [index: string]: Iterator } = {};
 
     constructor(parent?: DynamicContext) {
         this.parent = parent;

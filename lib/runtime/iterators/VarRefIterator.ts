@@ -3,6 +3,8 @@ import Iterator = require("./Iterator");
 import DynamicContext = require("../DynamicContext");
 import Position = require("../../compiler/parsers/Position");
 
+import Item = require("../items/Item");
+
 class VarRefIterator extends Iterator {
 
     private dctx: DynamicContext;
@@ -14,12 +16,18 @@ class VarRefIterator extends Iterator {
         this.varName = varName;
     }
 
-    next(): Promise<any> {
-        return this.dctx.getVariable('', this.varName).next();
+    next(): Promise<Item> {
+        if(!this.state) {
+            this.state = this.dctx.getVariable("", this.varName);
+            this.state.reset();
+        }
+        return this.state.next();
     }
 
     reset(): Iterator {
-        return super.reset();
+        super.reset();
+        this.state = undefined;
+        return this;
     }
 };
 

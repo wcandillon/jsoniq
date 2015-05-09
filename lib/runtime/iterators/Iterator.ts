@@ -1,7 +1,10 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 import Position = require("../../compiler/parsers/Position");
 import StaticContext = require("../../compiler/StaticContext");
+
 import DynamicContext = require("../DynamicContext");
+
+import Item = require("../items/Item");
 
 class Iterator {
 
@@ -14,11 +17,11 @@ class Iterator {
         this.position = position;
     }
 
-    next(): Promise<any> {
+    next(): Promise<Item> {
         if(this.closed) {
             throw new Error("Iterator is closed.");
         }
-        return null;
+        return Promise.resolve(new Item(undefined));
     }
 
     reset(): Iterator {
@@ -27,14 +30,13 @@ class Iterator {
         return this;
     }
 
-    forEach(callback:  (item: any) => void): Iterator {
-        this.next().then(item => {
+    forEach(callback:  (item: Item) => void): Promise<any> {
+        return this.next().then(item => {
             callback(item);
             if(!this.isClosed()) {
                 this.forEach(callback);
             }
         });
-        return this;
     }
 
     isClosed(): boolean {

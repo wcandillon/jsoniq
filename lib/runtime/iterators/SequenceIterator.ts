@@ -3,6 +3,8 @@
 import Iterator = require("./Iterator");
 import Position = require("../../compiler/parsers/Position");
 
+import Item = require("../items/Item");
+
 class SequenceIterator extends Iterator {
 
     private its: any[];
@@ -15,7 +17,7 @@ class SequenceIterator extends Iterator {
         }
     }
 
-    next(): Promise<any> {
+    next(): Promise<Item> {
         super.next();
         if(this.its[0].isClosed()) {
             this.its.splice(0, 1);

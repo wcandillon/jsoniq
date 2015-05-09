@@ -7,6 +7,8 @@ import ItemIterator = require("./ItemIterator");
 import DynamicContext = require("../DynamicContext");
 import Position = require("../../compiler/parsers/Position");
 
+import Item = require("../items/Item");
+
 export interface Tuple {
     [key: string]: Iterator;
 }
@@ -86,7 +88,6 @@ export class ForClause extends Clause {
     pull(): Promise<Tuple> {
         super.pull();
         if(this.state === undefined) {
-            console.log(this.parent);
             this.state = this.parent.pull();
         }
         return this.state.then(tuple => {
@@ -99,7 +100,7 @@ export class ForClause extends Clause {
                 } else {
                     this.state = Promise.resolve(tuple);
                 }
-                this.dctx.setVariable("", this.varName, new ItemIterator(item));
+                tuple[this.varName] = new ItemIterator(item);
                 return Promise.resolve(tuple);
             });
         });
@@ -108,18 +109,24 @@ export class ForClause extends Clause {
 
 export class ReturnIterator extends Iterator {
 
+    private dctx: DynamicContext;
     private it: Iterator;
     private parent: Clause;
 
-    constructor(position: Position, parent: Clause, it: Iterator) {
+    constructor(position: Position, dctx: DynamicContext, parent: Clause, it: Iterator) {
         super(position);
+        this.dctx = dctx;
         this.parent = parent;
         this.it = it;
     }
 
-    next(): Promise<any> {
+    next(): Promise<Item> {
         super.next();
         return this.parent.pull().then(tuple => {
+            _.chain<Tuple>(tuple).forEach((it: Iterator, varName: string) => {
+                this.dctx.setVariable("", varName, it);
+            });
+            this.it.reset();
             return this.it.next();
         });
     }
