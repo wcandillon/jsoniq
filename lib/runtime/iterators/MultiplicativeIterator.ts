@@ -23,7 +23,19 @@ class MultiplicativeIterator extends Iterator {
             this.closed = true;
             var left = values[0].get();
             var right = values[1].get();
-            var result;
+            return Promise.resolve(new Item(left * right));
+        });
+    }
+
+    /*
+
+    next(): Promise<Item> {
+        super.next();
+        return Promise.all([this.left.next(), this.right.next()]).then((values) => {
+            this.closed = true;
+            var left = values[0].get();
+            var right = values[1].get();
+            var result: number;
             if(this.operator === "*") {
                 result = left * right;
             } else if(this.operator === "div") {
@@ -34,10 +46,10 @@ class MultiplicativeIterator extends Iterator {
             } else if(this.operator === "mod") {
                 result = left % right;
             }
-            return Promise.resolve(result);
+            return Promise.resolve<Item>(new Item(result));
         });
     }
-
+*/
     reset(): Iterator {
         this.left.reset();
         this.right.reset();
