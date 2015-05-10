@@ -71,4 +71,10 @@ describe("Test FLWOR", () => {
             e.toEqual([5, 6, 7, 8, 9, 10, 5, 6, 7, 8, 9, 10]);
         });
     });
+
+    pit("for 12", () => {
+        return u.expectQuery("for $i in (1 to 2) return ($i + $i * 2)").then(e => {
+            e.toEqual([3, 6]);
+        });
+    });
 });
