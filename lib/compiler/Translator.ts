@@ -156,30 +156,32 @@ class Translator {
     }
 
     DecimalLiteral(node: ASTNode): boolean {
-        var item = new Item(parseFloat(node.getValue()));
+        var item = new Item(parseFloat(node.toString()));
         this.iterators.push(new ItemIterator(item));
         return true;
     }
 
     DoubleLiteral(node: ASTNode): boolean {
-        var item = new Item(parseFloat(node.getValue()));
+        var item = new Item(parseFloat(node.toString()));
         this.iterators.push(new ItemIterator(item));
         return true;
     }
 
     IntegerLiteral(node: ASTNode): boolean {
-        var item = new Item(parseInt(node.getValue(), 10));
+        var item = new Item(parseInt(node.toString(), 10));
         this.iterators.push(new ItemIterator(item));
         return true;
     }
 
     StringLiteral(node: ASTNode): boolean {
-        this.iterators.push(new ItemIterator(new Item(node.getValue())));
+        var val = node.toString();
+        val = val.substring(1, val.length - 1);
+        this.iterators.push(new ItemIterator(new Item(val)));
         return true;
     }
 
     BooleanLiteral(node: ASTNode): boolean {
-        this.iterators.push(new ItemIterator(new Item(node.getValue() === "true")));
+        this.iterators.push(new ItemIterator(new Item(node.toString() === "true")));
         return true;
     }
 
