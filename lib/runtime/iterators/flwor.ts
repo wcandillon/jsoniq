@@ -72,7 +72,7 @@ export class ForClause extends Clause {
     private allowEmpty: boolean;
     private positionalVar: string;
     private expr: Iterator;
-    private state: { tuples: Promise<Tuple>; index: number };
+    private state: { tuple: Promise<Tuple>; index: number };
 
     constructor(
         position: Position, dctx: DynamicContext, parent: Clause,
@@ -89,26 +89,30 @@ export class ForClause extends Clause {
         super.pull();
         if(this.state === undefined) {
             this.state = {
-                tuples: this.parent.pull(),
+                tuple: this.parent.pull(),
                 index: 0
             };
         }
-        return this.state.tuples.then(tuple => {
+        return this.state.tuple.then(tuple => {
             return this.expr.next().then(item => {
                 this.state.index++;
                 tuple[this.varName] = new ItemIterator(item);
                 if(this.positionalVar) {
                     tuple[this.positionalVar] = new ItemIterator(new Item(this.state.index));
                 }
+                //Add tuple to the dynamic context
+                _.chain<Tuple>(tuple).forEach((it: Iterator, varName: string) => {
+                    this.dctx.setVariable("", varName, it);
+                });
                 if(this.expr.isClosed() && !this.parent.isClosed()) {
                     this.state = undefined;
                     this.expr.reset();
                 } else if(this.expr.isClosed() && this.parent.isClosed()) {
                     this.closed = true;
                 } else {
-                    this.state.tuples = Promise.resolve(tuple);
+                    this.state.tuple = Promise.resolve(tuple);
                 }
-                return this.state.tuples;
+                return Promise.resolve(tuple);
             });
         });
     }
@@ -130,15 +134,20 @@ export class ReturnIterator extends Iterator {
     next(): Promise<Item> {
         super.next();
         return this.parent.pull().then(tuple => {
-            _.chain<Tuple>(tuple).forEach((it: Iterator, varName: string) => {
-                this.dctx.setVariable("", varName, it);
-            });
             this.it.reset();
-            return this.it.next();
+            return this.it.next().then(item => {
+                return Promise.resolve(item);
+            });
         });
     }
 
     isClosed(): boolean {
         return this.parent.isClosed();
+    }
+
+    reset(): Iterator {
+        super.reset();
+        this.it.reset();
+        return this;
     }
 };

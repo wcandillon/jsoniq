@@ -18,15 +18,17 @@ class VarRefIterator extends Iterator {
     }
 
     next(): Promise<Item> {
-        if(!this.state) {
-            this.state = this.dctx.getVariable("", this.varName);
-            this.state.reset();
-        }
-        return this.state.next();
+        super.next();
+        return this.dctx.getVariable("", this.varName).next();
+    }
+
+    isClosed(): boolean {
+        return this.dctx.getVariable("", this.varName).isClosed();
     }
 
     reset(): Iterator {
         super.reset();
+        this.dctx.getVariable("", this.varName).reset();
         this.state = undefined;
         return this;
     }

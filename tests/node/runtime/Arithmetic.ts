@@ -23,4 +23,10 @@ describe("Test Arithmetic Operation", () => {
             e.toEqual([10, 1, 2, 3, 4, 5, 1, 2, 3, 11, 5, 10]);
         });
     });
+
+    pit("to(1, add(5, 1))", () => {
+        return u.expectQuery("(1 to 5 + 1)").then((e: jasmine.Matchers) => {
+            e.toEqual([1, 2, 3, 4, 5, 6]);
+        });
+    });
 });

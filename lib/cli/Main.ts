@@ -24,7 +24,7 @@ cli
     var query = new JSONiq(fs.readFileSync(file, "utf-8"));
     query.setFileName(file);
     var it = query.compile();
-    console.log(it.toXML());
+    console.log(it.toString());
 });
 
 cli

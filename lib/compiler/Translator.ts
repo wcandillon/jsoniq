@@ -161,9 +161,30 @@ class Translator {
         return true;
     }
 
+    DoubleLiteral(node: ASTNode): boolean {
+        var item = new Item(parseFloat(node.getValue()));
+        this.iterators.push(new ItemIterator(item));
+        return true;
+    }
+
     IntegerLiteral(node: ASTNode): boolean {
         var item = new Item(parseInt(node.getValue(), 10));
         this.iterators.push(new ItemIterator(item));
+        return true;
+    }
+
+    StringLiteral(node: ASTNode): boolean {
+        this.iterators.push(new ItemIterator(new Item(node.getValue())));
+        return true;
+    }
+
+    BooleanLiteral(node: ASTNode): boolean {
+        this.iterators.push(new ItemIterator(new Item(node.getValue() === "true")));
+        return true;
+    }
+
+    NullLiteral(node: ASTNode): boolean {
+        this.iterators.push(new ItemIterator(new Item(null)));
         return true;
     }
 

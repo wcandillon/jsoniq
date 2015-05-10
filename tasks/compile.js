@@ -12,7 +12,11 @@ var tsProject = $.typescript.createProject({
     module: 'commonjs'
 });
 
-gulp.task('compile:typescript', function() {
+gulp.task('compile:clean', function () {
+    return gulp.src(Config.dist, { read: false }).pipe($.clean({ force: true }));
+});
+
+gulp.task('compile:typescript', ['compile:clean'], function() {
     var tsResult = gulp.src(Config.ts.concat(['typings/**/*.ts']))
         .pipe($.sourcemaps.init())
         .pipe($.typescript(tsProject));
