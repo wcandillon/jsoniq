@@ -123,6 +123,7 @@ export class ReturnIterator extends Iterator {
     private dctx: DynamicContext;
     private it: Iterator;
     private parent: Clause;
+    private state: Promise<Tuple>;
 
     constructor(position: Position, dctx: DynamicContext, parent: Clause, it: Iterator) {
         super(position);
@@ -133,20 +134,25 @@ export class ReturnIterator extends Iterator {
 
     next(): Promise<Item> {
         super.next();
-        return this.parent.pull().then(tuple => {
-            this.it.reset();
+        if(this.state === undefined) {
+            this.state = this.parent.pull();
+        }
+        return this.state.then(() => {
             return this.it.next().then(item => {
+                if(this.it.isClosed() && !this.parent.isClosed()) {
+                    this.state = undefined;
+                    this.it.reset();
+                } else if(this.it.isClosed() && this.parent.isClosed()) {
+                    this.closed = true;
+                }
                 return Promise.resolve(item);
             });
         });
     }
 
-    isClosed(): boolean {
-        return this.parent.isClosed();
-    }
-
     reset(): Iterator {
         super.reset();
+        this.state = undefined;
         this.it.reset();
         return this;
     }

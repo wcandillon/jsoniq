@@ -53,4 +53,22 @@ describe("Test FLWOR", () => {
             e.toEqual([1, 2, 3, 4, 5, 1, 2, 3, 4, 5]);
         });
     });
+
+    pit("for 9", () => {
+        return u.expectQuery("for $i in (for $a in (1 to 5) return $a) return $i").then(e => {
+            e.toEqual([1, 2, 3, 4, 5]);
+        });
+    });
+
+    pit("for 10", () => {
+        return u.expectQuery("for $i in (1 to 2) return ($i, $i)").then(e => {
+            e.toEqual([1, 1, 2, 2]);
+        });
+    });
+
+    pit("for 11", () => {
+        return u.expectQuery("for $i in (1 to 2) return (5 to 10)").then(e => {
+            e.toEqual([5, 6, 7, 8, 9, 10, 5, 6, 7, 8, 9, 10]);
+        });
+    });
 });
