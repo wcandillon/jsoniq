@@ -52,6 +52,11 @@ export class Clause {
     isClosed(): boolean {
         return this.closed;
     }
+
+    reset(): Clause {
+        this.closed = false;
+        return this;
+    }
 }
 
 export class EmptyClause extends Clause {
@@ -63,6 +68,10 @@ export class EmptyClause extends Clause {
         super.pull();
         this.closed = true;
         return Promise.resolve({});
+    }
+
+    reset(): EmptyClause {
+        return super.reset();
     }
 }
 
@@ -112,10 +121,17 @@ export class ForClause extends Clause {
                 } else {
                     this.state.tuple = Promise.resolve(tuple);
                 }
-                //console.log("for " + this.varName + " Tuple: " + JSON.stringify(tuple, null, 2));
                 return Promise.resolve(tuple);
             });
         });
+    }
+
+    reset(): ForClause {
+        super.reset();
+        this.state = undefined;
+        this.parent.reset();
+        this.expr.reset();
+        return this;
     }
 }
 
@@ -140,7 +156,6 @@ export class ReturnIterator extends Iterator {
         }
         return this.state.then(() => {
             return this.it.next().then(item => {
-                //console.log(item.get());
                 if(this.it.isClosed() && !this.parent.isClosed()) {
                     this.state = undefined;
                     this.it.reset();
@@ -156,6 +171,7 @@ export class ReturnIterator extends Iterator {
         super.reset();
         this.state = undefined;
         this.it.reset();
+        this.parent.reset();
         return this;
     }
 };
