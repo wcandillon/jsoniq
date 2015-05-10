@@ -20,6 +20,10 @@ class SequenceIterator extends Iterator {
         if(this.state === undefined) {
             this.state = _.clone(this.its);
         }
+        if(this.state.length === 0) {
+            this.closed = true;
+            return Promise.resolve(undefined);
+        }
         if(this.state[0].isClosed()) {
             this.state.splice(0, 1);
         }

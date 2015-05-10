@@ -77,4 +77,16 @@ describe("Test FLWOR", () => {
             e.toEqual([3, 6]);
         });
     });
+
+    pit("for 13", () => {
+        return u.expectQuery("for $i in () return $i").then(e => {
+            e.toEqual([]);
+        });
+    });
+
+    pit("for 14", () => {
+        return u.expectQuery("for $i allowing empty in () return 1").then(e => {
+            e.toEqual([1]);
+        });
+    });
 });

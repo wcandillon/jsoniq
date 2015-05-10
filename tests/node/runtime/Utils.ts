@@ -9,7 +9,7 @@ export function expectQuery(source: string, jsoniq?: boolean): Promise<jasmine.M
         }
         var it = query.compile();
         var result = [];
-        it.forEach(function(item){
+        it.forEach(function(item) {
             result.push(item.get());
         })
         .catch(error => {

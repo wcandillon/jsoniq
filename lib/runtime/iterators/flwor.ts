@@ -112,6 +112,7 @@ export class ForClause extends Clause {
                 } else {
                     this.state.tuple = Promise.resolve(tuple);
                 }
+                //console.log("for " + this.varName + " Tuple: " + JSON.stringify(tuple, null, 2));
                 return Promise.resolve(tuple);
             });
         });
@@ -139,6 +140,7 @@ export class ReturnIterator extends Iterator {
         }
         return this.state.then(() => {
             return this.it.next().then(item => {
+                //console.log(item.get());
                 if(this.it.isClosed() && !this.parent.isClosed()) {
                     this.state = undefined;
                     this.it.reset();

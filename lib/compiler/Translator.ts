@@ -85,7 +85,15 @@ class Translator {
 
     Expr(node: ASTNode): boolean {
         this.visitChildren(node);
-        this.iterators.push(new SequenceIterator(node.getPosition(), this.popAllIt()));
+        this.pushIt(new SequenceIterator(node.getPosition(), this.popAllIt()));
+        return true;
+    }
+
+    ParenthesizedExpr(node: ASTNode) {
+        this.visitChildren(node);
+        if(this.iterators.length === 0) {
+            this.pushIt(new SequenceIterator(node.getPosition(), []));
+        }
         return true;
     }
 
@@ -104,9 +112,10 @@ class Translator {
         return true;
     }
 
+    //ForBinding ::= "$" VarName TypeDeclaration? AllowingEmpty? PositionalVar? "in" ExprSingle
     ForBinding(node: ASTNode): boolean {
-        this.pushCtx(node.getPosition());
         this.visitChildren(node);
+        this.pushCtx(node.getPosition());
         this.clausesCount[this.clausesCount.length - 1]++;
         var varName = node.find(["VarName"])[0].toString();
         var allowingEmpty = node.find(["AllowingEmpty"])[0] !== undefined;

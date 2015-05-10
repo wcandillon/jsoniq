@@ -29,7 +29,9 @@ class Iterator {
 
     forEach(callback:  (item: Item) => void): Promise<any> {
         return this.next().then(item => {
-            callback(item);
+            if(item !== undefined) {
+                callback(item);
+            }
             if(!this.isClosed()) {
                 return this.forEach(callback);
             }
