@@ -38,8 +38,7 @@ cli
 
 cli.version(pkg.version);
 
-cli
-    .parse(process.argv);
+cli.parse(process.argv);
 if (!cli.args.length) {
     cli.help();
 }

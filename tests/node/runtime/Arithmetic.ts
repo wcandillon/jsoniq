@@ -7,7 +7,7 @@ declare function pit(expectation: string, assertion?: (done: () => void) => any)
 describe("Test Arithmetic Operation", () => {
 
     pit("boolean", () => {
-        return u.expectQuery("true, false").then(e => {
+        return u.expectQuery("true, false", true).then(e => {
             e.toEqual([true, false]);
         });
     });
@@ -25,7 +25,10 @@ describe("Test Arithmetic Operation", () => {
     });
 
     pit("multiple operations", () => {
-        return u.expectQuery("1 + 1 + 1 - 1 - 1 + 10 - 1, (1 to 5), (1, (), 2, 3), 20.1 idiv 1.678, 10 div 2, 2 * 5, true, false, \"Hello\", \"World\"").then((e: jasmine.Matchers) => {
+        return u.expectQuery(
+            "1 + 1 + 1 - 1 - 1 + 10 - 1, (1 to 5), (1, (), 2, 3), 20.1 idiv 1.678, 10 div 2, 2 * 5, true, false, \"Hello\", \"World\"",
+            true
+        ).then((e: jasmine.Matchers) => {
             e.toEqual([10, 1, 2, 3, 4, 5, 1, 2, 3, 11, 5, 10, true, false, "Hello", "World"]);
         });
     });
