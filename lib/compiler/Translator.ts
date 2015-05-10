@@ -25,10 +25,9 @@ class Translator {
 
     private marker: Marker[];
 
-    private iterators: Iterator[] = [];
-
+    private iterators: Iterator[]  = [];
     private clauses: flwor.Clause[] = [];
-    private clause: flwor.Clause;
+
     private clausesCount: number[] = [];
 
     private rootSctx: RootStaticContext;
@@ -53,6 +52,18 @@ class Translator {
             throw new Error("Empty iterator statck.");
         }
         return this.iterators.pop();
+    }
+
+    private pushClause(clause: flwor.Clause): Translator {
+        this.clauses.push(clause);
+        return this;
+    }
+
+    private popClause(): flwor.Clause {
+        if(this.iterators.length === 0) {
+            throw new Error("Empty iterator statck.");
+        }
+        return this.clauses.pop();
     }
 
     private popAllIt(): Iterator[] {
@@ -99,11 +110,10 @@ class Translator {
 
     FLWORExpr(node: ASTNode): boolean {
         this.pushCtx(node.getPosition());
-        this.clauses.push(new flwor.EmptyClause());
-        this.clause = this.clauses[this.clauses.length - 1];
         this.clausesCount.push(0);
+        this.pushClause(new flwor.EmptyClause());
         this.visitChildren(node);
-        this.clauses.pop();
+        //this.popClause();
         var clauseCount = this.clausesCount.pop();
         for(var i = 0; i < clauseCount; i++) {
             this.popCtx(node.getPosition());
@@ -124,13 +134,13 @@ class Translator {
         if(pos) {
             posVarName = pos.find(["VarName"])[0].toString();
         }
-        this.clause = new flwor.ForClause(node.getPosition(), this.dctx, this.clause, varName, allowingEmpty, posVarName, this.popIt());
+        this.pushClause(new flwor.ForClause(node.getPosition(), this.dctx, this.popClause(), varName, allowingEmpty, posVarName, this.popIt()));
         return true;
     }
 
     ReturnClause(node: ASTNode): boolean {
         this.visitChildren(node);
-        this.iterators.push(new flwor.ReturnIterator(node.getPosition(), this.dctx, this.clause, this.popIt()));
+        this.iterators.push(new flwor.ReturnIterator(node.getPosition(), this.dctx, this.popClause(), this.popIt()));
         return true;
     }
 
