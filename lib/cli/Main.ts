@@ -17,6 +17,25 @@ cli
     });
 });
 
+cli
+.command("plan <file>")
+.description("Print query plan")
+.action(file => {
+    var query = new JSONiq(fs.readFileSync(file, "utf-8"));
+    query.setFileName(file);
+    var it = query.compile();
+    console.log(it.toXML());
+});
+
+cli
+.command("ast <file>")
+.description("Print query plan")
+.action(file => {
+    var query = new JSONiq(fs.readFileSync(file, "utf-8"));
+    query.setFileName(file);
+    console.log(query.parse().toXML());
+});
+
 cli.version(pkg.version);
 
 cli

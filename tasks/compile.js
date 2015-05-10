@@ -8,7 +8,7 @@ var Config = require('./config');
 
 var tsProject = $.typescript.createProject({
     declarationFiles: true,
-    target: 'ES5',
+    target: 'ES6',
     module: 'commonjs'
 });
 
