@@ -107,4 +107,16 @@ describe("Test FLWOR", () => {
             e.toEqual([1]);
         });
     });
+
+    pit("let 2", () => {
+        return u.expectQuery("let $i := 1 let $i := 2 return $i").then(e => {
+            e.toEqual([2]);
+        });
+    });
+
+    pit("let 3", () => {
+        return u.expectQuery("let $i := 1 let $i := (1, 2, 3) return ($i, $i)").then(e => {
+            e.toEqual([1, 2, 3, 1, 2, 3]);
+        });
+    });
 });
