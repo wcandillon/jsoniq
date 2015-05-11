@@ -135,6 +135,48 @@ export class ForClause extends Clause {
     }
 }
 
+export class LetClause extends Clause {
+
+    private varName: string;
+    private expr: Iterator;
+    private state: Promise<Tuple>;
+
+    constructor(
+        position: Position, dctx: DynamicContext, parent: Clause,
+        varName: string, expr: Iterator
+    ) {
+        super(position, dctx, parent);
+        this.varName = varName;
+        this.expr = expr;
+    }
+
+    pull(): Promise<Tuple> {
+        super.pull();
+        if(this.state === undefined) {
+            this.state = this.parent.pull();
+        }
+        return this.state.then(tuple => {
+            tuple[this.varName] = this.expr;
+            //Add tuple to the dynamic context
+            _.chain<Tuple>(tuple).forEach((it: Iterator, varName: string) => {
+                this.dctx.setVariable("", varName, it);
+            });
+            if(this.parent.isClosed()) {
+                this.closed = true;
+            }
+            return tuple;
+        });
+    }
+
+    reset(): LetClause {
+        super.reset();
+        this.state = undefined;
+        this.parent.reset();
+        //this.expr.reset();
+        return this;
+    }
+}
+
 export class ReturnIterator extends Iterator {
 
     private dctx: DynamicContext;
