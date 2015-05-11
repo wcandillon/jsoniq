@@ -12,17 +12,13 @@ require('./tasks/lint');
 require('./tasks/compile');
 require('./tasks/rex');
 
-gulp.task('clean', function () {
-    return gulp.src(Config.dist, { read: false }).pipe($.clean({ force: true }));
-});
-
 gulp.task('browserify', function(){
     return browserify().require('./dist/lib/stores/indexeddb/IndexedDBStore.js', { expose: 'IndexedDBStore' }).bundle()
         .pipe(source('jsoniq.js'))
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('test-build', ['clean'], $.sequence('compile', 'browserify'));
+gulp.task('test-build', $.sequence('compile', 'browserify'));
 
 gulp.task('jasmine', function () {
     var jasmine = require('gulp-jasmine');
@@ -40,4 +36,4 @@ gulp.task('watch', ['test-build'], function() {
     gulp.watch(Config.ts, ['compile']);
 });
 
-gulp.task('default', ['clean', 'lint'], $.sequence('test-build', 'jasmine', 'karma'));
+gulp.task('default', ['lint'], $.sequence('test-build', 'jasmine', 'karma'));

@@ -1,6 +1,6 @@
 {
   "name": "jsoniq",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "JSONiq implementation for JavaScript",
   "main": "lib/jsoniq.js",
   "scripts": {
@@ -31,9 +31,11 @@
   },
   "homepage": "https://github.com/wcandillon/jsoniq",
   "dependencies": {
+    "commander": "^2.8.1",
+    "es6-promise": "~1.0.0",
     "lodash": "~2.4.1",
     "node-uuid": "~1.4.1",
-    "es6-promise": "~1.0.0"
+    "update-notifier": "^0.5.0"
   },
   "devDependencies": {
     "browserify": "5.11.0",

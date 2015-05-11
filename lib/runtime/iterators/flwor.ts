@@ -52,6 +52,11 @@ export class Clause {
     isClosed(): boolean {
         return this.closed;
     }
+
+    reset(): Clause {
+        this.closed = false;
+        return this;
+    }
 }
 
 export class EmptyClause extends Clause {
@@ -64,6 +69,10 @@ export class EmptyClause extends Clause {
         this.closed = true;
         return Promise.resolve({});
     }
+
+    reset(): EmptyClause {
+        return super.reset();
+    }
 }
 
 export class ForClause extends Clause {
@@ -72,7 +81,7 @@ export class ForClause extends Clause {
     private allowEmpty: boolean;
     private positionalVar: string;
     private expr: Iterator;
-    private state: { tuples: Promise<Tuple>; index: number };
+    private state: { tuple: Promise<Tuple>; index: number };
 
     constructor(
         position: Position, dctx: DynamicContext, parent: Clause,
@@ -89,28 +98,40 @@ export class ForClause extends Clause {
         super.pull();
         if(this.state === undefined) {
             this.state = {
-                tuples: this.parent.pull(),
+                tuple: this.parent.pull(),
                 index: 0
             };
         }
-        return this.state.tuples.then(tuple => {
+        return this.state.tuple.then(tuple => {
             return this.expr.next().then(item => {
                 this.state.index++;
+                tuple[this.varName] = new ItemIterator(item);
+                if(this.positionalVar) {
+                    tuple[this.positionalVar] = new ItemIterator(new Item(this.state.index));
+                }
+                //Add tuple to the dynamic context
+                _.chain<Tuple>(tuple).forEach((it: Iterator, varName: string) => {
+                    this.dctx.setVariable("", varName, it);
+                });
                 if(this.expr.isClosed() && !this.parent.isClosed()) {
                     this.state = undefined;
                     this.expr.reset();
                 } else if(this.expr.isClosed() && this.parent.isClosed()) {
                     this.closed = true;
                 } else {
-                    this.state.tuples = Promise.resolve(tuple);
-                }
-                tuple[this.varName] = new ItemIterator(item);
-                if(this.positionalVar) {
-                    tuple[this.positionalVar] = new ItemIterator(new Item(this.state.index));
+                    this.state.tuple = Promise.resolve(tuple);
                 }
                 return Promise.resolve(tuple);
             });
         });
+    }
+
+    reset(): ForClause {
+        super.reset();
+        this.state = undefined;
+        this.parent.reset();
+        this.expr.reset();
+        return this;
     }
 }
 
@@ -119,6 +140,7 @@ export class ReturnIterator extends Iterator {
     private dctx: DynamicContext;
     private it: Iterator;
     private parent: Clause;
+    private state: Promise<Tuple>;
 
     constructor(position: Position, dctx: DynamicContext, parent: Clause, it: Iterator) {
         super(position);
@@ -129,16 +151,27 @@ export class ReturnIterator extends Iterator {
 
     next(): Promise<Item> {
         super.next();
-        return this.parent.pull().then(tuple => {
-            _.chain<Tuple>(tuple).forEach((it: Iterator, varName: string) => {
-                this.dctx.setVariable("", varName, it);
+        if(this.state === undefined) {
+            this.state = this.parent.pull();
+        }
+        return this.state.then(() => {
+            return this.it.next().then(item => {
+                if(this.it.isClosed() && !this.parent.isClosed()) {
+                    this.state = undefined;
+                    this.it.reset();
+                } else if(this.it.isClosed() && this.parent.isClosed()) {
+                    this.closed = true;
+                }
+                return Promise.resolve(item);
             });
-            this.it.reset();
-            return this.it.next();
         });
     }
 
-    isClosed(): boolean {
-        return this.parent.isClosed();
+    reset(): Iterator {
+        super.reset();
+        this.state = undefined;
+        this.it.reset();
+        this.parent.reset();
+        return this;
     }
 };

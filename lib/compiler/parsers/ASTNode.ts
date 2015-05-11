@@ -106,7 +106,7 @@ class ASTNode {
         } else {
             value += this.value;
         }
-        return value;
+        return value.trim();
     }
 
     find(path: string[]): ASTNode[] {

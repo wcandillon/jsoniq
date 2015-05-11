@@ -1,5 +1,5 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-
+import _ = require("lodash");
 import Iterator = require("./Iterator");
 import Position = require("../../compiler/parsers/Position");
 
@@ -7,23 +7,28 @@ import Item = require("../items/Item");
 
 class SequenceIterator extends Iterator {
 
-    private its: any[];
+    private its: Iterator[];
+    private state: Iterator[];
 
     constructor(position: Position, its: Iterator[]) {
         super(position);
         this.its = its;
-        if(this.its.length === 0) {
-            this.closed = true;
-        }
     }
 
     next(): Promise<Item> {
         super.next();
-        if(this.its[0].isClosed()) {
-            this.its.splice(0, 1);
+        if(this.state === undefined) {
+            this.state = _.clone(this.its);
         }
-        return this.its[0].next().then(item => {
-            if(this.its[0].isClosed() && this.its.length === 1) {
+        if(this.state.length === 0) {
+            this.closed = true;
+            return Promise.resolve(undefined);
+        }
+        if(this.state[0].isClosed()) {
+            this.state.splice(0, 1);
+        }
+        return this.state[0].next().then(item => {
+            if(this.state[0].isClosed() && this.state.length === 1) {
                 this.closed = true;
             }
             return item;
@@ -31,10 +36,12 @@ class SequenceIterator extends Iterator {
     }
 
     reset(): Iterator {
+        super.reset();
         this.its.forEach(it => {
             it.reset();
         });
-        return super.reset();
+        this.state = undefined;
+        return this;
     }
 };
 

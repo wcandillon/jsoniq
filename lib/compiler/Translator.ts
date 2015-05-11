@@ -25,10 +25,9 @@ class Translator {
 
     private marker: Marker[];
 
-    private iterators: Iterator[] = [];
-
+    private iterators: Iterator[]  = [];
     private clauses: flwor.Clause[] = [];
-    private clause: flwor.Clause;
+
     private clausesCount: number[] = [];
 
     private rootSctx: RootStaticContext;
@@ -41,6 +40,34 @@ class Translator {
         this.sctx = rootSctx;
         this.dctx = new DynamicContext(undefined);
         this.ast = ast;
+    }
+
+    private pushIt(it: Iterator): Translator {
+        this.iterators.push(it);
+        return this;
+    }
+
+    private popIt(): Iterator {
+        if(this.iterators.length === 0) {
+            throw new Error("Empty iterator statck.");
+        }
+        return this.iterators.pop();
+    }
+
+    private pushClause(clause: flwor.Clause): Translator {
+        this.clauses.push(clause);
+        return this;
+    }
+
+    private popClause(): flwor.Clause {
+        if(this.iterators.length === 0) {
+            throw new Error("Empty iterator statck.");
+        }
+        return this.clauses.pop();
+    }
+
+    private popAllIt(): Iterator[] {
+        return this.iterators.splice(0, this.iterators.length);
     }
 
     private pushCtx(pos: Position): Translator {
@@ -69,28 +96,36 @@ class Translator {
 
     Expr(node: ASTNode): boolean {
         this.visitChildren(node);
-        this.iterators.push(new SequenceIterator(node.getPosition(), this.iterators.splice(0, this.iterators.length)));
+        this.pushIt(new SequenceIterator(node.getPosition(), this.popAllIt()));
+        return true;
+    }
+
+    ParenthesizedExpr(node: ASTNode) {
+        this.visitChildren(node);
+        if(this.iterators.length === 0) {
+            this.pushIt(new SequenceIterator(node.getPosition(), []));
+        }
         return true;
     }
 
     FLWORExpr(node: ASTNode): boolean {
         this.pushCtx(node.getPosition());
-        this.clauses.push(new flwor.EmptyClause());
-        this.clause = this.clauses[this.clauses.length - 1];
         this.clausesCount.push(0);
+        this.pushClause(new flwor.EmptyClause());
         this.visitChildren(node);
-        this.clauses.pop();
+        //this.popClause();
         var clauseCount = this.clausesCount.pop();
-        for(var i = 1; i <= clauseCount; i++) {
+        for(var i = 0; i < clauseCount; i++) {
             this.popCtx(node.getPosition());
         }
         this.popCtx(node.getPosition());
         return true;
     }
 
+    //ForBinding ::= "$" VarName TypeDeclaration? AllowingEmpty? PositionalVar? "in" ExprSingle
     ForBinding(node: ASTNode): boolean {
-        this.pushCtx(node.getPosition());
         this.visitChildren(node);
+        this.pushCtx(node.getPosition());
         this.clausesCount[this.clausesCount.length - 1]++;
         var varName = node.find(["VarName"])[0].toString();
         var allowingEmpty = node.find(["AllowingEmpty"])[0] !== undefined;
@@ -99,13 +134,13 @@ class Translator {
         if(pos) {
             posVarName = pos.find(["VarName"])[0].toString();
         }
-        this.clause = new flwor.ForClause(node.getPosition(), this.dctx, this.clause, varName, allowingEmpty, posVarName, this.iterators.pop());
+        this.pushClause(new flwor.ForClause(node.getPosition(), this.dctx, this.popClause(), varName, allowingEmpty, posVarName, this.popIt()));
         return true;
     }
 
     ReturnClause(node: ASTNode): boolean {
         this.visitChildren(node);
-        this.iterators.push(new flwor.ReturnIterator(node.getPosition(), this.dctx, this.clause, this.iterators.pop()));
+        this.iterators.push(new flwor.ReturnIterator(node.getPosition(), this.dctx, this.popClause(), this.popIt()));
         return true;
     }
 
@@ -117,8 +152,8 @@ class Translator {
 
     RangeExpr(node: ASTNode): boolean {
         this.visitChildren(node);
-        var to = this.iterators.pop();
-        var f = this.iterators.pop();
+        var to = this.popIt();
+        var f = this.popIt();
         this.iterators.push(new RangeIterator(node.getPosition(), f, to));
         return true;
     }
@@ -130,8 +165,8 @@ class Translator {
             this.iterators.push(
                 new AdditiveIterator(
                     node.getPosition(),
-                    this.iterators.pop(),
-                    this.iterators.pop(),
+                    this.popIt(),
+                    this.popIt(),
                     token.getValue() === "+"
                 )
             );
@@ -146,8 +181,8 @@ class Translator {
             this.iterators.push(
                 new MultiplicativeIterator(
                     node.getPosition(),
-                    this.iterators.pop(),
-                    this.iterators.pop(),
+                    this.popIt(),
+                    this.popIt(),
                     token.getValue()
                 )
             );
@@ -156,14 +191,37 @@ class Translator {
     }
 
     DecimalLiteral(node: ASTNode): boolean {
-        var item = new Item(parseFloat(node.getValue()));
-        this.iterators.push(new ItemIterator(item));
+        var item = new Item(parseFloat(node.toString()));
+        this.pushIt(new ItemIterator(item));
+        return true;
+    }
+
+    DoubleLiteral(node: ASTNode): boolean {
+        var item = new Item(parseFloat(node.toString()));
+        this.pushIt(new ItemIterator(item));
         return true;
     }
 
     IntegerLiteral(node: ASTNode): boolean {
-        var item = new Item(parseInt(node.getValue(), 10));
-        this.iterators.push(new ItemIterator(item));
+        var item = new Item(parseInt(node.toString(), 10));
+        this.pushIt(new ItemIterator(item));
+        return true;
+    }
+
+    StringLiteral(node: ASTNode): boolean {
+        var val = node.toString();
+        val = val.substring(1, val.length - 1);
+        this.pushIt(new ItemIterator(new Item(val)));
+        return true;
+    }
+
+    BooleanLiteral(node: ASTNode): boolean {
+        this.pushIt(new ItemIterator(new Item(node.toString() === "true")));
+        return true;
+    }
+
+    NullLiteral(node: ASTNode): boolean {
+        this.pushIt(new ItemIterator(new Item(null)));
         return true;
     }
 

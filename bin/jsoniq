@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+var path = require('path');
+var fs = require('fs');
+var lib = path.dirname(fs.realpathSync(__filename));
+var updateNotifier = require('update-notifier');
+var pkg = require('../package.json');
+updateNotifier({packageName: pkg.name, packageVersion: pkg.version}).notify();
+require(lib + '/../dist/lib/cli/Main.js');
