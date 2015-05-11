@@ -1,0 +1,11 @@
+(:
+  Check that index domain expr does not reference the context item
+:)
+
+module namespace idx = "http://www.w3.org/TestModules/idx";
+
+declare namespace ann = "http://zorba.io/annotations";
+
+declare %ann:value-range index idx:foo 
+on nodes ./site/people/person
+by fn:data(./@id) as xs:string;

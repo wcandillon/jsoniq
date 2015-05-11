@@ -1,0 +1,171 @@
+module namespace auctions = "http://www.w3.org/TestModules/auctions";
+
+import module namespace ddl = "http://zorba.io/modules/store/static/collections/ddl";
+import module namespace dml = "http://zorba.io/modules/store/static/collections/dml";
+import module namespace index_ddl = "http://zorba.io/modules/store/static/indexes/ddl";
+import module namespace index_dml = "http://zorba.io/modules/store/static/indexes/dml";
+
+declare namespace ann = "http://zorba.io/annotations";
+
+declare variable $auctions:auctions := xs:QName("auctions:auctions");
+declare variable $auctions:PersonId := xs:QName("auctions:PersonId");
+declare variable $auctions:PersonCity := xs:QName("auctions:PersonCity");
+declare variable $auctions:PersonWatches := xs:QName("auctions:PersonWatches");
+declare variable $auctions:PersonWatches2 := xs:QName("auctions:PersonWatches2");
+declare variable $auctions:AuctionDates := xs:QName("auctions:AuctionDates");
+declare variable $auctions:AuctionDates2 := xs:QName("auctions:AuctionDates2");
+declare variable $auctions:PersonIncome2 := xs:QName("auctions:PersonIncome2");
+
+declare collection auctions:auctions as node()*;
+
+
+(:
+  The PersonId index maps each id to the person with that id.
+:)
+
+declare %ann:unique %ann:value-range %ann:manual index auctions:PersonId
+on nodes dml:collection(xs:QName("auctions:auctions"))/site/people/person
+by xs:string(fn:data(./@id)) as xs:string;
+
+
+(:
+  The PersonCity index maps each city to the persons that live in that city.
+  The PersonCity index contains some NULL keys because not all persons have a city 
+:)
+
+declare %ann:value-range %ann:automatic index auctions:PersonCity
+on nodes dml:collection(xs:QName("auctions:auctions"))/site/people/person
+by xs:string(.//city) as xs:string;
+
+
+(:
+  The PersonWatches index maps each open auction to the persons who watch that 
+  auction. A person may watch multiple open auctions.
+:)
+
+declare %ann:general-equality %ann:automatic index auctions:PersonWatches
+on nodes dml:collection(xs:QName("auctions:auctions"))/site/people/person
+by (for $x in ./watches/watch/@open_auction return xs:string($x)) as xs:string*;
+
+
+(:
+  The PersonWatches2 is the same as the PersonWatches except that its key is untyped.
+:)
+
+declare %ann:general-equality %ann:manual index auctions:PersonWatches2
+on nodes dml:collection(xs:QName("auctions:auctions"))/site/people/person
+by (for $x in ./watches/watch/@open_auction return $x);
+
+
+(:
+  The AuctionDates index maps dates to the open auctions that had a biding on the
+  associated date. An open auction may have biddings on it on multiple dates.
+:)
+
+declare %ann:general-range %ann:manual index auctions:AuctionDates
+on nodes dml:collection(xs:QName("auctions:auctions"))//open_auction
+by (for $x in ./bidder/date return xs:date($x)) as xs:date*;
+
+
+(:
+  The AuctionDates2 index is the same as AuctionDates except that its key  
+  expression produces untyped items.
+:)
+
+declare %ann:general-range %ann:manual index auctions:AuctionDates2
+on nodes dml:collection(xs:QName("auctions:auctions"))//open_auction
+by (for $x in ./bidder/date return $x);
+
+
+(:
+  The PersonIncome2 maps each income to the persons who have that income.
+  Each person has at most one income.
+:)
+
+declare %ann:general-range %ann:manual index auctions:PersonIncome2
+on nodes dml:collection(xs:QName("auctions:auctions"))//person
+by .//@income;
+
+
+(:
+  Create and populate the collection, and then create the indexes
+:)
+
+declare %ann:sequential function auctions:create-db()
+{
+  ddl:create($auctions:auctions);
+
+  dml:insert($auctions:auctions, doc("auctions1.xml"));
+
+  index_ddl:create($auctions:PersonId);
+
+  index_ddl:create($auctions:PersonCity);
+
+  index_ddl:create($auctions:PersonWatches);
+
+  index_ddl:create($auctions:PersonWatches2);
+
+  index_ddl:create($auctions:AuctionDates);
+
+  index_ddl:create($auctions:AuctionDates2);
+
+  index_ddl:create($auctions:PersonIncome2);
+};
+
+
+declare function auctions:probe-point-id($indexName as xs:QName, $id as xs:string)
+{
+  index_dml:probe-index-point-value($indexName, $id)/.
+};
+
+
+(:
+  Look for persons whose id is >= than the given id
+:)
+
+declare function auctions:probe-range-id($indexName as xs:QName, $id as xs:string)
+{
+  index_dml:probe-index-range-value($indexName,
+                                $id,
+                                "",
+                                xs:boolean("true"), 
+                                xs:boolean("false"),
+                                xs:boolean("true"),
+                                xs:boolean("false"))/.
+};
+
+
+declare function auctions:probe-point-city($indexName as xs:QName, $city as xs:string?)
+{
+  index_dml:probe-index-point-value($indexName, $city)/.
+};
+
+
+(:
+  Look for persons whose city is >= than the given city
+:)
+
+declare function auctions:probe-range-city($indexName as xs:QName, $city as xs:string)
+{
+  index_dml:probe-index-range-value($indexName,
+                                $city,
+                                "",
+                                xs:boolean("true"),
+                                xs:boolean("false"),
+                                xs:boolean("true"),
+                                xs:boolean("false"))/.
+};
+
+
+
+(:
+  Look for persons who watch at least one of the auctions in the given set
+:)
+
+declare function auctions:probe-point-watch(
+    $indexName as xs:QName,
+    $auctions as xs:string*)
+{
+  index_dml:probe-index-point-general($indexName, $auctions)
+};
+

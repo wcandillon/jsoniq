@@ -1,0 +1,13 @@
+
+(:
+  Check that index definition does not reference any input sources other
+  than dc:collection
+:)
+
+module namespace idx = "http://www.w3.org/TestModules/idx";
+
+declare namespace ann = "http://zorba.io/annotations";
+
+declare %ann:value-range index idx:foo 
+on nodes doc("auction.xml")/site/people/person
+by fn:data(./@id) as xs:string;

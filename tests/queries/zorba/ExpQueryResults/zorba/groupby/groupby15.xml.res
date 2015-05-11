@@ -1,0 +1,1 @@
+<result><group>CA clothes<total-revenue>2550</total-revenue></group><group>CA kitchen<total-revenue>6500</total-revenue></group><group>MA clothes<total-revenue>100</total-revenue></group><group>MA kitchen<total-revenue>14000</total-revenue></group></result>

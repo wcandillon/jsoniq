@@ -1,0 +1,15 @@
+module namespace decl = "http://www.test.com/";
+
+import module namespace dml = "http://zorba.io/modules/store/static/collections/dml";
+
+declare namespace ann = "http://zorba.io/annotations";
+
+declare collection decl:coll1;
+
+declare %ann:unique %ann:manual %ann:value-range index decl:coll1_index
+on nodes dml:collection(xs:QName("decl:coll1"))/a/b/c
+by (fn:data(./@d)) as xs:double;
+
+declare %ann:manual %ann:value-range index decl:coll1_index
+on nodes dml:collection(xs:QName("decl:coll1"))/a/b/c
+by (fn:data(./@d)) as xs:double;

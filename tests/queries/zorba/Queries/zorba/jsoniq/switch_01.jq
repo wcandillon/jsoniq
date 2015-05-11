@@ -1,7 +1,7 @@
 let $o := { "foo" : "bar" }
-return
+select
   switch ($o.foo)
-    case "bar" return 42
-    case "foo" return 23
-    case { "foo" : "bar" } return $o
-    default return 2342
+    case "bar" select 42
+    case "foo" select 23
+    case { "foo" : "bar" } select $o
+    default select 2342
