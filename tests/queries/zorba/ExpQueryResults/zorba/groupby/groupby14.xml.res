@@ -1,0 +1,1 @@
+<result><group>CA clothes<total-qty>510</total-qty></group><group>CA kitchen<total-qty>170</total-qty></group><group>MA clothes<total-qty>10</total-qty></group><group>MA kitchen<total-qty>300</total-qty></group></result>

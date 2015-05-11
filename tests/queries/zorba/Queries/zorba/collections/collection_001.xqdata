@@ -1,0 +1,23 @@
+module namespace ns = "http://www.example.com/example";
+
+declare namespace ann = "http://zorba.io/annotations";
+
+declare collection ns:collection as node()*;
+
+declare collection ns:collection1 as node()*;
+
+declare collection ns:collection-objects as object()*;
+
+declare collection ns:collection-arrays as array()*;
+
+declare %ann:ordered collection ns:collection2 as document-node();
+
+declare %ann:const collection ns:collection_const as node()*;
+
+declare %ann:ordered %ann:append-only collection ns:collection_append_only as node()*;
+
+declare %ann:ordered %ann:queue collection ns:collection_queue as node()*;
+
+declare %ann:unordered collection ns:collection_unordered as node()*;
+
+declare function ns:test() { () };

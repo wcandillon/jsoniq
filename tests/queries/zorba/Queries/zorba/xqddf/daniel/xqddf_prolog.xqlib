@@ -1,0 +1,55 @@
+module namespace xqddf-test = "http://www.zorba-xquery.com/modules/xqddf/test";
+
+import module namespace ddl = "http://zorba.io/modules/store/static/collections/ddl";
+import module namespace dml = "http://zorba.io/modules/store/static/collections/dml";
+
+declare namespace ann = "http://zorba.io/annotations";
+
+declare collection xqddf-test:white-collection as node()*;
+
+declare collection xqddf-test:blue-collection as node()*;
+
+declare %ann:ordered collection xqddf-test:ordered-collection as node()*;
+
+declare variable $xqddf-test:white-collection := xs:QName("xqddf-test:white-collection");
+declare variable $xqddf-test:blue-collection := xs:QName("xqddf-test:blue-collection");
+declare variable $xqddf-test:ordered-collection := xs:QName("xqddf-test:ordered-collection");
+
+declare %ann:automatic %ann:value-equality index xqddf-test:index1
+on nodes dml:collection(xs:QName("xqddf-test:white-collection"))
+by fn:string(./location) as xs:string;
+
+declare %ann:manual %ann:value-range index xqddf-test:index2
+on nodes dml:collection(xs:QName("xqddf-test:white-collection"))
+by fn:count(.//incategory) as xs:integer;
+
+declare variable $xqddf-test:index1 := xs:QName("xqddf-test:index1");
+declare variable $xqddf-test:index2 := xs:QName("xqddf-test:index2");
+
+declare integrity constraint xqddf-test:eic1 
+        on collection xqddf-test:white-collection
+        node $i check unique key fn:string(($i/description/parlist/listitem/text)[1]);
+
+declare integrity constraint xqddf-test:eic2 
+        on collection xqddf-test:white-collection
+        node $i check unique key $i/name;
+
+declare integrity constraint xqddf-test:dic1
+        on collection xqddf-test:white-collection
+        foreach node $i check fn:string-length($i/name) != 0;
+        
+declare integrity constraint xqddf-test:dic2
+        on collection xqddf-test:white-collection
+        foreach node $i check fn:string($i/location) = "United States";
+        
+declare integrity constraint xqddf-test:ric1
+        foreign key
+        from collection xqddf-test:white-collection node $w key $w/name
+        to collection xqddf-test:blue-collection node $b key $b/name;
+        
+declare variable $xqddf-test:eic1 := xs:QName("xqddf-test:eic1");
+declare variable $xqddf-test:eic2 := xs:QName("xqddf-test:eic2");
+declare variable $xqddf-test:dic1 := xs:QName("xqddf-test:dic1");
+declare variable $xqddf-test:dic2 := xs:QName("xqddf-test:dic2");
+declare variable $xqddf-test:ric1 := xs:QName("xqddf-test:ric1");
+        
