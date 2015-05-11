@@ -94,6 +94,10 @@ class Translator {
         return this.marker;
     }
 
+    VersionDecl(node: ASTNode): boolean {
+        return true;
+    }
+
     Expr(node: ASTNode): boolean {
         this.visitChildren(node);
         this.pushIt(new SequenceIterator(node.getPosition(), this.popAllIt()));
@@ -135,6 +139,16 @@ class Translator {
             posVarName = pos.find(["VarName"])[0].toString();
         }
         this.pushClause(new flwor.ForClause(node.getPosition(), this.dctx, this.popClause(), varName, allowingEmpty, posVarName, this.popIt()));
+        return true;
+    }
+
+    //LetBinding ::= ( '$' VarName TypeDeclaration? | FTScoreVar ) ':=' ExprSingle
+    LetBinding(node: ASTNode): boolean {
+        this.visitChildren(node);
+        this.pushCtx(node.getPosition());
+        this.clausesCount[this.clausesCount.length - 1]++;
+        var varName = node.find(["VarName"])[0].toString();
+        this.pushClause(new flwor.LetClause(node.getPosition(), this.dctx, this.popClause(), varName, this.popIt()));
         return true;
     }
 

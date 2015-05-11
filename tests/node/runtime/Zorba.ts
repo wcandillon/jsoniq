@@ -24,7 +24,7 @@ describe("Test JSONiq Expressions", () => {
 
     var base = "tests/queries/zorba/Queries/zorba/jsoniq";
     var queries = [
-        "version_decl_02.xq"
+        //"version_decl_02.xq"
     ];
     //getQueries("tests/queries/zorba/Queries/zorba/jsoniq")
     queries.forEach(file => {
