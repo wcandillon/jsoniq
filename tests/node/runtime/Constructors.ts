@@ -12,7 +12,6 @@ describe("Test Item Constructors: ", () => {
         });
     });
 
-
     pit("()", () => {
         return u.expectQuery("((1 + 1, 2), 3, (4 + 0), (5))").then(e => {
             e.toEqual([2, 2, 3, 4, 5]);
@@ -84,5 +83,4 @@ describe("Test Item Constructors: ", () => {
             e.toEqual([[1, 2, 3]]);
         });
     });
-
 });

@@ -163,7 +163,7 @@ export class LetClause extends Clause {
             _.chain<Tuple>(tuple).forEach((it: Iterator, varName: string) => {
                 this.dctx.setVariable("", varName, it);
             });
-            this.state = this.parent.pull();
+            this.state = undefined;
             return Promise.resolve(tuple);
         });
     }
