@@ -154,6 +154,12 @@ class Translator {
         return true;
     }
 
+    WhereClause(node: ASTNode): boolean {
+        this.visitChildren(node);
+        this.pushClause(new flwor.WhereClause(node.getPosition(), this.dctx, this.popClause(), this.popIt()));
+        return true;
+    }
+
     ReturnClause(node: ASTNode): boolean {
         this.visitChildren(node);
         this.iterators.push(new flwor.ReturnIterator(node.getPosition(), this.dctx, this.popClause(), this.popIt()));
