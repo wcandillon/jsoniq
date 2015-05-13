@@ -92,7 +92,11 @@ export class ForClause extends Clause {
         return this.state.tuple.then(tuple => {
             if(tuple === undefined) {
                 this.closed = true;
-                return this.emptyTuple();
+                if(this.allowEmpty) {
+                    return Promise.resolve({});
+                } else {
+                    return this.emptyTuple();
+                }
             }
 
             return this.expr.next().then(item => {
