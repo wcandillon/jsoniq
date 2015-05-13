@@ -15,6 +15,9 @@ import RangeIterator = require("../runtime/iterators/RangeIterator");
 import SequenceIterator = require("../runtime/iterators/SequenceIterator");
 import MultiplicativeIterator = require("../runtime/iterators/MultiplicativeIterator");
 import VarRefIterator = require("../runtime/iterators/VarRefIterator");
+import ObjectIterator = require("../runtime/iterators/ObjectIterator");
+import PairIterator = require("../runtime/iterators/PairIterator");
+
 import flwor = require("../runtime/iterators/flwor");
 
 import Item = require("../runtime/items/Item");
@@ -66,10 +69,6 @@ class Translator {
         return this.clauses.pop();
     }
 
-    private popAllIt(): Iterator[] {
-        return this.iterators.splice(0, this.iterators.length);
-    }
-
     private pushCtx(pos: Position): Translator {
         this.sctx = this.sctx.createContext();
         this.dctx = this.dctx.createContext();
@@ -101,8 +100,9 @@ class Translator {
     }
 
     Expr(node: ASTNode): boolean {
+        var l = this.iterators.length;
         this.visitChildren(node);
-        this.pushIt(new SequenceIterator(node.getPosition(), this.popAllIt()));
+        this.pushIt(new SequenceIterator(node.getPosition(), this.iterators.splice(l)));
         return true;
     }
 
@@ -203,6 +203,35 @@ class Translator {
                 )
             );
         });
+        return true;
+    }
+
+    BlockExpr(node: ASTNode): boolean {
+        var oldLength = this.iterators.length;
+        this.visitChildren(node);
+        if(this.iterators.length === oldLength) {
+            this.pushIt(new ObjectIterator(node.getPosition(), []));
+        }
+        return true;
+    }
+
+    ObjectConstructor(node: ASTNode): boolean {
+        var l = this.iterators.length;
+        this.visitChildren(node);
+        this.pushIt(new ObjectIterator(node.getPosition(), this.iterators.splice(l)));
+        return true;
+    }
+
+    PairConstructor(node: ASTNode): boolean {
+        this.visitChildren(node);
+        var value = this.popIt();
+        var key;
+        if(node.find(["NCName"])[0]) {
+            key = new ItemIterator(new Item(node.find(["NCName"])[0].toString()));
+        } else {
+            key = this.popIt();
+        }
+        this.pushIt(new PairIterator(node.getPosition(), key, value));
         return true;
     }
 

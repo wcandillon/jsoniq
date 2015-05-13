@@ -4,11 +4,18 @@ import u = require("./Utils");
 
 declare function pit(expectation: string, assertion?: (done: () => void) => any): void;
 
-describe("Test Arithmetic Operation: ", () => {
+describe("Test Item Constructors: ", () => {
 
     pit("()", () => {
         return u.expectQuery("()").then(e => {
             e.toEqual([]);
+        });
+    });
+
+
+    pit("()", () => {
+        return u.expectQuery("((1 + 1, 2), 3, (4 + 0), (5))").then(e => {
+            e.toEqual([2, 2, 3, 4, 5]);
         });
     });
 
@@ -47,4 +54,29 @@ describe("Test Arithmetic Operation: ", () => {
             e.toEqual([null, false, null, true]);
         });
     });
+
+    pit("object 1", () => {
+        return u.expectQuery("{}, {}, 1, ({}, 2)", true).then(e => {
+            e.toEqual([{}, {}, 1, {}, 2]);
+        });
+    });
+
+    pit("object 2", () => {
+        return u.expectQuery("{ \"foo\": 1 + 1 }", true).then(e => {
+            e.toEqual([{ foo: 2 }]);
+        });
+    });
+
+    pit("object 3", () => {
+        return u.expectQuery("{ foo: 1, \"bar\": (1 + 1, 2) }", true).then(e => {
+            e.toEqual([{ foo: 1, "bar": [2, 2] }]);
+        });
+    });
+
+    pit("object 4", () => {
+        return u.expectQuery("{ (\"foo\", 2): 1, \"bar\": (1 + 1, 2) }", true).then(e => {
+            e.toEqual([{ foo: 1, "bar": [2, 2] }]);
+        });
+    });
+
 });

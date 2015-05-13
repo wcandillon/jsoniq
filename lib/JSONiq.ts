@@ -60,6 +60,7 @@ class JSONiq {
 
     compile(): Iterator {
         var ast = this.parse();
+        //TODO: check for syntax errors and don't compile
         //console.log(ast.toXML());
         var translator = new Translator(this.rootSctx, ast);
         var it = translator.compile();
