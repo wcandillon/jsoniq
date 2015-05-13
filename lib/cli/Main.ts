@@ -14,6 +14,8 @@ cli
     var it = query.compile();
     it.forEach(function(item){
         console.log(item.get());
+    }).catch(e => {
+        console.error(e.stack);
     });
 });
 

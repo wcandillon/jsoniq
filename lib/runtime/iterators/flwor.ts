@@ -160,6 +160,10 @@ export class LetClause extends Clause {
                 return this.emptyTuple();
             }
             tuple[this.varName] = this.expr;
+            //Add tuple to the dynamic context
+            _.chain<Tuple>(tuple).forEach((it: Iterator, varName: string) => {
+                this.dctx.setVariable("", varName, it);
+            });
             this.state = this.parent.pull();
             return Promise.resolve(tuple);
         });
