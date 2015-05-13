@@ -218,6 +218,7 @@ export class ReturnIterator extends Iterator {
         super.reset();
         this.it.reset();
         this.parent.reset();
+        this.state = undefined;
         return this;
     }
 };
