@@ -31,6 +31,19 @@ export class Clause {
         return undefined;
     }
 
+    pullAll(tuples?: Tuple[]): Promise<Tuple[]> {
+        tuples = tuples ? tuples : [];
+        return this.pull().then(tuple => {
+            if(tuple === undefined) {
+                return tuples;
+            } else {
+                return this.pullAll(tuples.concat(tuple));
+            }
+        }).then(() => {
+            return Promise.resolve(tuples);
+        });
+    }
+
     reset(): Clause {
         this.closed = false;
         return this;
@@ -176,6 +189,63 @@ export class LetClause extends Clause {
     }
 }
 
+export class OrderClause extends Clause {
+
+    private specs: { expr: Iterator; ascending: boolean; emptyGreatest: boolean }[];
+    private state: Tuple[];
+
+    constructor(
+        position: Position, dctx: DynamicContext, parent: Clause, specs: { expr: Iterator; ascending: boolean; emptyGreatest: boolean }[]
+    ) {
+        super(position, dctx, parent);
+        this.specs = specs;
+    }
+
+    pull(): Promise<Tuple> {
+        if(this.closed) {
+            return this.emptyTuple();
+        }
+        if(this.state) {
+            if(this.state.length === 0) {
+                this.closed = true;
+                return this.emptyTuple();
+            } else {
+                Promise.resolve(this.state.splice(0, 1));
+            }
+        }
+        return new Promise<Tuple>((resolve, reject) => {
+            this.parent.pullAll().then(tuples => {
+                var promises = new Array(tuples.length);
+                _.forEach(tuples, tuple => {
+                    //Add tuple to the dynamic context
+                    _.chain<Tuple>(tuple).forEach((it: Iterator, varName: string) => {
+                        this.dctx.setVariable("", varName, it);
+                    });
+                    //TODO: generalize to the all spec list
+                    promises.push(this.specs[0].expr.next().then(item => {
+                        return {
+                            spec: item.get(),
+                            tuple: tuple
+                        };
+                    }));
+                });
+                Promise.all(promises).then(results => {
+                    this.state = _.chain<{spec: any; tuple: Tuple}>(results).sortBy("spec").map(val => {
+                        return val.tuple;
+                    }).value();
+                    resolve(Promise.resolve(this.state.splice(0, 1)[0]));
+                });
+            });
+        });
+    }
+
+    reset(): OrderClause {
+        super.reset();
+        this.parent.reset();
+        this.state = undefined;
+        return this;
+    }
+}
 
 export class WhereClause extends Clause {
 

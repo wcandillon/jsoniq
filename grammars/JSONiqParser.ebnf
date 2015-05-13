@@ -149,7 +149,7 @@ OrderByClause
 OrderSpecList
          ::= OrderSpec ( ',' OrderSpec )*
 OrderSpec
-         ::= ExprSingle OrderModifier
+         ::= ExprSingle
 OrderModifier
          ::= ( 'ascending' | 'descending' )? ( 'empty' ( 'greatest' | 'least' ) )? ( 'collation' URILiteral )?
 ReturnClause

@@ -1,4 +1,4 @@
-//import _ = require("lodash");
+import _ = require("lodash");
 
 import ASTNode = require("./parsers/ASTNode");
 import Position = require("./parsers/Position");
@@ -65,8 +65,8 @@ class Translator {
     }
 
     private popClause(): flwor.Clause {
-        if(this.iterators.length === 0) {
-            throw new Error("Empty iterator statck.");
+        if(this.clauses.length === 0) {
+            throw new Error("Empty clause statck.");
         }
         return this.clauses.pop();
     }
@@ -158,7 +158,26 @@ class Translator {
 
     WhereClause(node: ASTNode): boolean {
         this.visitChildren(node);
+        this.pushCtx(node.getPosition());
+        this.clausesCount[this.clausesCount.length - 1]++;
         this.pushClause(new flwor.WhereClause(node.getPosition(), this.dctx, this.popClause(), this.popIt()));
+        return true;
+    }
+
+    OrderByClause(node: ASTNode): boolean {
+        this.pushCtx(node.getPosition());
+        this.clausesCount[this.clausesCount.length - 1]++;
+        var orderSpecs: { expr: Iterator; ascending: boolean; emptyGreatest: boolean }[] = [];
+        var specs: ASTNode[] = node.find(["OrderSpecList"])[0].getChildren();
+        _.chain<ASTNode[]>(specs).forEach((spec: ASTNode) => {
+            this.visitChildren(spec);
+            orderSpecs.push({
+                expr: this.popIt(),
+                ascending: spec.find(["OrderModifier"])[0].toString().indexOf("ascending") !== -1,
+                emptyGreatest: spec.find(["OrderModifier"])[0].toString().indexOf("empty greatest") !== -1
+            });
+        });
+        this.pushClause(new flwor.OrderClause(node.getPosition(), this.dctx, this.popClause(), orderSpecs));
         return true;
     }
 
