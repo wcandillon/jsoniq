@@ -176,6 +176,54 @@ export class LetClause extends Clause {
     }
 }
 
+
+export class WhereClause extends Clause {
+
+    private expr: Iterator;
+    private state: Promise<Tuple>;
+
+    constructor(
+        position: Position, dctx: DynamicContext, parent: Clause, expr: Iterator
+    ) {
+        super(position, dctx, parent);
+        this.expr = expr;
+    }
+
+    pull(): Promise<Tuple> {
+        if(this.closed) {
+            return this.emptyTuple();
+        }
+
+        if(this.state === undefined) {
+            this.state = this.parent.pull();
+        }
+
+        return this.state.then(tuple => {
+            this.expr.reset();
+            if(tuple === undefined) {
+                this.closed = true;
+                return this.emptyTuple();
+            }
+            return this.expr.next().then(item => {
+                this.state = undefined;
+                if(item && item.get()) {
+                    return tuple;
+                } else {
+                    return this.pull();
+                }
+            });
+        });
+    }
+
+    reset(): WhereClause {
+        super.reset();
+        this.state = undefined;
+        this.parent.reset();
+        this.expr.reset();
+        return this;
+    }
+}
+
 export class ReturnIterator extends Iterator {
 
     private dctx: DynamicContext;

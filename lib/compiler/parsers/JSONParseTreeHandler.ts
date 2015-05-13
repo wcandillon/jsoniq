@@ -18,7 +18,7 @@ class JSONParseTreeHandler implements JSONiqParser.ParsingEventHandler {
     //List of nodes that are not targeted by the parse tree size optimization.
     private list: string[] = [
         "OrExpr", "AndExpr", "ComparisonExpr", "StringConcatExpr", "RangeExpr",
-        "AdditiveExpr", "MultiplicativeExpr",
+        "AdditiveExpr", "MultiplicativeExpr", "NotExpr",
         "UnionExpr", "IntersectExceptExpr", "InstanceofExpr", "TreatExpr", "CastableExpr", "CastExpr", "UnaryExpr", "ValueExpr",
         "FTContainsExpr", "SimpleMapExpr", "PathExpr", "RelativePathExpr", "PostfixExpr", "StepExpr"
     ];

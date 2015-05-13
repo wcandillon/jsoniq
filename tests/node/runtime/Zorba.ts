@@ -40,3 +40,27 @@ describe("Test JSONiq Expressions", () => {
         });
     });
 });
+
+
+describe("Test FLWOR Expressions", () => {
+
+    var base = "tests/queries/zorba/Queries/zorba/flwor";
+    var queries = [
+        "flwor00.xq",
+        "flwor01.xq"
+    ];
+    //getQueries("tests/queries/zorba/Queries/zorba/jsoniq")
+    queries.forEach(file => {
+        file = base + "/" + file;
+        pit(file, () => {
+            var query = fs.readFileSync(file, "utf-8");
+            return u.expectSerializedQuery(query, file.substring(file.length - 3) === ".jq").then(e => {
+                file = file.replace("/Queries/", "/ExpQueryResults/");
+                file = file.substring(0, file.length - 3);
+                file = file + ".xml.res";
+                e.toEqual(fs.readFileSync(file, "utf-8").trim());
+            });
+        });
+    });
+});
+

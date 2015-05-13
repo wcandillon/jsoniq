@@ -15,6 +15,7 @@ import RangeIterator = require("../runtime/iterators/RangeIterator");
 import SequenceIterator = require("../runtime/iterators/SequenceIterator");
 import MultiplicativeIterator = require("../runtime/iterators/MultiplicativeIterator");
 import VarRefIterator = require("../runtime/iterators/VarRefIterator");
+import ComparisonIterator = require("../runtime/iterators/ComparisonIterator");
 import ObjectIterator = require("../runtime/iterators/ObjectIterator");
 import PairIterator = require("../runtime/iterators/PairIterator");
 
@@ -154,15 +155,21 @@ class Translator {
         return true;
     }
 
+    WhereClause(node: ASTNode): boolean {
+        this.visitChildren(node);
+        this.pushClause(new flwor.WhereClause(node.getPosition(), this.dctx, this.popClause(), this.popIt()));
+        return true;
+    }
+
     ReturnClause(node: ASTNode): boolean {
         this.visitChildren(node);
-        this.iterators.push(new flwor.ReturnIterator(node.getPosition(), this.dctx, this.popClause(), this.popIt()));
+        this.pushIt(new flwor.ReturnIterator(node.getPosition(), this.dctx, this.popClause(), this.popIt()));
         return true;
     }
 
     VarRef(node: ASTNode): boolean {
         var varName = node.find(["VarName"])[0].toString();
-        this.iterators.push(new VarRefIterator(node.getPosition(), this.dctx, varName));
+        this.pushIt(new VarRefIterator(node.getPosition(), this.dctx, varName));
         return true;
     }
 
@@ -194,7 +201,7 @@ class Translator {
     MultiplicativeExpr(node: ASTNode): boolean {
         this.visitChildren(node);
         node.find(["TOKEN"]).forEach((token: ASTNode) => {
-            this.iterators.push(
+            this.pushIt(
                 new MultiplicativeIterator(
                     node.getPosition(),
                     this.popIt(),
@@ -203,6 +210,15 @@ class Translator {
                 )
             );
         });
+        return true;
+    }
+
+    ComparisonExpr(node: ASTNode): boolean {
+        this.visitChildren(node);
+        var right = this.popIt();
+        var left = this.popIt();
+        var comp = node.find(["ValueComp"]).toString();
+        this.pushIt(new ComparisonIterator(node.getPosition(), left, right, comp));
         return true;
     }
 
