@@ -69,6 +69,7 @@ class Translator {
         return this.clauses.pop();
     }
 
+    //TODO: should probably this removed
     private popAllIt(): Iterator[] {
         return this.iterators.splice(0, this.iterators.length);
     }

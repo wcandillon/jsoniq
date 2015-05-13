@@ -12,6 +12,13 @@ describe("Test Arithmetic Operation: ", () => {
         });
     });
 
+
+    pit("()", () => {
+        return u.expectQuery("((1 + 1, 2), 3, (4 + 0), (5))").then(e => {
+            e.toEqual([2, 2, 3, 4, 5]);
+        });
+    });
+
     pit("null 1", () => {
         return u.expectQuery("null", true).then(e => {
             e.toEqual([null]);
@@ -49,14 +56,20 @@ describe("Test Arithmetic Operation: ", () => {
     });
 
     pit("object 1", () => {
-        return u.expectQuery("{}, {}, 1", true).then(e => {
-            e.toEqual([{}, {}, 1]);
+        return u.expectQuery("{}, {}, 1, ({}, 2)", true).then(e => {
+            e.toEqual([{}, {}, 1, {}, 2]);
         });
     });
 
     pit("object 2", () => {
         return u.expectQuery("{ \"foo\": 1 + 1 }", true).then(e => {
             e.toEqual([{ foo: 2 }]);
+        });
+    });
+
+    pit("object 3", () => {
+        return u.expectQuery("{ foo: 1, \"bar\": (1 + 1, 2) }", true).then(e => {
+            e.toEqual([{ foo: 1, "bar": [2, 2] }]);
         });
     });
 
