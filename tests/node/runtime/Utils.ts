@@ -6,6 +6,8 @@ export function expectQuery(source: string, jsoniq?: boolean): Promise<jasmine.M
         var query = new JSONiq(source);
         if(jsoniq) {
             query.setFileName("test.jq");
+        } else {
+            query.setFileName("test.xq");
         }
         var it = query.compile();
         var result = [];
@@ -27,6 +29,8 @@ export function expectSerializedQuery(source: string, jsoniq?: boolean): Promise
         var query = new JSONiq(source);
         if(jsoniq) {
             query.setFileName("test.jq");
+        } else {
+            query.setFileName("test.xq");
         }
         var it = query.compile();
         var result: string[] = [];
