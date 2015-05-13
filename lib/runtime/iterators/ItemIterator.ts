@@ -13,7 +13,9 @@ class ItemIterator extends Iterator {
     }
 
     next(): Promise<Item> {
-        super.next();
+        if(this.closed) {
+            return this.emptySequence();
+        }
         this.closed = true;
         return Promise.resolve(this.item);
     }

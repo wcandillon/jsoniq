@@ -95,13 +95,13 @@ describe("Test FLWOR", () => {
             e.toEqual([1]);
         });
     });
-/*
+
     pit("for 15", () => {
         return u.expectQuery("for $i in () return 1").then(e => {
             e.toEqual([]);
         });
     });
-*/
+
     pit("let 1", () => {
         return u.expectQuery("let $i := 1 return $i").then(e => {
             e.toEqual([1]);
@@ -117,6 +117,18 @@ describe("Test FLWOR", () => {
     pit("let 3", () => {
         return u.expectQuery("let $i := 1 let $i := (1, 2, 3) return ($i, $i)").then(e => {
             e.toEqual([1, 2, 3, 1, 2, 3]);
+        });
+    });
+
+    pit("flwor 1", () => {
+        return u.expectQuery("let $a := for $i in (1 to 2) return $i let $b := for $i in (1 to 2) return $i return ($a, $b)").then(e => {
+            e.toEqual([1, 2, 1, 2]);
+        });
+    });
+
+    pit("flwor 2", () => {
+        return u.expectQuery("let $a := for $i in (1 to 2) return $i let $b := for $i in (1 to 2) return $i for $a in (1 to 2) for $i in (for $i in (1 to 2) return $i) return $i").then(e => {
+            e.toEqual([1, 2, 1, 2]);
         });
     });
 });

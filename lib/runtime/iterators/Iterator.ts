@@ -11,15 +11,16 @@ class Iterator {
 
     protected closed: boolean = false;
 
+    protected emptySequence(): Promise<Item> {
+        return Promise.resolve(undefined);
+    }
+
     constructor(position: Position) {
         this.position = position;
     }
 
     next(): Promise<Item> {
-        if(this.closed) {
-            throw new Error("Iterator is closed.");
-        }
-        return Promise.resolve(new Item(undefined));
+        return this.emptySequence();
     }
 
     reset(): Iterator {
@@ -31,18 +32,9 @@ class Iterator {
         return this.next().then(item => {
             if(item !== undefined) {
                 callback(item);
-            }
-            if(!this.isClosed()) {
                 return this.forEach(callback);
             }
-        })
-        .catch(error => {
-            console.error(error.stack);
         });
-    }
-
-    isClosed(): boolean {
-        return this.closed;
     }
 
     toString(): string {

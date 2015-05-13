@@ -13,6 +13,7 @@ export function expectQuery(source: string, jsoniq?: boolean): Promise<jasmine.M
             result.push(item.get());
         })
         .catch(error => {
+            console.log(error.stack);
             reject(error.stack);
         })
         .then(() => {
@@ -33,6 +34,7 @@ export function expectSerializedQuery(source: string, jsoniq?: boolean): Promise
             result.push(item.get());
         })
         .catch(error => {
+            console.log(error.stack);
             reject(error.stack);
         })
         .then(() => {

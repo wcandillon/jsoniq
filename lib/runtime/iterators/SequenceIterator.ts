@@ -16,20 +16,24 @@ class SequenceIterator extends Iterator {
     }
 
     next(): Promise<Item> {
-        super.next();
+        if((this.state && this.state.length === 0) || this.its.length === 0) {
+            this.closed = true;
+        }
+
+        if(this.closed) {
+            return this.emptySequence();
+        }
+
         if(this.state === undefined) {
             this.state = _.clone(this.its);
         }
-        if(this.state.length === 0) {
-            this.closed = true;
-            return Promise.resolve(undefined);
-        }
-        if(this.state[0].isClosed()) {
-            this.state.splice(0, 1);
-        }
+
         return this.state[0].next().then(item => {
-            if(this.state[0].isClosed() && this.state.length === 1) {
-                this.closed = true;
+            if(item === undefined) {
+                this.state.splice(0, 1);
+                if(this.state.length > 0) {
+                    return this.state[0].next();
+                }
             }
             return item;
         });
