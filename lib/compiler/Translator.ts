@@ -18,6 +18,7 @@ import VarRefIterator = require("../runtime/iterators/VarRefIterator");
 import ComparisonIterator = require("../runtime/iterators/ComparisonIterator");
 import ObjectIterator = require("../runtime/iterators/ObjectIterator");
 import PairIterator = require("../runtime/iterators/PairIterator");
+import ArrayIterator = require("../runtime/iterators/ArrayIterator");
 
 import flwor = require("../runtime/iterators/flwor");
 
@@ -235,6 +236,13 @@ class Translator {
         var l = this.iterators.length;
         this.visitChildren(node);
         this.pushIt(new ObjectIterator(node.getPosition(), this.iterators.splice(l)));
+        return true;
+    }
+
+    //ArrayConstructor
+    ArrayConstructor(node: ASTNode): boolean {
+        this.visitChildren(node);
+        this.pushIt(new ArrayIterator(node.getPosition(), this.popIt()));
         return true;
     }
 

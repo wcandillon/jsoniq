@@ -79,4 +79,10 @@ describe("Test Item Constructors: ", () => {
         });
     });
 
+    pit("array 1", () => {
+        return u.expectQuery("[1, 1 + 1, 1 + 1 + 1]", true).then(e => {
+            e.toEqual([[1, 2, 3]]);
+        });
+    });
+
 });
