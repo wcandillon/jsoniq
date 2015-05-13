@@ -98,12 +98,11 @@ export class ForClause extends Clause {
                     return this.emptyTuple();
                 }
             }
-
             return this.expr.next().then(item => {
                 this.state.tuple = Promise.resolve(tuple);
                 if(item === undefined) {
-                    this.expr.reset();
                     this.state = undefined;
+                    this.expr.reset();
                     return this.pull();
                 } else {
                     this.state.index++;
