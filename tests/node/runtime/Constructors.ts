@@ -72,12 +72,11 @@ describe("Test Item Constructors: ", () => {
             e.toEqual([{ foo: 1, "bar": [2, 2] }]);
         });
     });
-/*
+
     pit("object 4", () => {
-        return u.expectQuery("{ (\"foo\"), 2): 1, \"bar\": (1 + 1, 2) }", true).then(e => {
+        return u.expectQuery("{ (\"foo\", 2): 1, \"bar\": (1 + 1, 2) }", true).then(e => {
             e.toEqual([{ foo: 1, "bar": [2, 2] }]);
         });
     });
-    */
 
 });
