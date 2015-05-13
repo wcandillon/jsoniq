@@ -95,13 +95,13 @@ describe("Test FLWOR", () => {
             e.toEqual([1]);
         });
     });
-/*
+
     pit("for 15", () => {
         return u.expectQuery("for $i in () return 1").then(e => {
             e.toEqual([]);
         });
     });
-*/
+
     pit("let 1", () => {
         return u.expectQuery("let $i := 1 return $i").then(e => {
             e.toEqual([1]);
