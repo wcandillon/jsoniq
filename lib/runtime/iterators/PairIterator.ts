@@ -19,12 +19,20 @@ class PairIterator extends Iterator {
         if(this.closed) {
             return this.emptySequence();
         }
-
-        return Promise.all([this.key.next(), this.value.next()]).then(values => {
-            var object = {};
-            object[values[0].get()] = values[1].get();
-            this.closed = true;
-            return Promise.resolve(new Item(object));
+        this.closed = true;
+        var object = {};
+        return this.key.next().then((key: Item) => {
+            var values = [];
+            return this.value.forEach(item => {
+                values.push(item.get());
+            }).then(() => {
+                if(values.length > 1) {
+                    object[key.get()] = values;
+                } else {
+                    object[key.get()] = values[0];
+                }
+                return Promise.resolve(new Item(object));
+            });
         });
     }
 

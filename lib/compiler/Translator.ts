@@ -69,11 +69,6 @@ class Translator {
         return this.clauses.pop();
     }
 
-    //TODO: should probably this removed
-    private popAllIt(): Iterator[] {
-        return this.iterators.splice(0, this.iterators.length);
-    }
-
     private pushCtx(pos: Position): Translator {
         this.sctx = this.sctx.createContext();
         this.dctx = this.dctx.createContext();
@@ -105,8 +100,9 @@ class Translator {
     }
 
     Expr(node: ASTNode): boolean {
+        var l = this.iterators.length;
         this.visitChildren(node);
-        this.pushIt(new SequenceIterator(node.getPosition(), this.popAllIt()));
+        this.pushIt(new SequenceIterator(node.getPosition(), this.iterators.splice(l)));
         return true;
     }
 
@@ -220,15 +216,21 @@ class Translator {
     }
 
     ObjectConstructor(node: ASTNode): boolean {
+        var l = this.iterators.length;
         this.visitChildren(node);
-        this.pushIt(new ObjectIterator(node.getPosition(), this.popAllIt()));
+        this.pushIt(new ObjectIterator(node.getPosition(), this.iterators.splice(l)));
         return true;
     }
 
     PairConstructor(node: ASTNode): boolean {
         this.visitChildren(node);
         var value = this.popIt();
-        var key = this.popIt();
+        var key;
+        if(node.find(["NCName"])[0]) {
+            key = new ItemIterator(new Item(node.find(["NCName"])[0].toString()));
+        } else {
+            key = this.popIt();
+        }
         this.pushIt(new PairIterator(node.getPosition(), key, value));
         return true;
     }
