@@ -47,13 +47,13 @@ describe("Test Arithmetic Operation: ", () => {
             e.toEqual([null, false, null, true]);
         });
     });
-/*
+
     pit("object 1", () => {
-        return u.expectQuery("{}, {}", true).then(e => {
-            e.toEqual([{}, {}]);
+        return u.expectQuery("{}, {}, 1", true).then(e => {
+            e.toEqual([{}, {}, 1]);
         });
     });
-*/
+
     pit("object 2", () => {
         return u.expectQuery("{ \"foo\": 1 + 1 }", true).then(e => {
             e.toEqual([{ foo: 2 }]);

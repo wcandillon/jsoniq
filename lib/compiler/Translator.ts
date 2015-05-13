@@ -209,6 +209,15 @@ class Translator {
         return true;
     }
 
+    BlockExpr(node: ASTNode): boolean {
+        var oldLength = this.iterators.length;
+        this.visitChildren(node);
+        if(this.iterators.length === oldLength) {
+            this.pushIt(new ObjectIterator(node.getPosition(), []));
+        }
+        return true;
+    }
+
     ObjectConstructor(node: ASTNode): boolean {
         this.visitChildren(node);
         this.pushIt(new ObjectIterator(node.getPosition(), this.popAllIt()));
