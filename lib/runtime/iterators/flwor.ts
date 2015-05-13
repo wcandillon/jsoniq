@@ -28,34 +28,16 @@ export class Clause {
     }
 
     pull(): Promise<Tuple> {
-        if(this.closed) {
-            throw new Error("Stream has stopped");
-        }
-        return null;
-    }
-
-    materialize(tuples: Tuple[]): Promise<Tuple[]> {
-        return this.pull().then(tuple => {
-            tuples.push(tuple);
-            if(this.closed) {
-                return tuples;
-            } else {
-                return this.materialize(tuples);
-            }
-        });
-    }
-
-    materializes(): boolean {
-        return false;
-    }
-
-    isClosed(): boolean {
-        return this.closed;
+        return undefined;
     }
 
     reset(): Clause {
         this.closed = false;
         return this;
+    }
+
+    emptyTuple(): Promise<Tuple> {
+        return Promise.resolve(undefined);
     }
 }
 
@@ -65,13 +47,16 @@ export class EmptyClause extends Clause {
     }
 
     pull(): Promise<Tuple> {
-        super.pull();
+        if(this.closed) {
+            return this.emptyTuple();
+        }
         this.closed = true;
         return Promise.resolve({});
     }
 
     reset(): EmptyClause {
-        return super.reset();
+        super.reset();
+        return this;
     }
 }
 
@@ -95,7 +80,9 @@ export class ForClause extends Clause {
     }
 
     pull(): Promise<Tuple> {
-        super.pull();
+        if(this.closed) {
+            return this.emptyTuple();
+        }
         if(this.state === undefined) {
             this.state = {
                 tuple: this.parent.pull(),
@@ -103,23 +90,27 @@ export class ForClause extends Clause {
             };
         }
         return this.state.tuple.then(tuple => {
+            if(tuple === undefined) {
+                this.closed = true;
+                return this.emptyTuple();
+            }
+
             return this.expr.next().then(item => {
-                this.state.index++;
-                tuple[this.varName] = new ItemIterator(item);
-                if(this.positionalVar) {
-                    tuple[this.positionalVar] = new ItemIterator(new Item(this.state.index));
-                }
-                //Add tuple to the dynamic context
-                _.chain<Tuple>(tuple).forEach((it: Iterator, varName: string) => {
-                    this.dctx.setVariable("", varName, it);
-                });
-                if(this.expr.isClosed() && !this.parent.isClosed()) {
-                    this.state = undefined;
+                this.state.tuple = Promise.resolve(tuple);
+                if(item === undefined) {
                     this.expr.reset();
-                } else if(this.expr.isClosed() && this.parent.isClosed()) {
-                    this.closed = true;
+                    this.state = undefined;
+                    return this.pull();
                 } else {
-                    this.state.tuple = Promise.resolve(tuple);
+                    this.state.index++;
+                    tuple[this.varName] = new ItemIterator(item);
+                    if(this.positionalVar !== undefined) {
+                        tuple[this.positionalVar] = new ItemIterator(new Item(this.state.index));
+                    }
+                    //Add tuple to the dynamic context
+                    _.chain<Tuple>(tuple).forEach((it: Iterator, varName: string) => {
+                        this.dctx.setVariable("", varName, it);
+                    });
                 }
                 return Promise.resolve(tuple);
             });
@@ -151,20 +142,22 @@ export class LetClause extends Clause {
     }
 
     pull(): Promise<Tuple> {
-        super.pull();
+        if(this.closed) {
+            return this.emptyTuple();
+        }
+
         if(this.state === undefined) {
             this.state = this.parent.pull();
         }
+
         return this.state.then(tuple => {
-            tuple[this.varName] = this.expr;
-            //Add tuple to the dynamic context
-            _.chain<Tuple>(tuple).forEach((it: Iterator, varName: string) => {
-                this.dctx.setVariable("", varName, it);
-            });
-            if(this.parent.isClosed()) {
+            if(tuple === undefined) {
                 this.closed = true;
+                return this.emptyTuple();
             }
-            return tuple;
+            tuple[this.varName] = this.expr;
+            this.state = this.parent.pull();
+            return Promise.resolve(tuple);
         });
     }
 
@@ -172,7 +165,6 @@ export class LetClause extends Clause {
         super.reset();
         this.state = undefined;
         this.parent.reset();
-        //this.expr.reset();
         return this;
     }
 }
@@ -192,17 +184,23 @@ export class ReturnIterator extends Iterator {
     }
 
     next(): Promise<Item> {
-        super.next();
+        if(this.closed) {
+            return this.emptySequence();
+        }
         if(this.state === undefined) {
             this.state = this.parent.pull();
         }
-        return this.state.then(() => {
+        return this.state.then(tuple => {
+            if(tuple === undefined) {
+                this.closed = true;
+                return this.emptySequence();
+            }
+            this.state = Promise.resolve(tuple);
             return this.it.next().then(item => {
-                if(this.it.isClosed() && !this.parent.isClosed()) {
+                if(item === undefined) {
                     this.state = undefined;
                     this.it.reset();
-                } else if(this.it.isClosed() && this.parent.isClosed()) {
-                    this.closed = true;
+                    return this.next();
                 }
                 return Promise.resolve(item);
             });
@@ -211,7 +209,6 @@ export class ReturnIterator extends Iterator {
 
     reset(): Iterator {
         super.reset();
-        this.state = undefined;
         this.it.reset();
         this.parent.reset();
         return this;

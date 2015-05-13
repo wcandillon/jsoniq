@@ -24,7 +24,9 @@ class RangeIterator extends Iterator {
     }
 
     next(): Promise<Item> {
-        super.next();
+        if(this.closed) {
+            return this.emptySequence();
+        }
         if(this.state === undefined) {
             return Promise.all([this.from.next(), this.to.next()]).then((values) => {
                 this.state = {

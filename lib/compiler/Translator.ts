@@ -84,6 +84,8 @@ class Translator {
 
     compile(): Iterator {
         this.visit(this.ast);
+        //if iterators.lenght === 0
+        //[XPST0003] invalid expression: syntax error, unexpected end of file, the query body should not be empty
         if(this.iterators.length !== 1) {
             throw new Error("Invalid query plan.");
         }

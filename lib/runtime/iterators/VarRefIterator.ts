@@ -9,7 +9,7 @@ class VarRefIterator extends Iterator {
 
     private dctx: DynamicContext;
     private varName: string;
-    private state: Iterator;
+    private variable: Iterator;
 
     constructor(position: Position, dctx: DynamicContext, varName: string) {
         super(position);
@@ -18,23 +18,15 @@ class VarRefIterator extends Iterator {
     }
 
     next(): Promise<Item> {
-        super.next();
-        if(this.state === undefined) {
-            var it = this.dctx.getVariable("", this.varName);
-            it.reset();
-            this.state = it;
+        if(!this.variable) {
+            this.variable = this.dctx.getVariable("", this.varName);
+            this.variable.reset();
         }
-        return this.state.next().then(item => {
-            if(this.state.isClosed()) {
-                this.closed = true;
-            }
-            return Promise.resolve(item);
-        });
+        return this.variable.next();
     }
 
     reset(): Iterator {
-        super.reset();
-        this.state = undefined;
+        this.variable = null;
         return this;
     }
 };

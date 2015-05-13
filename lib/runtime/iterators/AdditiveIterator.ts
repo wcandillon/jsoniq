@@ -18,7 +18,9 @@ class AdditiveIterator extends Iterator {
     }
 
     next(): Promise<Item> {
-        super.next();
+        if(this.closed) {
+            return this.emptySequence();
+        }
         return Promise.all([this.left.next(), this.right.next()]).then((values) => {
             this.closed = true;
             var left = values[0].get();
@@ -28,9 +30,10 @@ class AdditiveIterator extends Iterator {
     }
 
     reset(): Iterator {
+        super.reset();
         this.left.reset();
         this.right.reset();
-        return super.reset();
+        return this;
     }
 };
 
