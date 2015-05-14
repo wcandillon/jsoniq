@@ -35,12 +35,10 @@ export class Clause {
         tuples = tuples ? tuples : [];
         return this.pull().then(tuple => {
             if(tuple === undefined) {
-                return tuples;
+                return Promise.resolve(tuples);
             } else {
                 return this.pullAll(tuples.concat(tuple));
             }
-        }).then(() => {
-            return Promise.resolve(tuples);
         });
     }
 
@@ -215,25 +213,33 @@ export class OrderClause extends Clause {
         }
         return new Promise<Tuple>((resolve, reject) => {
             this.parent.pullAll().then(tuples => {
-                var promises = new Array(tuples.length);
+                var promises = [];
                 _.forEach(tuples, tuple => {
-                    //Add tuple to the dynamic context
-                    _.chain<Tuple>(tuple).forEach((it: Iterator, varName: string) => {
-                        this.dctx.setVariable("", varName, it);
-                    });
                     //TODO: generalize to the all spec list
-                    promises.push(this.specs[0].expr.next().then(item => {
-                        return {
-                            spec: item.get(),
-                            tuple: tuple
-                        };
-                    }));
+                    promises.push(this.evalSpec(tuple, this.specs[0]));
                 });
                 Promise.all(promises).then(results => {
                     this.state = _.chain<{spec: any; tuple: Tuple}>(results).sortBy("spec").map(val => {
                         return val.tuple;
                     }).value();
+                    //console.log("STATE: " + JSON.stringify(this.state));
                     resolve(Promise.resolve(this.state.splice(0, 1)[0]));
+                });
+            });
+        });
+    }
+
+    private evalSpec(tuple: Tuple, spec: { expr: Iterator; ascending: boolean; emptyGreatest: boolean }): Promise<{ spec: any; tuple: Tuple }> {
+        return new Promise<{ spec: any; tuple: Tuple }>((resolve, reject) => {
+            //spec.expr.reset();
+            _.chain<Tuple>(tuple).forEach((it: Iterator, varName: string) => {
+                this.dctx.setVariable("", varName, it);
+            });
+            spec.expr.next().then(item => {
+                console.log("ITEM " + item.get());
+                resolve({
+                    spec: item.get(),
+                    tuple: tuple
                 });
             });
         });
