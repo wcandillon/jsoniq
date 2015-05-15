@@ -2,7 +2,7 @@
 import _ = require("lodash");
 import Iterator = require("./Iterator");
 import Position = require("../../compiler/parsers/Position");
-
+import DynamicContext = require("../DynamicContext");
 import Item = require("../items/Item");
 
 class SequenceIterator extends Iterator {
@@ -45,6 +45,14 @@ class SequenceIterator extends Iterator {
             it.reset();
         });
         this.state = undefined;
+        return this;
+    }
+
+    setDynamicCtx(dctx: DynamicContext): SequenceIterator {
+        super.setDynamicCtx(dctx);
+        this.its.forEach(it => {
+            it.setDynamicCtx(dctx);
+        });
         return this;
     }
 };

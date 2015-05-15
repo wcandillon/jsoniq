@@ -1,7 +1,7 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 import Iterator = require("./Iterator");
 import Position = require("../../compiler/parsers/Position");
-
+import DynamicContext = require("../DynamicContext");
 import Item = require("../items/Item");
 
 class AdditiveIterator extends Iterator {
@@ -33,6 +33,13 @@ class AdditiveIterator extends Iterator {
         super.reset();
         this.left.reset();
         this.right.reset();
+        return this;
+    }
+
+    setDynamicCtx(dctx: DynamicContext): AdditiveIterator {
+        super.setDynamicCtx(dctx);
+        this.left.setDynamicCtx(dctx);
+        this.right.setDynamicCtx(dctx);
         return this;
     }
 };

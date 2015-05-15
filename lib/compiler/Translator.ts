@@ -38,12 +38,10 @@ class Translator {
     private rootSctx: RootStaticContext;
 
     private sctx: StaticContext;
-    private dctx: DynamicContext;
 
     constructor(rootSctx: RootStaticContext, ast: ASTNode) {
         this.rootSctx = rootSctx;
         this.sctx = rootSctx;
-        this.dctx = new DynamicContext(undefined);
         this.ast = ast;
     }
 
@@ -73,13 +71,11 @@ class Translator {
 
     private pushCtx(pos: Position): Translator {
         this.sctx = this.sctx.createContext();
-        this.dctx = this.dctx.createContext();
         return this;
     }
 
     private popCtx = function(pos: Position): Translator {
         this.sctx = this.sctx.getParent();
-        this.dctx = this.dctx.getParent();
         return this;
     }
 
@@ -90,7 +86,7 @@ class Translator {
         if(this.iterators.length !== 1 || this.clauses.length !== 0) {
             throw new Error("Invalid query plan.");
         }
-        return this.iterators[0];
+        return this.iterators[0].setDynamicCtx(new DynamicContext(undefined));
     }
 
     getMarkers(): Marker[] {
@@ -142,7 +138,7 @@ class Translator {
         if(pos) {
             posVarName = pos.find(["VarName"])[0].toString();
         }
-        this.pushClause(new flwor.ForClause(node.getPosition(), this.dctx, this.popClause(), varName, allowingEmpty, posVarName, this.popIt()));
+        this.pushClause(new flwor.ForClause(node.getPosition(), this.popClause(), varName, allowingEmpty, posVarName, this.popIt()));
         return true;
     }
 
@@ -152,7 +148,7 @@ class Translator {
         this.pushCtx(node.getPosition());
         this.clausesCount[this.clausesCount.length - 1]++;
         var varName = node.find(["VarName"])[0].toString();
-        this.pushClause(new flwor.LetClause(node.getPosition(), this.dctx, this.popClause(), varName, this.popIt()));
+        this.pushClause(new flwor.LetClause(node.getPosition(), this.popClause(), varName, this.popIt()));
         return true;
     }
 
@@ -160,7 +156,7 @@ class Translator {
         this.visitChildren(node);
         this.pushCtx(node.getPosition());
         this.clausesCount[this.clausesCount.length - 1]++;
-        this.pushClause(new flwor.WhereClause(node.getPosition(), this.dctx, this.popClause(), this.popIt()));
+        this.pushClause(new flwor.WhereClause(node.getPosition(), this.popClause(), this.popIt()));
         return true;
     }
 
@@ -177,19 +173,19 @@ class Translator {
                 emptyGreatest: spec.find(["OrderModifier"])[0].toString().indexOf("empty greatest") !== -1
             });
         });
-        this.pushClause(new flwor.OrderClause(node.getPosition(), this.dctx, this.popClause(), orderSpecs));
+        this.pushClause(new flwor.OrderClause(node.getPosition(), this.popClause(), orderSpecs));
         return true;
     }
 
     ReturnClause(node: ASTNode): boolean {
         this.visitChildren(node);
-        this.pushIt(new flwor.ReturnIterator(node.getPosition(), this.dctx, this.popClause(), this.popIt()));
+        this.pushIt(new flwor.ReturnIterator(node.getPosition(), this.popClause(), this.popIt()));
         return true;
     }
 
     VarRef(node: ASTNode): boolean {
         var varName = node.find(["VarName"])[0].toString();
-        this.pushIt(new VarRefIterator(node.getPosition(), this.dctx, varName));
+        this.pushIt(new VarRefIterator(node.getPosition(), varName));
         return true;
     }
 

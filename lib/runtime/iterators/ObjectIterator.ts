@@ -2,7 +2,7 @@
 import _ = require("lodash");
 import Iterator = require("./Iterator");
 import Position = require("../../compiler/parsers/Position");
-
+import DynamicContext = require("../DynamicContext");
 import Item = require("../items/Item");
 
 class ObjectIterator extends Iterator {
@@ -38,6 +38,14 @@ class ObjectIterator extends Iterator {
         super.reset();
         this.pairs.forEach(pair => {
             pair.reset();
+        });
+        return this;
+    }
+
+    setDynamicCtx(dctx: DynamicContext): ObjectIterator {
+        super.setDynamicCtx(dctx);
+        this.pairs.forEach(it => {
+            it.setDynamicCtx(dctx);
         });
         return this;
     }

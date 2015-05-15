@@ -21,9 +21,8 @@ export class Clause {
 
     protected closed: boolean = false;
 
-    constructor(position: Position, dctx: DynamicContext, parent: Clause) {
+    constructor(position: Position, parent: Clause) {
         this.position = position;
-        this.dctx = dctx;
         this.parent = parent;
     }
 
@@ -54,7 +53,7 @@ export class Clause {
 
 export class EmptyClause extends Clause {
     constructor() {
-        super(null, null, null);
+        super(null, null);
     }
 
     pull(): Promise<Tuple> {
@@ -80,10 +79,10 @@ export class ForClause extends Clause {
     private state: { tuple: Promise<Tuple>; index: number };
 
     constructor(
-        position: Position, dctx: DynamicContext, parent: Clause,
+        position: Position, parent: Clause,
         varName: string, allowEmpty: boolean, positionalVar: string, expr: Iterator
     ) {
-        super(position, dctx, parent);
+        super(position, parent);
         this.varName = varName;
         this.allowEmpty = allowEmpty;
         this.positionalVar = positionalVar;
@@ -147,10 +146,10 @@ export class LetClause extends Clause {
     private state: Promise<Tuple>;
 
     constructor(
-        position: Position, dctx: DynamicContext, parent: Clause,
+        position: Position, parent: Clause,
         varName: string, expr: Iterator
     ) {
-        super(position, dctx, parent);
+        super(position, parent);
         this.varName = varName;
         this.expr = expr;
     }
@@ -193,9 +192,9 @@ export class OrderClause extends Clause {
     private state: Tuple[];
 
     constructor(
-        position: Position, dctx: DynamicContext, parent: Clause, specs: { expr: Iterator; ascending: boolean; emptyGreatest: boolean }[]
+        position: Position, parent: Clause, specs: { expr: Iterator; ascending: boolean; emptyGreatest: boolean }[]
     ) {
-        super(position, dctx, parent);
+        super(position, parent);
         this.specs = specs;
     }
 
@@ -259,9 +258,9 @@ export class WhereClause extends Clause {
     private state: Promise<Tuple>;
 
     constructor(
-        position: Position, dctx: DynamicContext, parent: Clause, expr: Iterator
+        position: Position, parent: Clause, expr: Iterator
     ) {
-        super(position, dctx, parent);
+        super(position, parent);
         this.expr = expr;
     }
 
@@ -302,14 +301,12 @@ export class WhereClause extends Clause {
 
 export class ReturnIterator extends Iterator {
 
-    private dctx: DynamicContext;
     private it: Iterator;
     private parent: Clause;
     private state: Promise<Tuple>;
 
-    constructor(position: Position, dctx: DynamicContext, parent: Clause, it: Iterator) {
+    constructor(position: Position, parent: Clause, it: Iterator) {
         super(position);
-        this.dctx = dctx;
         this.parent = parent;
         this.it = it;
     }
@@ -345,4 +342,6 @@ export class ReturnIterator extends Iterator {
         this.state = undefined;
         return this;
     }
+
+
 };
