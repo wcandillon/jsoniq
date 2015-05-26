@@ -20,7 +20,12 @@ import ObjectIterator = require("../runtime/iterators/ObjectIterator");
 import PairIterator = require("../runtime/iterators/PairIterator");
 import ArrayIterator = require("../runtime/iterators/ArrayIterator");
 
-import flwor = require("../runtime/iterators/flwor");
+import FLWORIterator = require("../runtime/iterators/flwor/FLWORIterator");
+import Clause = require("../runtime/iterators/flwor/Clause");
+import ForClause = require("../runtime/iterators/flwor/ForClause");
+import LetClause = require("../runtime/iterators/flwor/LetClause");
+import OrderClause = require("../runtime/iterators/flwor/OrderClause");
+import WhereClause = require("../runtime/iterators/flwor/WhereClause");
 
 import Item = require("../runtime/items/Item");
 
@@ -31,9 +36,7 @@ class Translator {
     private marker: Marker[];
 
     private iterators: Iterator[]  = [];
-    private clauses: flwor.Clause[] = [];
-
-    private clausesCount: number[] = [];
+    private clauses: Clause[][] = [];
 
     private rootSctx: RootStaticContext;
 
@@ -57,12 +60,17 @@ class Translator {
         return this.iterators.pop();
     }
 
-    private pushClause(clause: flwor.Clause): Translator {
-        this.clauses.push(clause);
+    private startFLWOR(): Translator {
+        this.clauses.push([]);
         return this;
     }
 
-    private popClause(): flwor.Clause {
+    private pushClause(clause: Clause): Translator {
+        this.clauses[this.clauses.length - 1].push(clause);
+        return this;
+    }
+
+    private popClauses(): Clause[] {
         if(this.clauses.length === 0) {
             throw new Error("Empty clause statck.");
         }
@@ -82,7 +90,7 @@ class Translator {
     compile(): Iterator {
         this.visit(this.ast);
         //if iterators.lenght === 0
-        //[XPST0003] invalid expression: syntax error, unexpected end of file, the query body should not be empty
+        //TODO: [XPST0003] invalid expression: syntax error, unexpected end of file, the query body should not be empty
         if(this.iterators.length !== 1 || this.clauses.length !== 0) {
             throw new Error("Invalid query plan.");
         }
@@ -114,12 +122,11 @@ class Translator {
 
     FLWORExpr(node: ASTNode): boolean {
         this.pushCtx(node.getPosition());
-        this.clausesCount.push(0);
-        this.pushClause(new flwor.EmptyClause());
+        this.startFLWOR();
         this.visitChildren(node);
-        //this.popClause();
-        var clauseCount = this.clausesCount.pop();
-        for(var i = 0; i < clauseCount; i++) {
+        var clauses: Clause[] = this.popClauses();
+        this.pushIt(new FLWORIterator(node.getPosition(), clauses, this.popIt()));
+        for(var i = 0; i < clauses.length; i++) {
             this.popCtx(node.getPosition());
         }
         this.popCtx(node.getPosition());
@@ -130,7 +137,6 @@ class Translator {
     ForBinding(node: ASTNode): boolean {
         this.visitChildren(node);
         this.pushCtx(node.getPosition());
-        this.clausesCount[this.clausesCount.length - 1]++;
         var varName = node.find(["VarName"])[0].toString();
         var allowingEmpty = node.find(["AllowingEmpty"])[0] !== undefined;
         var pos = node.find(["PositionalVar"])[0];
@@ -138,7 +144,7 @@ class Translator {
         if(pos) {
             posVarName = pos.find(["VarName"])[0].toString();
         }
-        this.pushClause(new flwor.ForClause(node.getPosition(), this.popClause(), varName, allowingEmpty, posVarName, this.popIt()));
+        this.pushClause(new ForClause(node.getPosition(), varName, allowingEmpty, posVarName, this.popIt()));
         return true;
     }
 
@@ -146,23 +152,20 @@ class Translator {
     LetBinding(node: ASTNode): boolean {
         this.visitChildren(node);
         this.pushCtx(node.getPosition());
-        this.clausesCount[this.clausesCount.length - 1]++;
         var varName = node.find(["VarName"])[0].toString();
-        this.pushClause(new flwor.LetClause(node.getPosition(), this.popClause(), varName, this.popIt()));
+        this.pushClause(new LetClause(node.getPosition(), varName, this.popIt()));
         return true;
     }
 
     WhereClause(node: ASTNode): boolean {
         this.visitChildren(node);
         this.pushCtx(node.getPosition());
-        this.clausesCount[this.clausesCount.length - 1]++;
-        this.pushClause(new flwor.WhereClause(node.getPosition(), this.popClause(), this.popIt()));
+        this.pushClause(new WhereClause(node.getPosition(), this.popIt()));
         return true;
     }
 
     OrderByClause(node: ASTNode): boolean {
         this.pushCtx(node.getPosition());
-        this.clausesCount[this.clausesCount.length - 1]++;
         var orderSpecs: { expr: Iterator; ascending: boolean; emptyGreatest: boolean }[] = [];
         var specs: ASTNode[] = node.find(["OrderSpecList"])[0].getChildren();
         _.chain<ASTNode[]>(specs).forEach((spec: ASTNode) => {
@@ -173,13 +176,12 @@ class Translator {
                 emptyGreatest: spec.find(["OrderModifier"])[0].toString().indexOf("empty greatest") !== -1
             });
         });
-        this.pushClause(new flwor.OrderClause(node.getPosition(), this.popClause(), orderSpecs));
+        this.pushClause(new OrderClause(node.getPosition(), orderSpecs));
         return true;
     }
 
     ReturnClause(node: ASTNode): boolean {
         this.visitChildren(node);
-        this.pushIt(new flwor.ReturnIterator(node.getPosition(), this.popClause(), this.popIt()));
         return true;
     }
 
