@@ -25,8 +25,12 @@ class Clause {
             if(tuple === undefined) {
                 return Promise.resolve(tuples);
             } else {
-                //TODO: why deepClone?
-                tuples.push(_.cloneDeep(tuple));
+                //TODO: copy clone
+                var newTuple: Tuple = {};
+                _.forEach(tuple, (value, key) => {
+                    newTuple[key] = value;
+                });
+                tuples.push(tuple);
                 return this.pullAll(tuples);
             }
         });

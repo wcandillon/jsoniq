@@ -18,13 +18,16 @@ class VarRefIterator extends Iterator {
     next(): Promise<Item> {
         if(!this.variable) {
             this.variable = this.dctx.getVariable("", this.varName);
+            console.log(this.variable);
+            console.log(this.variable instanceof Iterator);
+            console.log(this.variable.reset);
             this.variable.reset();
         }
         return this.variable.next();
     }
 
     reset(): Iterator {
-        this.variable = null;
+        this.variable = undefined;
         return this;
     }
 };

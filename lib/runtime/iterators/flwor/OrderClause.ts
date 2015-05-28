@@ -35,19 +35,21 @@ class OrderClause extends Clause {
         }
         return new Promise<Tuple>((resolve, reject) => {
             this.parent.pullAll().then(tuples => {
+                console.log("TUPLES");
+                console.log(JSON.stringify(tuples, null, 2));
                 var promises = [];
-                _.forEach(tuples, (tuple: Tuple) => {
+                tuples.forEach(tuple => {
                     //TODO: generalize to the all spec list
                     promises.push(this.evalSpec(tuple, this.specs[0]));
                 });
                 return Promise.all(promises).then(results => {
-                    console.log(results.length);
-                    console.log(results);
                     this.state = _.chain<{spec: any; tuple: Tuple}>(results).sortBy("spec").map(val => {
                         return val.tuple;
                     }).value();
                     //console.log("STATE: " + JSON.stringify(this.state));
                     resolve(Promise.resolve(this.state.splice(0, 1)[0]));
+                }).catch(error => {
+                    console.error(error.stack);
                 });
             });
         });
@@ -55,7 +57,7 @@ class OrderClause extends Clause {
 
     private evalSpec(tuple: Tuple, spec: { expr: Iterator; ascending: boolean; emptyGreatest: boolean }): Promise<{ spec: any; tuple: Tuple }> {
         return new Promise<{ spec: any; tuple: Tuple }>((resolve, reject) => {
-            _.chain<Tuple>(tuple).forEach((it: Iterator, varName: string) => {
+            _.forEach(tuple, (it, varName) => {
                 this.dctx.setVariable("", varName, it);
             });
             spec.expr.next().then(item => {
