@@ -51,7 +51,8 @@ describe("Test FLWOR Expressions", () => {
         "flwor02.xq",
         "flwor06.xq",
         "flwor07.xq",
-        "flwor08.xq"
+        "flwor08.xq",
+        "flwor10.xq"
     ];
     //getQueries("tests/queries/zorba/Queries/zorba/jsoniq")
     queries.forEach(file => {
