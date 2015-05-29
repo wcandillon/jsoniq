@@ -30,26 +30,24 @@ class OrderClause extends Clause {
                 this.closed = true;
                 return this.emptyTuple();
             } else {
-                Promise.resolve(this.state.splice(0, 1));
+                return Promise.resolve(this.state.splice(0, 1)[0]);
             }
         }
         return new Promise<Tuple>((resolve, reject) => {
             this.parent.pullAll().then(tuples => {
-                console.log("TUPLES");
-                console.log(JSON.stringify(tuples, null, 2));
                 var promises = [];
                 tuples.forEach(tuple => {
                     //TODO: generalize to the all spec list
                     promises.push(this.evalSpec(tuple, this.specs[0]));
                 });
                 return Promise.all(promises).then(results => {
-                    this.state = _.chain<{spec: any; tuple: Tuple}>(results).sortBy("spec").map(val => {
+                    this.state = _.chain<{spec: any; tuple: Tuple}>(results).sortBy("spec").reverse().map(val => {
                         return val.tuple;
                     }).value();
-                    //console.log("STATE: " + JSON.stringify(this.state));
                     resolve(Promise.resolve(this.state.splice(0, 1)[0]));
                 }).catch(error => {
                     console.error(error.stack);
+                    reject(error);
                 });
             });
         });
@@ -60,12 +58,15 @@ class OrderClause extends Clause {
             tuple.getVariableNames().forEach(varName => {
                 this.dctx.setVariable("", varName, tuple.getVariable(varName));
             });
+            spec.expr.reset();
             spec.expr.next().then(item => {
-                //console.log("ITEM " + item.get());
                 resolve({
                     spec: item.get(),
                     tuple: tuple
                 });
+            }).catch(error => {
+                console.error(error.stack);
+                reject(error);
             });
         });
     }

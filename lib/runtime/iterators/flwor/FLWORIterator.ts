@@ -34,6 +34,9 @@ class FLWORIterator extends Iterator {
                 return this.emptySequence();
             }
             this.state = Promise.resolve(tuple);
+            tuple.getVariableNames().forEach(varName => {
+                this.dctx.setVariable("", varName, tuple.getVariable(varName));
+            });
             return this.returnExpr.next().then(item => {
                 if(item === undefined) {
                     this.state = undefined;
