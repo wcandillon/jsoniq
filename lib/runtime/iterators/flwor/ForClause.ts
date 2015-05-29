@@ -1,5 +1,3 @@
-import _ = require("lodash");
-
 import Position = require("../../../compiler/parsers/Position");
 
 import DynamicContext = require("../../DynamicContext");
@@ -43,12 +41,13 @@ class ForClause extends Clause {
             if(tuple === undefined) {
                 this.closed = true;
                 if(this.allowEmpty) {
-                    //TODO: return {};
-                    return Promise.resolve({});
+                    //TODO: return new Tuple();
+                    return Promise.resolve(new Tuple());
                 } else {
                     return this.emptyTuple();
                 }
             }
+            tuple = tuple.clone();
             return this.expr.next().then(item => {
                 this.state.tuple = Promise.resolve(tuple);
                 if(item === undefined) {
@@ -57,13 +56,10 @@ class ForClause extends Clause {
                     return this.pull();
                 } else {
                     this.state.index++;
-                    tuple[this.varName] = new ItemIterator(item);
-                    if(this.positionalVar !== undefined) {
-                        tuple[this.positionalVar] = new ItemIterator(new Item(this.state.index));
-                    }
-                    //Add tuple to the dynamic context
-                    _.chain<Tuple>(tuple).forEach((it: Iterator, varName: string) => {
-                        this.dctx.setVariable("", varName, it);
+                    tuple.addVariable(this.varName, new ItemIterator(item));
+                    tuple.addVariable(this.positionalVar, new ItemIterator(new Item(this.state.index)));
+                    tuple.getVariableNames().forEach(varName => {
+                        this.dctx.setVariable("", varName, tuple.getVariable(varName));
                     });
                 }
                 //TODO: return tuple

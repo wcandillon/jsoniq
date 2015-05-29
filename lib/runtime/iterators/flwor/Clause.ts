@@ -1,4 +1,3 @@
-import _ = require("lodash");
 import Position = require("../../../compiler/parsers/Position");
 import DynamicContext = require("../../DynamicContext");
 
@@ -25,11 +24,6 @@ class Clause {
             if(tuple === undefined) {
                 return Promise.resolve(tuples);
             } else {
-                //TODO: copy clone
-                var newTuple: Tuple = {};
-                _.forEach(tuple, (value, key) => {
-                    newTuple[key] = value;
-                });
                 tuples.push(tuple);
                 return this.pullAll(tuples);
             }

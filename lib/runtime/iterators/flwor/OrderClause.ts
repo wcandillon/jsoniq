@@ -57,11 +57,11 @@ class OrderClause extends Clause {
 
     private evalSpec(tuple: Tuple, spec: { expr: Iterator; ascending: boolean; emptyGreatest: boolean }): Promise<{ spec: any; tuple: Tuple }> {
         return new Promise<{ spec: any; tuple: Tuple }>((resolve, reject) => {
-            _.forEach(tuple, (it, varName) => {
-                this.dctx.setVariable("", varName, it);
+            tuple.getVariableNames().forEach(varName => {
+                this.dctx.setVariable("", varName, tuple.getVariable(varName));
             });
             spec.expr.next().then(item => {
-                console.log("ITEM " + item.get());
+                //console.log("ITEM " + item.get());
                 resolve({
                     spec: item.get(),
                     tuple: tuple

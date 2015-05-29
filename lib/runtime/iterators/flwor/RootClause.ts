@@ -12,7 +12,7 @@ class RootClause extends Clause {
             return this.emptyTuple();
         }
         this.closed = true;
-        return Promise.resolve({});
+        return Promise.resolve(new Tuple());
     }
 
     reset(): Clause {
