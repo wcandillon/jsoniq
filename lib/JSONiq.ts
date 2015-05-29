@@ -67,6 +67,10 @@ class JSONiq {
         this.markers = this.markers.concat(translator.getMarkers());
         return it;
     }
+
+    getMarkers(): Marker[] {
+        return this.markers;
+    }
 }
 
 export = JSONiq;

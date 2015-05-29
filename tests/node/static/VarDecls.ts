@@ -1,0 +1,17 @@
+/// <reference path="../../../typings/tsd.d.ts" />
+import u = require("./Utils");
+
+describe("Test Variable declarations: ", () => {
+
+    it("XPST0081 (1)", () => {
+        var markers = u.getMarkers("let $bar:hello := 1 return 1");
+        expect(markers.length).toBe(1);
+        expect(markers[0].getType()).toBe("error");
+        expect(markers[0].getMessage().indexOf("[XPST0081]")).toBe(0);
+    });
+
+    it("XPST0081 (2)", () => {
+        var markers = u.getMarkers("declare namespace bar = \"http://www.example.com\"; let $bar:hello := 1 return 1");
+        expect(markers.length).toBe(0);
+    });
+});

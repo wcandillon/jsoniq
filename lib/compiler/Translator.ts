@@ -2,10 +2,12 @@ import _ = require("lodash");
 
 import ASTNode = require("./parsers/ASTNode");
 import Position = require("./parsers/Position");
+
 import StaticContext = require("./StaticContext");
 import RootStaticContext = require("./RootStaticContext");
-
+import QName = require("./QName");
 import Marker = require("./Marker");
+import err = require("./StaticErrors");
 
 import DynamicContext = require("../runtime/DynamicContext");
 import Iterator = require("../runtime/iterators/Iterator");
@@ -33,7 +35,7 @@ class Translator {
 
     private ast: ASTNode;
 
-    private marker: Marker[];
+    private markers: Marker[] = [];
 
     private iterators: Iterator[]  = [];
     private clauses: Clause[][] = [];
@@ -46,6 +48,23 @@ class Translator {
         this.rootSctx = rootSctx;
         this.sctx = rootSctx;
         this.ast = ast;
+    }
+
+    resolveQName(value: string, pos: Position): QName {
+        var idx;
+        if (value.substring(0, 2) === "Q{") {
+            idx = value.indexOf("}");
+            return new QName("", value.substring(2, idx), value.substring(idx + 1));
+        } else {
+            idx = value.indexOf(":");
+            var prefix = value.substring(0, idx);
+            var qname = this.sctx.getNamespaceByPrefix(prefix);
+            if(!qname && prefix.length > 0) {
+                this.markers.push(new err.XPST0081(pos, prefix));
+            }
+            return new QName(prefix, qname ? qname.getURI() : "", value.substring(idx + 1));
+        }
+
     }
 
     private pushIt(it: Iterator): Translator {
@@ -98,10 +117,17 @@ class Translator {
     }
 
     getMarkers(): Marker[] {
-        return this.marker;
+        return this.markers;
     }
 
     VersionDecl(node: ASTNode): boolean {
+        return true;
+    }
+
+    NamespaceDecl(node: ASTNode): boolean {
+        var prefix = node.find(["NCName"]).toString();
+        var uri = node.find(["URILiteral"]).toString();
+        this.sctx.addNamespace(prefix, uri);
         return true;
     }
 
@@ -152,8 +178,9 @@ class Translator {
     LetBinding(node: ASTNode): boolean {
         this.visitChildren(node);
         this.pushCtx(node.getPosition());
-        var varName = node.find(["VarName"])[0].toString();
-        this.pushClause(new LetClause(node.getPosition(), varName, this.popIt()));
+        var v = node.find(["VarName"])[0];
+        this.resolveQName(v.toString(), v.getPosition());
+        this.pushClause(new LetClause(node.getPosition(), v.toString(), this.popIt()));
         return true;
     }
 
