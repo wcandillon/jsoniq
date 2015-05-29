@@ -236,6 +236,8 @@ class Translator {
         var right = this.popIt();
         var left = this.popIt();
         var comp = node.find(["ValueComp"]).toString();
+        comp = comp === "" ? node.find(["GeneralComp"]).toString() : comp;
+        comp = comp === "" ? node.find(["NodeComp"]).toString() : comp;
         this.pushIt(new ComparisonIterator(node.getPosition(), left, right, comp));
         return true;
     }

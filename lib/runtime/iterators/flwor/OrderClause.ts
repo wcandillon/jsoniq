@@ -36,12 +36,18 @@ class OrderClause extends Clause {
         return new Promise<Tuple>((resolve, reject) => {
             this.parent.pullAll().then(tuples => {
                 var promises = [];
+                var asc = this.specs[0].ascending;
+                //var empty = this.specs[0].emptyGreatest;
                 tuples.forEach(tuple => {
                     //TODO: generalize to the all spec list
                     promises.push(this.evalSpec(tuple, this.specs[0]));
                 });
                 return Promise.all(promises).then(results => {
-                    this.state = _.chain<{spec: any; tuple: Tuple}>(results).sortBy("spec").reverse().map(val => {
+                    this.state = _.chain<{spec: any; tuple: Tuple}>(results).sortBy("spec");
+                    if(!asc) {
+                        this.state = this.state.reverse();
+                    }
+                    this.state = this.state.map(val => {
                         return val.tuple;
                     }).value();
                     resolve(Promise.resolve(this.state.splice(0, 1)[0]));
