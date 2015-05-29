@@ -30,7 +30,7 @@ class ComparisonIterator extends Iterator {
             valueOp = function(left, right) {
                 return left !== right;
             };
-        } else if(this.operator === "lt") {
+        } else if(this.operator === "lt" || this.operator === "<") {
             valueOp = function(left, right) {
                 return left < right;
             };
@@ -38,7 +38,7 @@ class ComparisonIterator extends Iterator {
             valueOp = function(left, right) {
                 return left <= right;
             };
-        } else if(this.operator === "gt") {
+        } else if(this.operator === "gt" || this.operator === ">") {
             valueOp = function(left, right) {
                 return left > right;
             };
