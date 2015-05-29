@@ -1,14 +1,13 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 import Position = require("../../compiler/parsers/Position");
 //import StaticContext = require("../../compiler/StaticContext");
-//import DynamicContext = require("../DynamicContext");
-
+import DynamicContext = require("../DynamicContext");
 import Item = require("../items/Item");
 
 class Iterator {
 
     protected position: Position;
-
+    protected dctx: DynamicContext;
     protected closed: boolean = false;
 
     protected emptySequence(): Promise<Item> {
@@ -39,6 +38,11 @@ class Iterator {
 
     toString(): string {
         return JSON.stringify(this, null, 2);
+    }
+
+    setDynamicCtx(dctx: DynamicContext): Iterator {
+        this.dctx = dctx;
+        return this;
     }
 }
 

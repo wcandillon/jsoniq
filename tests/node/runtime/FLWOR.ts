@@ -131,4 +131,10 @@ describe("Test FLWOR", () => {
             e.toEqual([1, 2, 1, 2]);
         });
     });
+
+    pit("flwor 3", () => {
+        return u.expectQuery("for $a in (1,2) let $b := (1,2,3) for $c in $b return $a").then(e => {
+            e.toEqual([1, 1, 1, 2, 2, 2]);
+        });
+    });
 });

@@ -2,7 +2,7 @@
 
 import Iterator = require("./Iterator");
 import Position = require("../../compiler/parsers/Position");
-
+import DynamicContext = require("../DynamicContext");
 import Item = require("../items/Item");
 
 class RangeIteratorState {
@@ -53,6 +53,13 @@ class RangeIterator extends Iterator {
         this.to.reset();
         this.state = undefined;
         return super.reset();
+    }
+
+    setDynamicCtx(dctx: DynamicContext): RangeIterator {
+        super.setDynamicCtx(dctx);
+        this.from.setDynamicCtx(dctx);
+        this.to.setDynamicCtx(dctx);
+        return this;
     }
 };
 

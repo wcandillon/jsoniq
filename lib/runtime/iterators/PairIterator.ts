@@ -1,7 +1,7 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 import Iterator = require("./Iterator");
 import Position = require("../../compiler/parsers/Position");
-
+import DynamicContext = require("../DynamicContext");
 import Item = require("../items/Item");
 
 class PairIterator extends Iterator {
@@ -40,6 +40,13 @@ class PairIterator extends Iterator {
         super.reset();
         this.key.reset();
         this.value.reset();
+        return this;
+    }
+
+    setDynamicCtx(dctx: DynamicContext): PairIterator {
+        super.setDynamicCtx(dctx);
+        this.key.setDynamicCtx(dctx);
+        this.value.setDynamicCtx(dctx);
         return this;
     }
 };
