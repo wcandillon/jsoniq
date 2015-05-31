@@ -21,6 +21,14 @@ class QName {
     getLocalName(): string {
         return this.local;
     }
+
+    toString(): string {
+        if(this.prefix !== "") {
+            return this.prefix + ":" + this.local;
+        } else {
+            return "Q{" + this.uri + "}" + this.local;
+        }
+    }
 }
 
 export = QName;

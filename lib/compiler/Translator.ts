@@ -6,8 +6,10 @@ import Position = require("./parsers/Position");
 import StaticContext = require("./StaticContext");
 import RootStaticContext = require("./RootStaticContext");
 import QName = require("./QName");
+import Variable = require("./Variable");
 import Marker = require("./Marker");
 import err = require("./StaticErrors");
+import war = require("./StaticWarnings");
 
 import DynamicContext = require("../runtime/DynamicContext");
 import Iterator = require("../runtime/iterators/Iterator");
@@ -97,11 +99,25 @@ class Translator {
     }
 
     private pushCtx(pos: Position): Translator {
-        this.sctx = this.sctx.createContext();
+        this.sctx = this.sctx.createContext(pos);
         return this;
     }
 
     private popCtx = function(pos: Position): Translator {
+        this.sctx.setPosition(
+            new Position(
+                this.sctx.getPosition().getStartLine(),
+                this.sctx.getPosition().getStartColumn(),
+                pos.getEndLine(),
+                pos.getEndColumn()
+            )
+        );
+        this.sctx.getParent().addVarRefs(this.sctx.getUnusedVarRefs());
+        this.sctx.getUnusedVariables().forEach((v: Variable) => {
+            if(v.getType() !== "GroupingVariable" && v.getType() !== "CatchVar") {
+                this.markers.push(new war.UnusedVariable(v));
+            }
+        });
         this.sctx = this.sctx.getParent();
         return this;
     }
@@ -138,7 +154,7 @@ class Translator {
         return true;
     }
 
-    ParenthesizedExpr(node: ASTNode) {
+    ParenthesizedExpr(node: ASTNode): boolean {
         this.visitChildren(node);
         if(this.iterators.length === 0) {
             this.pushIt(new SequenceIterator(node.getPosition(), []));
@@ -179,7 +195,8 @@ class Translator {
         this.visitChildren(node);
         this.pushCtx(node.getPosition());
         var v = node.find(["VarName"])[0];
-        this.resolveQName(v.toString(), v.getPosition());
+        var qname = this.resolveQName(v.toString(), v.getPosition());
+        this.sctx.addVariable(new Variable(v.getPosition(), "LetBinding", qname));
         this.pushClause(new LetClause(node.getPosition(), v.toString(), this.popIt()));
         return true;
     }
@@ -214,6 +231,7 @@ class Translator {
 
     VarRef(node: ASTNode): boolean {
         var varName = node.find(["VarName"])[0].toString();
+        this.sctx.addVarRef(this.resolveQName(varName, node.getPosition()));
         this.pushIt(new VarRefIterator(node.getPosition(), varName));
         return true;
     }

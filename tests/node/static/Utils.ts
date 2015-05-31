@@ -9,6 +9,10 @@ export function getMarkers(source: string, jsoniq?: boolean): Marker[] {
     } else {
         query.setFileName("test.xq");
     }
-    query.compile();
+    try {
+        query.compile();
+    } catch(e) {
+        console.error(e.stack);
+    }
     return query.getMarkers();
 }
