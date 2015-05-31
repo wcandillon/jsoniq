@@ -1,5 +1,5 @@
 /// <reference path="../typings/tsd.d.ts" />
-require("source-map-support").install();
+//require("source-map-support").install();
 import Marker = require("./compiler/Marker");
 import Translator = require("./compiler/Translator");
 import Position = require("./compiler/parsers/Position");
@@ -20,7 +20,7 @@ class JSONiq {
 
     constructor(source: string) {
         this.source = source;
-        this.rootSctx = new RootStaticContext();
+        this.rootSctx = new RootStaticContext(new Position(0, 0, 0, 0));
     }
 
     setFileName(fileName: string): JSONiq {
@@ -66,6 +66,10 @@ class JSONiq {
         var it = translator.compile();
         this.markers = this.markers.concat(translator.getMarkers());
         return it;
+    }
+
+    getMarkers(): Marker[] {
+        return this.markers;
     }
 }
 

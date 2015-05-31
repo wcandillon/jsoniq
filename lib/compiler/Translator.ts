@@ -2,10 +2,14 @@ import _ = require("lodash");
 
 import ASTNode = require("./parsers/ASTNode");
 import Position = require("./parsers/Position");
+
 import StaticContext = require("./StaticContext");
 import RootStaticContext = require("./RootStaticContext");
-
+import QName = require("./QName");
+import Variable = require("./Variable");
 import Marker = require("./Marker");
+import err = require("./StaticErrors");
+import war = require("./StaticWarnings");
 
 import DynamicContext = require("../runtime/DynamicContext");
 import Iterator = require("../runtime/iterators/Iterator");
@@ -33,7 +37,7 @@ class Translator {
 
     private ast: ASTNode;
 
-    private marker: Marker[];
+    private markers: Marker[] = [];
 
     private iterators: Iterator[]  = [];
     private clauses: Clause[][] = [];
@@ -46,6 +50,23 @@ class Translator {
         this.rootSctx = rootSctx;
         this.sctx = rootSctx;
         this.ast = ast;
+    }
+
+    resolveQName(value: string, pos: Position): QName {
+        var idx;
+        if (value.substring(0, 2) === "Q{") {
+            idx = value.indexOf("}");
+            return new QName("", value.substring(2, idx), value.substring(idx + 1));
+        } else {
+            idx = value.indexOf(":");
+            var prefix = value.substring(0, idx);
+            var qname = this.sctx.getNamespaceByPrefix(prefix);
+            if(!qname && prefix.length > 0) {
+                this.markers.push(new err.XPST0081(pos, prefix));
+            }
+            return new QName(prefix, qname ? qname.getURI() : "", value.substring(idx + 1));
+        }
+
     }
 
     private pushIt(it: Iterator): Translator {
@@ -78,11 +99,25 @@ class Translator {
     }
 
     private pushCtx(pos: Position): Translator {
-        this.sctx = this.sctx.createContext();
+        this.sctx = this.sctx.createContext(pos);
         return this;
     }
 
     private popCtx = function(pos: Position): Translator {
+        this.sctx.setPosition(
+            new Position(
+                this.sctx.getPosition().getStartLine(),
+                this.sctx.getPosition().getStartColumn(),
+                pos.getEndLine(),
+                pos.getEndColumn()
+            )
+        );
+        this.sctx.getParent().addVarRefs(this.sctx.getUnusedVarRefs());
+        this.sctx.getUnusedVariables().forEach((v: Variable) => {
+            if(v.getType() !== "GroupingVariable" && v.getType() !== "CatchVar") {
+                this.markers.push(new war.UnusedVariable(v));
+            }
+        });
         this.sctx = this.sctx.getParent();
         return this;
     }
@@ -98,10 +133,17 @@ class Translator {
     }
 
     getMarkers(): Marker[] {
-        return this.marker;
+        return this.markers;
     }
 
     VersionDecl(node: ASTNode): boolean {
+        return true;
+    }
+
+    NamespaceDecl(node: ASTNode): boolean {
+        var prefix = node.find(["NCName"]).toString();
+        var uri = node.find(["URILiteral"]).toString();
+        this.sctx.addNamespace(prefix, uri);
         return true;
     }
 
@@ -112,7 +154,7 @@ class Translator {
         return true;
     }
 
-    ParenthesizedExpr(node: ASTNode) {
+    ParenthesizedExpr(node: ASTNode): boolean {
         this.visitChildren(node);
         if(this.iterators.length === 0) {
             this.pushIt(new SequenceIterator(node.getPosition(), []));
@@ -152,8 +194,10 @@ class Translator {
     LetBinding(node: ASTNode): boolean {
         this.visitChildren(node);
         this.pushCtx(node.getPosition());
-        var varName = node.find(["VarName"])[0].toString();
-        this.pushClause(new LetClause(node.getPosition(), varName, this.popIt()));
+        var v = node.find(["VarName"])[0];
+        var qname = this.resolveQName(v.toString(), v.getPosition());
+        this.sctx.addVariable(new Variable(v.getPosition(), "LetBinding", qname));
+        this.pushClause(new LetClause(node.getPosition(), v.toString(), this.popIt()));
         return true;
     }
 
@@ -187,6 +231,7 @@ class Translator {
 
     VarRef(node: ASTNode): boolean {
         var varName = node.find(["VarName"])[0].toString();
+        this.sctx.addVarRef(this.resolveQName(varName, node.getPosition()));
         this.pushIt(new VarRefIterator(node.getPosition(), varName));
         return true;
     }
