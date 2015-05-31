@@ -1,5 +1,7 @@
 /// <reference path="../typings/tsd.d.ts" />
 //require("source-map-support").install();
+import _ = require("lodash");
+
 import Marker = require("./compiler/Marker");
 import Translator = require("./compiler/Translator");
 import Position = require("./compiler/parsers/Position");
@@ -11,6 +13,8 @@ import JSONParseTreeHandler = require("./compiler/parsers/JSONParseTreeHandler")
 
 import Iterator = require("./runtime/iterators/Iterator");
 
+import fs = require("fs");
+
 class JSONiq {
 
     private rootSctx: RootStaticContext;
@@ -21,6 +25,16 @@ class JSONiq {
     constructor(source: string) {
         this.source = source;
         this.rootSctx = new RootStaticContext(new Position(0, 0, 0, 0));
+    }
+
+    private static serializeIt(plan: {}): string {
+        return _.template("new <%= __className %>(<% print(_.map(arguments, function(argument) { if(_.isObject(argument) && argument.__className) { return JSONiq.serializeIt(argument); } else { return JSON.stringify(argument); } }).join(', ')); %>)", plan, { imports: { JSONiq: JSONiq, JSON: JSON } });
+    }
+
+    static serialize(plan: {}): string {
+        var it = JSONiq.serializeIt(plan);
+        console.log(it);
+        return it;
     }
 
     setFileName(fileName: string): JSONiq {

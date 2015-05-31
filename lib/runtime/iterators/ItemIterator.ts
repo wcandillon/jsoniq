@@ -19,6 +19,20 @@ class ItemIterator extends Iterator {
         this.closed = true;
         return Promise.resolve(this.item);
     }
+
+    serialize(): {} {
+        return {
+            __className: 'ItemIterator',
+            arguments: [
+                {
+                    __className: 'Item',
+                    arguments: [
+                        this.item.get()
+                    ]
+                }
+            ]
+        }
+    }
 };
 
 export = ItemIterator;

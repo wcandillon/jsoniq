@@ -44,6 +44,18 @@ class Iterator {
         this.dctx = dctx;
         return this;
     }
+
+    serialize(): {} {
+        return {
+            __className: 'Position',
+            arguments: [
+                this.position.getStartLine(),
+                this.position.getStartColumn(),
+                this.position.getEndLine(),
+                this.position.getEndColumn()
+            ]
+        };
+    }
 }
 
 export = Iterator;

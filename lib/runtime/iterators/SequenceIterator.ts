@@ -55,6 +55,16 @@ class SequenceIterator extends Iterator {
         });
         return this;
     }
+
+    serialize(): {} {
+        return {
+            __className: 'SequenceIterator',
+            arguments: [
+                super.serialize(),
+                this.its.map(it => { return it.serialize(); })
+            ]
+        };
+    }
 };
 
 export = SequenceIterator;

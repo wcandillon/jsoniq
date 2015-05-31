@@ -42,6 +42,18 @@ class AdditiveIterator extends Iterator {
         this.right.setDynamicCtx(dctx);
         return this;
     }
+
+    serialize(): {} {
+        return {
+            __className: 'AdditiveIterator',
+            arguments: [
+                super.serialize(),
+                this.left.serialize(),
+                this.right.serialize(),
+                this.isPlus
+            ]
+        };
+    }
 };
 
 export = AdditiveIterator;
