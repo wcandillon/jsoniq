@@ -56,9 +56,9 @@ class ForClause extends Clause {
                     return this.pull();
                 } else {
                     this.state.index++;
-                    tuple.addVariable(this.varName, new ItemIterator(item));
+                    tuple.addVariable(this.varName, new ItemIterator(undefined, item));
                     if(this.positionalVar) {
-                        tuple.addVariable(this.positionalVar, new ItemIterator(new Item(this.state.index)));
+                        tuple.addVariable(this.positionalVar, new ItemIterator(undefined, new Item(this.state.index)));
                     }
                     tuple.getVariableNames().forEach(varName => {
                         this.dctx.setVariable("", varName, tuple.getVariable(varName));

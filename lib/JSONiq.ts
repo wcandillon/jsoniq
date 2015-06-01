@@ -1,5 +1,5 @@
 /// <reference path="../typings/tsd.d.ts" />
-//require("source-map-support").install();
+require("source-map-support").install();
 import Marker = require("./compiler/Marker");
 import Translator = require("./compiler/Translator");
 import Position = require("./compiler/parsers/Position");

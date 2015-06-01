@@ -1,5 +1,7 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 import _ = require("lodash");
+import SourceMap = require("source-map");
+
 import Iterator = require("./Iterator");
 import Position = require("../../compiler/parsers/Position");
 import DynamicContext = require("../DynamicContext");
@@ -54,6 +56,23 @@ class SequenceIterator extends Iterator {
             it.setDynamicCtx(dctx);
         });
         return this;
+    }
+
+    //
+    serialize(fileName: string): SourceMap.SourceNode {
+        var node = new SourceMap.SourceNode(this.position.getStartLine(), this.position.getEndColumn(), fileName);
+        node
+            .add("new SequenceIterator(")
+            .add(super.serialize(fileName))
+            .add(", [");
+        this.its.forEach((it, index) => {
+            node.add(it.serialize(fileName));
+            if(index !== this.its.length - 1) {
+                node.add(", ");
+            }
+        });
+        node.add("])");
+        return node;
     }
 };
 

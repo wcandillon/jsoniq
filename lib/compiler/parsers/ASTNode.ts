@@ -67,9 +67,9 @@ class ASTNode {
         var result =  "";
         indent = indent ? indent : "";
         if(this.value) {
-            result += (indent + "<" + this.name + ">" + this.value + "</" + this.name + ">\n");
+            result += (indent + "<" + this.name + " sl=\"" + this.position.getStartLine() + "\" sc=\"" + this.position.getStartColumn() + "\" el=\"" + this.position.getEndLine() + "\" ec=\"" + this.position.getStartColumn() + "\">" + this.value + "</" + this.name + ">\n");
         } else {
-            result += indent + "<" + this.name + ">\n";
+            result += indent + "<" + this.name + " sl=\"" + this.position.getStartLine() + "\" sc=\"" + this.position.getStartColumn() + "\" el=\"" + this.position.getEndLine() + "\" ec=\"" + this.position.getStartColumn() + "\">\n";
             this.children.forEach(function (child) {
                 result += child.toXML(indent + "  ");
             });

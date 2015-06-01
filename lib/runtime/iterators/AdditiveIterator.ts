@@ -1,4 +1,6 @@
 /// <reference path="../../../typings/tsd.d.ts" />
+import SourceMap = require("source-map");
+
 import Iterator = require("./Iterator");
 import Position = require("../../compiler/parsers/Position");
 import DynamicContext = require("../DynamicContext");
@@ -41,6 +43,21 @@ class AdditiveIterator extends Iterator {
         this.left.setDynamicCtx(dctx);
         this.right.setDynamicCtx(dctx);
         return this;
+    }
+
+    serialize(fileName: string): SourceMap.SourceNode {
+        var node = new SourceMap.SourceNode(this.position.getStartLine(), this.position.getEndColumn(), fileName);
+        node
+            .add("new AdditiveIterator(")
+            .add(super.serialize(fileName))
+            .add(", ")
+            .add(this.left.serialize(fileName))
+            .add(", ")
+            .add(this.right.serialize(fileName))
+            .add(", ")
+            .add(JSON.stringify(this.isPlus))
+            .add(")");
+        return node;
     }
 };
 
