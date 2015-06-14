@@ -45,15 +45,15 @@ class AdditiveIterator extends Iterator {
         return this;
     }
 
-    serialize(fileName: string): SourceMap.SourceNode {
-        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getEndColumn() + 1, fileName);
+    serialize(): SourceMap.SourceNode {
+        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getEndColumn() + 1, this.position.getFileName());
         node
-            .add("new AdditiveIterator(")
-            .add(super.serialize(fileName))
+            .add("new r.AdditiveIterator(")
+            .add(super.serialize())
             .add(", ")
-            .add(this.left.serialize(fileName))
+            .add(this.left.serialize())
             .add(", ")
-            .add(this.right.serialize(fileName))
+            .add(this.right.serialize())
             .add(", ")
             .add(JSON.stringify(this.isPlus))
             .add(")");

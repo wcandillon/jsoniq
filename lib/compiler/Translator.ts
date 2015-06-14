@@ -109,7 +109,8 @@ class Translator {
                 this.sctx.getPosition().getStartLine(),
                 this.sctx.getPosition().getStartColumn(),
                 pos.getEndLine(),
-                pos.getEndColumn()
+                pos.getEndColumn(),
+                pos.getFileName()
             )
         );
         this.sctx.getParent().addVarRefs(this.sctx.getUnusedVarRefs());

@@ -47,9 +47,12 @@ class Iterator {
         return this;
     }
 
-    serialize(fileName: string): SourceMap.SourceNode {
-        var chunk = _.template("new Position(<%= sl %>, <%= sc %>, <%= el %>, <%= ec %>)")(this.position);
-        return new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getEndColumn() + 1, fileName, chunk, "position");
+    serialize(): SourceMap.SourceNode {
+        var chunk = _.template("new r.Position(<%= sl %>, <%= sc %>, <%= el %>, <%= ec %>, '<%= fileName %>')")(this.position);
+        return new SourceMap.SourceNode(
+            this.position.getStartLine() + 1, this.position.getEndColumn() + 1,
+            this.position.getFileName(), chunk, "position"
+        );
     }
 }
 

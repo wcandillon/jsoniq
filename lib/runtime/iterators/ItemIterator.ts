@@ -23,14 +23,14 @@ class ItemIterator extends Iterator {
         return Promise.resolve(this.item);
     }
 
-    serialize(fileName: string): SourceMap.SourceNode {
-        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getEndColumn() + 1, fileName);
+    serialize(): SourceMap.SourceNode {
+        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getEndColumn() + 1, this.position.getFileName());
         node
-            .add("new ItemIterator(")
-            .add(super.serialize(fileName))
-            .add(", ")
+            .add("new r.ItemIterator(")
+            .add(super.serialize())
+            .add(", new r.Item(")
             .add(JSON.stringify(this.item.get()))
-            .add(")");
+            .add("))");
         return node;
     }
 };

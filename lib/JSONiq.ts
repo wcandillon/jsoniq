@@ -20,7 +20,7 @@ class JSONiq {
 
     constructor(source: string) {
         this.source = source;
-        this.rootSctx = new RootStaticContext(new Position(0, 0, 0, 0));
+        this.rootSctx = new RootStaticContext(new Position(0, 0, 0, 0, this.fileName));
     }
 
     setFileName(fileName: string): JSONiq {
@@ -33,7 +33,7 @@ class JSONiq {
             (this.fileName.substring(this.fileName.length - ".jq".length).indexOf(".jq") !== -1) &&
             this.source.indexOf("xquery version") !== 0
             ) || this.source.indexOf("jsoniq version") === 0;
-        var h = new JSONParseTreeHandler(this.source);
+        var h = new JSONParseTreeHandler(this.source, this.fileName);
         var parser = isJSONiq ? new JSONiqParser.Parser(this.source, h) : new XQueryParser.Parser(this.source, h);
         try {
             parser.parse_XQuery();
@@ -46,7 +46,7 @@ class JSONiq {
                 } else if(parser instanceof XQueryParser.Parser) {
                     message = (<XQueryParser.Parser>parser).getErrorMessage(e);
                 }
-                var pos = Position.convertPosition(this.source, e.getBegin(), e.getEnd());
+                var pos = Position.convertPosition(this.source, e.getBegin(), e.getEnd(), this.fileName);
                 if (pos.getStartColumn() === pos.getEndColumn() && pos.getStartLine() === pos.getEndLine()) {
                     pos.setEndColumn(pos.getEndColumn() + 1);
                 }

@@ -59,14 +59,14 @@ class SequenceIterator extends Iterator {
     }
 
     //
-    serialize(fileName: string): SourceMap.SourceNode {
-        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getEndColumn() + 1, fileName);
+    serialize(): SourceMap.SourceNode {
+        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getEndColumn() + 1, this.position.getFileName());
         node
-            .add("new SequenceIterator(")
-            .add(super.serialize(fileName))
+            .add("new r.SequenceIterator(")
+            .add(super.serialize())
             .add(", [");
         this.its.forEach((it, index) => {
-            node.add(it.serialize(fileName));
+            node.add(it.serialize());
             if(index !== this.its.length - 1) {
                 node.add(", ");
             }
