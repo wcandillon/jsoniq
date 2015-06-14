@@ -24,9 +24,11 @@ class ItemIterator extends Iterator {
     }
 
     serialize(fileName: string): SourceMap.SourceNode {
-        var node = new SourceMap.SourceNode(this.position.getStartLine(), this.position.getEndColumn(), fileName);
+        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getEndColumn() + 1, fileName);
         node
             .add("new ItemIterator(")
+            .add(super.serialize(fileName))
+            .add(", ")
             .add(JSON.stringify(this.item.get()))
             .add(")");
         return node;

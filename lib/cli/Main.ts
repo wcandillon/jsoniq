@@ -2,6 +2,7 @@
 import fs = require("fs");
 import cli = require("commander");
 import JSONiq = require("../JSONiq");
+import SourceMap = require("source-map");
 
 var pkg = require("../../../package.json");
 
@@ -26,7 +27,10 @@ cli
     var query = new JSONiq(fs.readFileSync(file, "utf-8"));
     query.setFileName(file);
     var it = query.compile();
-    console.log(it.serialize(file).toStringWithSourceMap());
+    var node = new SourceMap.SourceNode(1, 1, file);
+    node.add("var r = require('./dist/lib/runtime/Runtime');\n");
+    node.add(it.serialize(file));
+    console.log(node.toStringWithSourceMap());
 });
 
 cli
