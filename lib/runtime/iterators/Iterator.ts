@@ -20,6 +20,10 @@ class Iterator {
         this.position = position;
     }
 
+    getPosition(): Position {
+        return this.position;
+    }
+
     next(): Promise<Item> {
         return this.emptySequence();
     }

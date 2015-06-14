@@ -1,5 +1,8 @@
 /// <reference path="../typings/tsd.d.ts" />
 require("source-map-support").install();
+
+import SourceMap = require("source-map");
+
 import Marker = require("./compiler/Marker");
 import Translator = require("./compiler/Translator");
 import Position = require("./compiler/parsers/Position");
@@ -66,6 +69,19 @@ class JSONiq {
         var it = translator.compile();
         this.markers = this.markers.concat(translator.getMarkers());
         return it;
+    }
+
+    static serialize(it: Iterator): string {
+        var node = new SourceMap.SourceNode(1, 1, it.getPosition().getFileName());
+        node.add("var r = require('./dist/lib/runtime/Runtime');\nvar it = ");
+        node.add(it.serialize());
+        node.add(";\n");
+        node.add("\n");
+        node.add("it.setDynamicCtx(new r.DynamicContext());");
+        node.add("\n");
+        node.add("it\n.forEach(function(item){ console.log(item.get()); })\n.catch(function(e){ console.error(e.stack); });");
+        var source = node.toStringWithSourceMap();
+        return source.code;
     }
 
     getMarkers(): Marker[] {
