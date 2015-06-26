@@ -73,7 +73,7 @@ class ComparisonIterator extends Iterator {
     }
 
     serialize(): SourceMap.SourceNode {
-        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getEndColumn() + 1, this.position.getFileName());
+        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getStartColumn() + 1, this.position.getFileName());
         node
             .add("new r.ComparisonIterator(")
             .add(super.serialize())

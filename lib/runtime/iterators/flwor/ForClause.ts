@@ -87,7 +87,7 @@ class ForClause extends Clause {
     }
 
     serialize(): SourceMap.SourceNode {
-        var node = new SourceMap.SourceNode(this.pos.getStartLine() + 1, this.pos.getEndColumn() + 1, this.pos.getFileName());
+        var node = new SourceMap.SourceNode(this.pos.getStartLine() + 1, this.pos.getStartColumn() + 1, this.pos.getFileName());
         node
             .add("new r.ForClause(")
             .add(super.serialize())

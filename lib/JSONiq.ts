@@ -81,6 +81,16 @@ class JSONiq {
         node.add("\n");
         node.add("it\n.forEach(function(item){ console.log(item.get()); })\n.catch(function(e){ console.error(e.stack); });");
         var source = node.toStringWithSourceMap();
+
+        // output :: { code :: String, map :: SourceMapGenerator }
+        //var output         = rootSourceNode.toStringWithSourceMap({ file: mapFilename});
+
+        //We must add the //# sourceMappingURL comment directive
+        //so that the browser’s debugger knows where to find the source map.
+        source.code +=  "\n//# sourceMappingURL=data:application/json," + source.map;
+
+        //fs.writeFileSync(codeFilename, output.code);
+        //fs.writeFileSync(mapFilename,  output.map);
         return source.code;
     }
 

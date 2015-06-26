@@ -54,7 +54,7 @@ class Iterator {
     serialize(): SourceMap.SourceNode {
         var chunk = _.template("new r.Position(<%= sl %>, <%= sc %>, <%= el %>, <%= ec %>, '<%= fileName %>')")(this.position);
         return new SourceMap.SourceNode(
-            this.position.getStartLine() + 1, this.position.getEndColumn() + 1,
+            this.position.getStartLine() + 1, this.position.getStartColumn() + 1,
             this.position.getFileName(), chunk, "position"
         );
     }
