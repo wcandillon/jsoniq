@@ -4,6 +4,7 @@ import Iterator = require("./Iterator");
 import Position = require("../../compiler/parsers/Position");
 import DynamicContext = require("../DynamicContext");
 import Item = require("../items/Item");
+import SourceMap = require("source-map");
 
 class RangeIteratorState {
     from: number;
@@ -60,6 +61,19 @@ class RangeIterator extends Iterator {
         this.from.setDynamicCtx(dctx);
         this.to.setDynamicCtx(dctx);
         return this;
+    }
+
+    serialize(): SourceMap.SourceNode {
+        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getEndColumn() + 1, this.position.getFileName());
+        node
+            .add("new r.RangeIterator(")
+            .add(super.serialize())
+            .add(", ")
+            .add(this.from.serialize())
+            .add(", ")
+            .add(this.to.serialize())
+            .add(")");
+        return node;
     }
 };
 

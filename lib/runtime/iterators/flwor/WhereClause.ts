@@ -7,6 +7,8 @@ import Iterator = require("../Iterator");
 import Clause = require("./Clause");
 import Tuple = require("./Tuple");
 
+import SourceMap = require("source-map");
+
 class WhereClause extends Clause {
 
     private expr: Iterator;
@@ -57,6 +59,17 @@ class WhereClause extends Clause {
         super.setDynamicCtx(dctx);
         this.expr.setDynamicCtx(dctx);
         return this;
+    }
+
+    serialize(): SourceMap.SourceNode {
+        var node = new SourceMap.SourceNode(this.pos.getStartLine() + 1, this.pos.getEndColumn() + 1, this.pos.getFileName());
+         node
+         .add("new r.WhereClause(")
+         .add(super.serialize())
+         .add(", ")
+         .add(this.expr.serialize())
+         .add(")");
+        return node;
     }
 }
 

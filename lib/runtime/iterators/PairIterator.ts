@@ -3,6 +3,7 @@ import Iterator = require("./Iterator");
 import Position = require("../../compiler/parsers/Position");
 import DynamicContext = require("../DynamicContext");
 import Item = require("../items/Item");
+import SourceMap = require("source-map");
 
 class PairIterator extends Iterator {
 
@@ -48,6 +49,19 @@ class PairIterator extends Iterator {
         this.key.setDynamicCtx(dctx);
         this.value.setDynamicCtx(dctx);
         return this;
+    }
+
+    serialize(): SourceMap.SourceNode {
+        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getEndColumn() + 1, this.position.getFileName());
+        node
+            .add("new r.PairIterator(")
+            .add(super.serialize())
+            .add(", ")
+            .add(this.key.serialize())
+            .add(", ")
+            .add(this.value.serialize())
+            .add(")");
+        return node;
     }
 };
 

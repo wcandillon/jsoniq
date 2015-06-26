@@ -9,6 +9,8 @@ import Iterator = require("../Iterator");
 import Clause = require("./Clause");
 import Tuple = require("./Tuple");
 
+import SourceMap = require("source-map");
+
 class OrderClause extends Clause {
 
     private specs: { expr: Iterator; ascending: boolean; emptyGreatest: boolean }[];
@@ -90,6 +92,22 @@ class OrderClause extends Clause {
             spec.expr.setDynamicCtx(dctx);
         });
         return this;
+    }
+
+    serialize(): SourceMap.SourceNode {
+        //var node = new SourceMap.SourceNode(this.pos.getStartLine() + 1, this.pos.getEndColumn() + 1, this.pos.getFileName());
+        throw new Error();
+        /*
+        node
+            .add("new r.LetClause(")
+            .add(super.serialize())
+            .add(", ")
+            .add(JSON.stringify(this.varName))
+            .add(", ")
+            .add(this.expr.serialize())
+            .add(")");
+        */
+        //return node;
     }
 }
 

@@ -3,6 +3,7 @@ import Iterator = require("./Iterator");
 import Position = require("../../compiler/parsers/Position");
 import DynamicContext = require("../DynamicContext");
 import Item = require("../items/Item");
+import SourceMap = require("source-map");
 
 class MultiplicativeIterator extends Iterator {
 
@@ -51,6 +52,21 @@ class MultiplicativeIterator extends Iterator {
         this.left.setDynamicCtx(dctx);
         this.right.setDynamicCtx(dctx);
         return this;
+    }
+
+    serialize(): SourceMap.SourceNode {
+        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getEndColumn() + 1, this.position.getFileName());
+        node
+            .add("new r.MultiplicativeIterator(")
+            .add(super.serialize())
+            .add(", ")
+            .add(this.right.serialize())
+            .add(", ")
+            .add(this.left.serialize())
+            .add(", ")
+            .add(JSON.stringify(this.operator))
+            .add(")");
+        return node;
     }
 };
 

@@ -1,7 +1,8 @@
+import _ = require("lodash");
 import Position = require("../../../compiler/parsers/Position");
 import DynamicContext = require("../../DynamicContext");
-
 import Tuple = require("./Tuple");
+import SourceMap = require("source-map");
 
 class Clause {
 
@@ -47,6 +48,14 @@ class Clause {
     reset(): Clause {
         this.closed = false;
         return this;
+    }
+
+    serialize(): SourceMap.SourceNode {
+        var chunk = _.template("new r.Position(<%= sl %>, <%= sc %>, <%= el %>, <%= ec %>, '<%= fileName %>')")(this.pos);
+        return new SourceMap.SourceNode(
+            this.pos.getStartLine() + 1, this.pos.getEndColumn() + 1,
+            this.pos.getFileName(), chunk, "position"
+        );
     }
 }
 

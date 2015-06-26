@@ -7,6 +7,7 @@ import Clause = require("./Clause");
 import RootClause = require("./RootClause");
 import Tuple = require("./Tuple");
 import DynamicContext = require("../../DynamicContext");
+import SourceMap = require("source-map");
 
 class FLWORIterator extends Iterator {
 
@@ -70,6 +71,26 @@ class FLWORIterator extends Iterator {
             this.leafClause = clause;
         });
         return this;
+    }
+
+    serialize(): SourceMap.SourceNode {
+        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getEndColumn() + 1, this.position.getFileName());
+        node
+            .add("new r.FLWORIterator(")
+            .add(super.serialize())
+            .add(", [");
+        this.clauses.map((clause, i) => {
+            var isLast = i === this.clauses.length - 1;
+            node.add(clause.serialize());
+            if(!isLast) {
+                node.add(", ");
+            }
+        });
+        node
+            .add("], ")
+            .add(this.returnExpr.serialize())
+            .add(")");
+        return node;
     }
 }
 

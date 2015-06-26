@@ -10,7 +10,7 @@ export function expectQuery(source: string, jsoniq?: boolean): Promise<jasmine.M
             query.setFileName("test.xq");
         }
         var it = query.compile();
-        var plan = JSONiq.serialize(it);
+        //var plan = JSONiq.serialize(it);
         var result = [];
         it.forEach(function(item) {
             result.push(item.get());
