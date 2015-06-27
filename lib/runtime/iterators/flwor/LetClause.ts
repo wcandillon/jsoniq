@@ -7,6 +7,8 @@ import Iterator = require("../Iterator");
 import Clause = require("./Clause");
 import Tuple = require("./Tuple");
 
+import SourceMap = require("source-map");
+
 class LetClause extends Clause {
 
     private varName: string;
@@ -55,6 +57,19 @@ class LetClause extends Clause {
         super.setDynamicCtx(dctx);
         this.expr.setDynamicCtx(dctx);
         return this;
+    }
+
+    serialize(): SourceMap.SourceNode {
+        var node = new SourceMap.SourceNode(this.pos.getStartLine() + 1, this.pos.getStartColumn() + 1, this.pos.getFileName());
+        node
+            .add("new r.LetClause(")
+            .add(super.serialize())
+            .add(", ")
+            .add(JSON.stringify(this.varName))
+            .add(", ")
+            .add(this.expr.serialize())
+            .add(")");
+        return node;
     }
 }
 

@@ -12,7 +12,7 @@ cli
     var query = new JSONiq(fs.readFileSync(file, "utf-8"));
     query.setFileName(file);
     var it = query.compile();
-    it.forEach(function(item){
+    it.forEach(item => {
         console.log(item.get());
     }).catch(e => {
         console.error(e.stack);
@@ -26,7 +26,7 @@ cli
     var query = new JSONiq(fs.readFileSync(file, "utf-8"));
     query.setFileName(file);
     var it = query.compile();
-    console.log(it.toString());
+    console.log(JSONiq.serialize(it));
 });
 
 cli

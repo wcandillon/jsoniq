@@ -22,6 +22,9 @@
     },
     "commander/commander.d.ts": {
       "commit": "b3834d886a95789e6ab56e8244775ec10c5293d0"
+    },
+    "source-map/source-map.d.ts": {
+      "commit": "aae45edc2a66df08c931bd8f104df34aeae6306d"
     }
   }
 }

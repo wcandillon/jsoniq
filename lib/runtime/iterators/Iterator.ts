@@ -1,4 +1,6 @@
 /// <reference path="../../../typings/tsd.d.ts" />
+import _ = require("lodash");
+import SourceMap = require("source-map");
 import Position = require("../../compiler/parsers/Position");
 //import StaticContext = require("../../compiler/StaticContext");
 import DynamicContext = require("../DynamicContext");
@@ -16,6 +18,10 @@ class Iterator {
 
     constructor(position: Position) {
         this.position = position;
+    }
+
+    getPosition(): Position {
+        return this.position;
     }
 
     next(): Promise<Item> {
@@ -43,6 +49,14 @@ class Iterator {
     setDynamicCtx(dctx: DynamicContext): Iterator {
         this.dctx = dctx;
         return this;
+    }
+
+    serialize(): SourceMap.SourceNode {
+        var chunk = _.template("new r.Position(<%= sl %>, <%= sc %>, <%= el %>, <%= ec %>, '<%= fileName %>')")(this.position);
+        return new SourceMap.SourceNode(
+            this.position.getStartLine() + 1, this.position.getStartColumn() + 1,
+            this.position.getFileName(), chunk, "position"
+        );
     }
 }
 

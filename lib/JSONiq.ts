@@ -1,5 +1,8 @@
 /// <reference path="../typings/tsd.d.ts" />
-//require("source-map-support").install();
+require("source-map-support").install();
+
+import SourceMap = require("source-map");
+
 import Marker = require("./compiler/Marker");
 import Translator = require("./compiler/Translator");
 import Position = require("./compiler/parsers/Position");
@@ -20,7 +23,7 @@ class JSONiq {
 
     constructor(source: string) {
         this.source = source;
-        this.rootSctx = new RootStaticContext(new Position(0, 0, 0, 0));
+        this.rootSctx = new RootStaticContext(new Position(0, 0, 0, 0, this.fileName));
     }
 
     setFileName(fileName: string): JSONiq {
@@ -33,7 +36,7 @@ class JSONiq {
             (this.fileName.substring(this.fileName.length - ".jq".length).indexOf(".jq") !== -1) &&
             this.source.indexOf("xquery version") !== 0
             ) || this.source.indexOf("jsoniq version") === 0;
-        var h = new JSONParseTreeHandler(this.source);
+        var h = new JSONParseTreeHandler(this.source, this.fileName);
         var parser = isJSONiq ? new JSONiqParser.Parser(this.source, h) : new XQueryParser.Parser(this.source, h);
         try {
             parser.parse_XQuery();
@@ -46,7 +49,7 @@ class JSONiq {
                 } else if(parser instanceof XQueryParser.Parser) {
                     message = (<XQueryParser.Parser>parser).getErrorMessage(e);
                 }
-                var pos = Position.convertPosition(this.source, e.getBegin(), e.getEnd());
+                var pos = Position.convertPosition(this.source, e.getBegin(), e.getEnd(), this.fileName);
                 if (pos.getStartColumn() === pos.getEndColumn() && pos.getStartLine() === pos.getEndLine()) {
                     pos.setEndColumn(pos.getEndColumn() + 1);
                 }
@@ -66,6 +69,29 @@ class JSONiq {
         var it = translator.compile();
         this.markers = this.markers.concat(translator.getMarkers());
         return it;
+    }
+
+    static serialize(it: Iterator): string {
+        var node = new SourceMap.SourceNode(1, 1, it.getPosition().getFileName());
+        node.add("var r = require('./dist/lib/runtime/Runtime');\nvar it = ");
+        node.add(it.serialize());
+        node.add(";\n");
+        node.add("\n");
+        node.add("it.setDynamicCtx(new r.DynamicContext());");
+        node.add("\n");
+        node.add("it\n.forEach(function(item){ console.log(item.get()); })\n.catch(function(e){ console.error(e.stack); });");
+        var source = node.toStringWithSourceMap();
+
+        // output :: { code :: String, map :: SourceMapGenerator }
+        //var output         = rootSourceNode.toStringWithSourceMap({ file: mapFilename});
+
+        //We must add the //# sourceMappingURL comment directive
+        //so that the browser’s debugger knows where to find the source map.
+        source.code +=  "\n//# sourceMappingURL=data:application/json," + source.map;
+
+        //fs.writeFileSync(codeFilename, output.code);
+        //fs.writeFileSync(mapFilename,  output.map);
+        return source.code;
     }
 
     getMarkers(): Marker[] {

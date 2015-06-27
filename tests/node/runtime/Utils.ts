@@ -10,6 +10,7 @@ export function expectQuery(source: string, jsoniq?: boolean): Promise<jasmine.M
             query.setFileName("test.xq");
         }
         var it = query.compile();
+        //var plan = JSONiq.serialize(it);
         var result = [];
         it.forEach(function(item) {
             result.push(item.get());
@@ -19,6 +20,12 @@ export function expectQuery(source: string, jsoniq?: boolean): Promise<jasmine.M
             reject(error.stack);
         })
         .then(() => {
+            /*
+            console.log("=");
+            console.log(eval(plan));
+            console.log(result);
+            console.log("=");
+             */
             resolve(expect(result));
         });
     });

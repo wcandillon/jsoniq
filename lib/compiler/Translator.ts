@@ -109,7 +109,8 @@ class Translator {
                 this.sctx.getPosition().getStartLine(),
                 this.sctx.getPosition().getStartColumn(),
                 pos.getEndLine(),
-                pos.getEndColumn()
+                pos.getEndColumn(),
+                pos.getFileName()
             )
         );
         this.sctx.getParent().addVarRefs(this.sctx.getUnusedVarRefs());
@@ -315,7 +316,7 @@ class Translator {
         var value = this.popIt();
         var key;
         if(node.find(["NCName"])[0]) {
-            key = new ItemIterator(new Item(node.find(["NCName"])[0].toString()));
+            key = new ItemIterator(node.getPosition(), new Item(node.find(["NCName"])[0].toString()));
         } else {
             key = this.popIt();
         }
@@ -325,36 +326,36 @@ class Translator {
 
     DecimalLiteral(node: ASTNode): boolean {
         var item = new Item(parseFloat(node.toString()));
-        this.pushIt(new ItemIterator(item));
+        this.pushIt(new ItemIterator(node.getPosition(), item));
         return true;
     }
 
     DoubleLiteral(node: ASTNode): boolean {
         var item = new Item(parseFloat(node.toString()));
-        this.pushIt(new ItemIterator(item));
+        this.pushIt(new ItemIterator(node.getPosition(), item));
         return true;
     }
 
     IntegerLiteral(node: ASTNode): boolean {
         var item = new Item(parseInt(node.toString(), 10));
-        this.pushIt(new ItemIterator(item));
+        this.pushIt(new ItemIterator(node.getPosition(), item));
         return true;
     }
 
     StringLiteral(node: ASTNode): boolean {
         var val = node.toString();
         val = val.substring(1, val.length - 1);
-        this.pushIt(new ItemIterator(new Item(val)));
+        this.pushIt(new ItemIterator(node.getPosition(), new Item(val)));
         return true;
     }
 
     BooleanLiteral(node: ASTNode): boolean {
-        this.pushIt(new ItemIterator(new Item(node.toString() === "true")));
+        this.pushIt(new ItemIterator(node.getPosition(), new Item(node.toString() === "true")));
         return true;
     }
 
     NullLiteral(node: ASTNode): boolean {
-        this.pushIt(new ItemIterator(new Item(null)));
+        this.pushIt(new ItemIterator(node.getPosition(), new Item(null)));
         return true;
     }
 

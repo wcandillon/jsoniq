@@ -5,21 +5,24 @@ class Position {
     private el: number = 0;
     private ec: number = 0;
 
-    static convertPosition(code: string, begin: number, end: number) {
+    private fileName: string;
+
+    static convertPosition(code: string, begin: number, end: number, fileName: string) {
         var before = code.substring(0, begin);
         var after = code.substring(0, end);
         var startline = before.split("\n").length;
         var startcolumn = begin - before.lastIndexOf("\n");
         var endline = after.split("\n").length;
         var endcolumn = end - after.lastIndexOf("\n");
-        return new Position(startline - 1, startcolumn - 1, endline - 1, endcolumn - 1);
+        return new Position(startline - 1, startcolumn - 1, endline - 1, endcolumn - 1, fileName);
     }
 
-    constructor(sl: number, sc: number, el: number, ec: number) {
+    constructor(sl: number, sc: number, el: number, ec: number, fileName: string) {
         this.sl = sl;
         this.sc = sc;
         this.el = el;
         this.ec = ec;
+        this.fileName = fileName;
     }
 
     getStartLine(): number {
@@ -56,6 +59,10 @@ class Position {
     setEndColumn(ec: number): Position {
         this.ec = ec;
         return this;
+    }
+
+    getFileName(): string {
+        return this.fileName;
     }
 }
 

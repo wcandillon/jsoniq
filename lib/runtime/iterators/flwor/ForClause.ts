@@ -9,6 +9,8 @@ import ItemIterator = require("../ItemIterator");
 import Clause = require("./Clause");
 import Tuple = require("./Tuple");
 
+import SourceMap = require("source-map");
+
 class ForClause extends Clause {
 
     private varName: string;
@@ -56,9 +58,9 @@ class ForClause extends Clause {
                     return this.pull();
                 } else {
                     this.state.index++;
-                    tuple.addVariable(this.varName, new ItemIterator(item));
+                    tuple.addVariable(this.varName, new ItemIterator(undefined, item));
                     if(this.positionalVar) {
-                        tuple.addVariable(this.positionalVar, new ItemIterator(new Item(this.state.index)));
+                        tuple.addVariable(this.positionalVar, new ItemIterator(undefined, new Item(this.state.index)));
                     }
                     tuple.getVariableNames().forEach(varName => {
                         this.dctx.setVariable("", varName, tuple.getVariable(varName));
@@ -82,6 +84,23 @@ class ForClause extends Clause {
         this.parent.reset();
         this.expr.reset();
         return this;
+    }
+
+    serialize(): SourceMap.SourceNode {
+        var node = new SourceMap.SourceNode(this.pos.getStartLine() + 1, this.pos.getStartColumn() + 1, this.pos.getFileName());
+        node
+            .add("new r.ForClause(")
+            .add(super.serialize())
+            .add(", ")
+            .add(JSON.stringify(this.varName))
+            .add(", ")
+            .add(JSON.stringify(this.allowEmpty))
+            .add(", ")
+            .add(JSON.stringify(this.positionalVar))
+            .add(", ")
+            .add(this.expr.serialize())
+            .add(")");
+        return node;
     }
 }
 

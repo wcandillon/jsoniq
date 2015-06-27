@@ -6,6 +6,8 @@ import Position = require("./Position");
 class JSONParseTreeHandler implements JSONiqParser.ParsingEventHandler {
 
     private source: string;
+    private fileName: string;
+
     private ast: ASTNode;
     private ptr: ASTNode;
     private remains: string;
@@ -23,13 +25,14 @@ class JSONParseTreeHandler implements JSONiqParser.ParsingEventHandler {
         "FTContainsExpr", "SimpleMapExpr", "PathExpr", "RelativePathExpr", "PostfixExpr", "StepExpr"
     ];
 
-    constructor(source) {
+    constructor(source: string, fileName: string) {
         this.source = source;
         this.remains = source;
+        this.fileName = fileName;
     }
 
     pushNode(name: string): JSONParseTreeHandler { //begin
-        var node = new ASTNode(name, this.ast, new Position(0, 0, 0, 0), undefined, []);
+        var node = new ASTNode(name, this.ast, new Position(0, 0, 0, 0, this.fileName), undefined, []);
         if (this.ast === undefined) {
             this.ast = node;
             this.ast.index = [];
@@ -60,7 +63,8 @@ class JSONParseTreeHandler implements JSONiqParser.ParsingEventHandler {
                 s.getPosition().getStartLine(),
                 s.getPosition().getStartColumn(),
                 e.getPosition().getEndLine(),
-                e.getPosition().getEndColumn()
+                e.getPosition().getEndColumn(),
+                this.fileName
             ));
         }
 
@@ -145,7 +149,7 @@ class JSONParseTreeHandler implements JSONiqParser.ParsingEventHandler {
 
         this.line = el;
         this.lineCursor = ec;
-        node.setPosition(new Position(sl, sc, el, ec));
+        node.setPosition(new Position(sl, sc, el, ec, this.fileName));
     }
 }
 

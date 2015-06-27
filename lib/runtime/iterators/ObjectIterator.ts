@@ -4,6 +4,7 @@ import Iterator = require("./Iterator");
 import Position = require("../../compiler/parsers/Position");
 import DynamicContext = require("../DynamicContext");
 import Item = require("../items/Item");
+import SourceMap = require("source-map");
 
 class ObjectIterator extends Iterator {
 
@@ -48,6 +49,17 @@ class ObjectIterator extends Iterator {
             it.setDynamicCtx(dctx);
         });
         return this;
+    }
+
+    serialize(): SourceMap.SourceNode {
+        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getStartColumn() + 1, this.position.getFileName());
+        node
+            .add("new r.ObjectIterator(")
+            .add(super.serialize())
+            .add(", [")
+            .add(this.pairs.map(pair => { return pair.serialize(); }).join(","))
+            .add("])");
+        return node;
     }
 };
 
