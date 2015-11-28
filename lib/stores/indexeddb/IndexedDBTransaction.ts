@@ -1,10 +1,6 @@
-/// <reference path="../../../typings/es6-promise/es6-promise.d.ts" />
+import { ITransaction } from "../ITransaction";
 
-import es6Promise = require("es6-promise");
-
-import ITransaction = require("../ITransaction");
-
-class IndexedDBTransaction implements ITransaction {
+export default class IndexedDBTransaction implements ITransaction {
 
     private db: IDBDatabase;
     private txs: Promise<any>[] = [];
@@ -14,11 +10,11 @@ class IndexedDBTransaction implements ITransaction {
     }
 
     done(): Promise<any> {
-        return es6Promise.Promise.all(this.txs);
+        return Promise.all(this.txs);
     }
 
     get(id: string): Promise<any> {
-        return new es6Promise.Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             var segments = id.split(":");
             var objectStoreName = segments[0];
             var key = segments[1];
@@ -38,7 +34,7 @@ class IndexedDBTransaction implements ITransaction {
         var objectStoreName = segments[0];
         var key = segments[1];
         var tx = this.db.transaction(objectStoreName, "readwrite");
-        this.txs.push(new es6Promise.Promise((resolve, reject) => {
+        this.txs.push(new Promise((resolve, reject) => {
             var objectStore = tx.objectStore(objectStoreName);
             objectStore.put(item, !objectStore.keyPath && objectStore["autoIncrement"] !== true ? key : undefined);
             tx.oncomplete = event => { resolve(event); };
@@ -52,7 +48,7 @@ class IndexedDBTransaction implements ITransaction {
         var objectStoreName = segments[0];
         var key = segments[1];
         var tx = this.db.transaction(objectStoreName, "readwrite");
-        this.txs.push(new es6Promise.Promise((resolve, reject) => {
+        this.txs.push(new Promise((resolve, reject) => {
             tx.objectStore(objectStoreName).delete(key);
             tx.oncomplete = event => { resolve(event); };
             tx.onerror = event => { reject(event); };
@@ -60,5 +56,3 @@ class IndexedDBTransaction implements ITransaction {
         return this;
     }
 }
-
-export = IndexedDBTransaction;

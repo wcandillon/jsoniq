@@ -1,46 +1,40 @@
-import _ = require("lodash");
+//import * as _ from "lodash";
 
-import ASTNode = require("./parsers/ASTNode");
-import Position = require("./parsers/Position");
+import ASTNode from "./parsers/ASTNode";
+import Position from "./parsers/Position";
 
-import StaticContext = require("./StaticContext");
-import RootStaticContext = require("./RootStaticContext");
-import QName = require("./QName");
-import Variable = require("./Variable");
-import Marker = require("./Marker");
-import err = require("./StaticErrors");
-import war = require("./StaticWarnings");
+import StaticContext from "./StaticContext";
+import RootStaticContext from "./RootStaticContext";
+import QName from "./QName";
+//import Variable from "./Variable";
+import Marker from "./Marker";
 
-import DynamicContext = require("../runtime/DynamicContext");
-import Iterator = require("../runtime/iterators/Iterator");
-import ItemIterator = require("../runtime/iterators/ItemIterator");
-import AdditiveIterator = require("../runtime/iterators/AdditiveIterator");
-import RangeIterator = require("../runtime/iterators/RangeIterator");
-import SequenceIterator = require("../runtime/iterators/SequenceIterator");
-import MultiplicativeIterator = require("../runtime/iterators/MultiplicativeIterator");
-import VarRefIterator = require("../runtime/iterators/VarRefIterator");
-import ComparisonIterator = require("../runtime/iterators/ComparisonIterator");
-import ObjectIterator = require("../runtime/iterators/ObjectIterator");
-import PairIterator = require("../runtime/iterators/PairIterator");
-import ArrayIterator = require("../runtime/iterators/ArrayIterator");
+import * as err from "./StaticErrors";
+//import * as war from "./StaticWarnings";
 
-import FLWORIterator = require("../runtime/iterators/flwor/FLWORIterator");
-import Clause = require("../runtime/iterators/flwor/Clause");
-import ForClause = require("../runtime/iterators/flwor/ForClause");
-import LetClause = require("../runtime/iterators/flwor/LetClause");
-import OrderClause = require("../runtime/iterators/flwor/OrderClause");
-import WhereClause = require("../runtime/iterators/flwor/WhereClause");
+//import DynamicContext from "../runtime/DynamicContext";
 
-import Item = require("../runtime/items/Item");
+import Iterator from "../runtime/iterators/Iterator";
+import ItemIterator from "../runtime/iterators/ItemIterator";
+import AdditiveIterator from "../runtime/iterators/AdditiveIterator";
+import RangeIterator from "../runtime/iterators/RangeIterator";
+import SequenceIterator from "../runtime/iterators/SequenceIterator";
+import MultiplicativeIterator from "../runtime/iterators/MultiplicativeIterator";
+import VarRefIterator from "../runtime/iterators/VarRefIterator";
+import ComparisonIterator from "../runtime/iterators/ComparisonIterator";
+import ObjectIterator from "../runtime/iterators/ObjectIterator";
+import PairIterator from "../runtime/iterators/PairIterator";
+import ArrayIterator from "../runtime/iterators/ArrayIterator";
 
-class Translator {
+import Item from "../runtime/items/Item";
+
+export default class Translator {
 
     private ast: ASTNode;
 
     private markers: Marker[] = [];
 
     private iterators: Iterator[]  = [];
-    private clauses: Clause[][] = [];
 
     private rootSctx: RootStaticContext;
 
@@ -80,30 +74,13 @@ class Translator {
         }
         return this.iterators.pop();
     }
-
-    private startFLWOR(): Translator {
-        this.clauses.push([]);
-        return this;
-    }
-
-    private pushClause(clause: Clause): Translator {
-        this.clauses[this.clauses.length - 1].push(clause);
-        return this;
-    }
-
-    private popClauses(): Clause[] {
-        if(this.clauses.length === 0) {
-            throw new Error("Empty clause statck.");
-        }
-        return this.clauses.pop();
-    }
-
+/*
     private pushCtx(pos: Position): Translator {
         this.sctx = this.sctx.createContext(pos);
         return this;
     }
 
-    private popCtx = function(pos: Position): Translator {
+    private popCtx(pos: Position): Translator {
         this.sctx.setPosition(
             new Position(
                 this.sctx.getPosition().getStartLine(),
@@ -122,15 +99,16 @@ class Translator {
         this.sctx = this.sctx.getParent();
         return this;
     }
+    */
 
     compile(): Iterator {
         this.visit(this.ast);
         //if iterators.lenght === 0
         //TODO: [XPST0003] invalid expression: syntax error, unexpected end of file, the query body should not be empty
-        if(this.iterators.length !== 1 || this.clauses.length !== 0) {
+        if(this.iterators.length !== 1) {
             throw new Error("Invalid query plan.");
         }
-        return this.iterators[0].setDynamicCtx(new DynamicContext(undefined));
+        return this.iterators[0];
     }
 
     getMarkers(): Marker[] {
@@ -160,73 +138,6 @@ class Translator {
         if(this.iterators.length === 0) {
             this.pushIt(new SequenceIterator(node.getPosition(), []));
         }
-        return true;
-    }
-
-    FLWORExpr(node: ASTNode): boolean {
-        this.pushCtx(node.getPosition());
-        this.startFLWOR();
-        this.visitChildren(node);
-        var clauses: Clause[] = this.popClauses();
-        this.pushIt(new FLWORIterator(node.getPosition(), clauses, this.popIt()));
-        for(var i = 0; i < clauses.length; i++) {
-            this.popCtx(node.getPosition());
-        }
-        this.popCtx(node.getPosition());
-        return true;
-    }
-
-    //ForBinding ::= "$" VarName TypeDeclaration? AllowingEmpty? PositionalVar? "in" ExprSingle
-    ForBinding(node: ASTNode): boolean {
-        this.visitChildren(node);
-        this.pushCtx(node.getPosition());
-        var varName = node.find(["VarName"])[0].toString();
-        var allowingEmpty = node.find(["AllowingEmpty"])[0] !== undefined;
-        var pos = node.find(["PositionalVar"])[0];
-        var posVarName;
-        if(pos) {
-            posVarName = pos.find(["VarName"])[0].toString();
-        }
-        this.pushClause(new ForClause(node.getPosition(), varName, allowingEmpty, posVarName, this.popIt()));
-        return true;
-    }
-
-    //LetBinding ::= ( '$' VarName TypeDeclaration? | FTScoreVar ) ':=' ExprSingle
-    LetBinding(node: ASTNode): boolean {
-        this.visitChildren(node);
-        this.pushCtx(node.getPosition());
-        var v = node.find(["VarName"])[0];
-        var qname = this.resolveQName(v.toString(), v.getPosition());
-        this.sctx.addVariable(new Variable(v.getPosition(), "LetBinding", qname));
-        this.pushClause(new LetClause(node.getPosition(), v.toString(), this.popIt()));
-        return true;
-    }
-
-    WhereClause(node: ASTNode): boolean {
-        this.visitChildren(node);
-        this.pushCtx(node.getPosition());
-        this.pushClause(new WhereClause(node.getPosition(), this.popIt()));
-        return true;
-    }
-
-    OrderByClause(node: ASTNode): boolean {
-        this.pushCtx(node.getPosition());
-        var orderSpecs: { expr: Iterator; ascending: boolean; emptyGreatest: boolean }[] = [];
-        var specs: ASTNode[] = node.find(["OrderSpecList"])[0].getChildren();
-        _.chain<ASTNode[]>(specs).forEach((spec: ASTNode) => {
-            this.visitChildren(spec);
-            orderSpecs.push({
-                expr: this.popIt(),
-                ascending: spec.find(["OrderModifier"])[0].toString().indexOf("ascending") !== -1,
-                emptyGreatest: spec.find(["OrderModifier"])[0].toString().indexOf("empty greatest") !== -1
-            });
-        });
-        this.pushClause(new OrderClause(node.getPosition(), orderSpecs));
-        return true;
-    }
-
-    ReturnClause(node: ASTNode): boolean {
-        this.visitChildren(node);
         return true;
     }
 
@@ -380,5 +291,3 @@ class Translator {
         return this;
     }
 }
-
-export = Translator;

@@ -1,8 +1,8 @@
-import DeleteFromArray = require("../primitives/DeleteFromArray");
-import PUL = require("../PUL");
-import UPComposition = require("./UPComposition");
+import DeleteFromArray from "../primitives/DeleteFromArray";
+import PUL from "../PUL";
+import UPComposition from "./UPComposition";
 
-class DeleteFromArrayComposition extends UPComposition {
+export default class DeleteFromArrayComposition extends UPComposition {
     constructor(d0: PUL) {
         super(d0);
     }
@@ -11,5 +11,3 @@ class DeleteFromArrayComposition extends UPComposition {
         throw new Error("Not implemented yet");
     }
 }
-
-export = DeleteFromArrayComposition;

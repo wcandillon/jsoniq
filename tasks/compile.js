@@ -8,9 +8,7 @@ var Config = require('./config');
 
 var tsProject = $.typescript.createProject({
     declarationFiles: false,
-    target: 'ES6',
-    module: 'commonjs',
-    typescript: require('typescript')
+    target: 'ES5'
 });
 
 gulp.task('compile:clean', function () {

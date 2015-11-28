@@ -1,10 +1,10 @@
 /// <reference path="../../../../typings/tsd.d.ts" />
-import _ = require("lodash");
-import PUL = require("../../../../lib/updates/PUL");
-import PULComposition = require("../../../../lib/updates/composition/PULComposition");
-import MemoryStore = require("../../../../lib/stores/memory/MemoryStore");
+import * as _ from "lodash";
+import PUL from "../../../../lib/updates/PUL";
+import PULComposition from "../../../../lib/updates/composition/PULComposition";
+import MemoryStore from "../../../../lib/stores/memory/MemoryStore";
 
-class Common {
+export default class Common {
     private static debug(pul: PUL, snapshot: {}, show: boolean) {
         if(show) {
             if(pul) {
@@ -54,6 +54,4 @@ class Common {
         });
     }
 }
-
-export = Common;
 

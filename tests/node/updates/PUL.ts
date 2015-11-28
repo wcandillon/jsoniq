@@ -1,8 +1,8 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-import _ = require("lodash");
-import uuid = require("node-uuid");
-import PUL = require("../../../lib/updates/PUL");
-import jerr = require("../../../lib/errors");
+import * as _ from "lodash";
+import * as uuid from "node-uuid";
+import PUL from "../../../lib/updates/PUL";
+import * as jerr from "../../../lib/errors";
 
 describe("PUL", () => {
     it("Should build a simple PUL", () => {

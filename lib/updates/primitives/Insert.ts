@@ -2,11 +2,11 @@
 //import _ = require("lodash");
 //import jerr = require("../../errors");
 
-import UpdatePrimitive = require("./UpdatePrimitive");
+import UpdatePrimitive from "./UpdatePrimitive";
 
-import IPUL = require("../IPUL");
+import { IPUL } from "../IPUL";
 
-class Insert extends UpdatePrimitive {
+export default class Insert extends UpdatePrimitive {
     id: string;
     item: any;
 
@@ -21,5 +21,3 @@ class Insert extends UpdatePrimitive {
         return this;
     }
 }
-
-export = Insert;

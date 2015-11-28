@@ -1,10 +1,10 @@
 /// <reference path="../../typings/tsd.d.ts" />
-import _ = require("lodash");
-import QName = require("./QName");
-import Variable = require("./Variable");
-import Position = require("./parsers/Position");
+import * as _ from "lodash";
+import QName from "./QName";
+import Variable from "./Variable";
+import Position from "./parsers/Position";
 
-class StaticContext {
+export default class StaticContext {
 
     private parent: StaticContext;
     private position: Position;
@@ -74,5 +74,3 @@ class StaticContext {
         return this;
     }
 }
-
-export = StaticContext;

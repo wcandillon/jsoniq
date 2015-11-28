@@ -1,16 +1,16 @@
-import PUL = require("../PUL");
+import PUL  from "../PUL";
 
-import InsertComposition = require("./InsertComposition");
-import RemoveComposition = require("./RemoveComposition");
-import DeleteFromObjectComposition = require("./DeleteFromObjectComposition");
-import InsertIntoObjectComposition = require("./InsertIntoObjectComposition");
-import ReplaceInObjectComposition = require("./ReplaceInObjectComposition");
-import RenameInObjectComposition = require("./RenameInObjectComposition");
-import ReplaceInArrayComposition = require("./ReplaceInArrayComposition");
-import DeleteFromArrayComposition = require("./DeleteFromArrayComposition");
-import InsertIntoArrayComposition = require("./InsertIntoArrayComposition");
+import InsertComposition  from "./InsertComposition";
+import RemoveComposition  from "./RemoveComposition";
+import DeleteFromObjectComposition  from "./DeleteFromObjectComposition";
+import InsertIntoObjectComposition  from "./InsertIntoObjectComposition";
+import ReplaceInObjectComposition  from "./ReplaceInObjectComposition";
+import RenameInObjectComposition  from "./RenameInObjectComposition";
+import ReplaceInArrayComposition  from "./ReplaceInArrayComposition";
+import DeleteFromArrayComposition  from "./DeleteFromArrayComposition";
+import InsertIntoArrayComposition  from "./InsertIntoArrayComposition";
 
-class PULComposition {
+export default class PULComposition {
 
     static compose(d0: PUL, d1: PUL, copy: boolean = false): PUL {
 
@@ -70,5 +70,3 @@ class PULComposition {
         return d0.normalize();
     }
 }
-
-export = PULComposition;

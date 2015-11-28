@@ -1,4 +1,4 @@
-class QName {
+export default class QName {
 
     private prefix: string;
     private uri: string;
@@ -30,5 +30,3 @@ class QName {
         }
     }
 }
-
-export = QName;

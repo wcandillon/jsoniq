@@ -1,9 +1,9 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-import JSONiqParser = require("./JSONiqParser");
-import ASTNode = require("./ASTNode");
-import Position = require("./Position");
+import * as Parser from "./JSONiqParser";
+import ASTNode from "./ASTNode";
+import Position from "./Position";
 
-class JSONParseTreeHandler implements JSONiqParser.ParsingEventHandler {
+export default class JSONParseTreeHandler implements Parser.ParsingEventHandler {
 
     private source: string;
     private fileName: string;
@@ -152,5 +152,3 @@ class JSONParseTreeHandler implements JSONiqParser.ParsingEventHandler {
         node.setPosition(new Position(sl, sc, el, ec, this.fileName));
     }
 }
-
-export = JSONParseTreeHandler;

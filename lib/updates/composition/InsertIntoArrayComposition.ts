@@ -1,8 +1,9 @@
-import InsertIntoArray = require("../primitives/InsertIntoArray");
-import PUL = require("../PUL");
-import UPComposition = require("./UPComposition");
+import InsertIntoArray from "../primitives/InsertIntoArray";
+import PUL from "../PUL";
+import UPComposition from "./UPComposition";
 
-class InsertIntoArrayComposition extends UPComposition {
+
+export default class InsertIntoArrayComposition extends UPComposition {
     constructor(d0: PUL) {
         super(d0);
     }
@@ -11,5 +12,3 @@ class InsertIntoArrayComposition extends UPComposition {
         throw new Error("Not implemented yet");
     }
 }
-
-export = InsertIntoArrayComposition;

@@ -1,8 +1,8 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 require("jasmine2-pit");
-import PUL = require("../../../lib/updates/PUL");
-import jerr = require("../../../lib/errors");
-import MemoryStore = require("../../../lib/stores/memory/MemoryStore");
+import PUL from "../../../lib/updates/PUL";
+import * as jerr from "../../../lib/errors";
+import MemoryStore from "../../../lib/stores/memory/MemoryStore";
 
 declare function pit(expectation: string, assertion?: (done: () => void) => any): void;
 

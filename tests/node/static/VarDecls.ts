@@ -1,5 +1,5 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-import u = require("./Utils");
+import * as u from "./Utils";
 
 describe("Test Variable declarations: ", () => {
 

@@ -18,7 +18,7 @@ gulp.task('browserify', function(){
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('test-build', $.sequence('compile', 'browserify'));
+gulp.task('test-build', $.sequence('compile'));//'browserify'
 
 gulp.task('jasmine', function () {
     var jasmine = require('gulp-jasmine');
@@ -36,4 +36,4 @@ gulp.task('watch', ['test-build'], function() {
     gulp.watch(Config.ts, ['compile']);
 });
 
-gulp.task('default', ['lint'], $.sequence('test-build', 'jasmine', 'karma'));
+gulp.task('default', ['lint'], $.sequence('test-build', 'jasmine')); //'karma'

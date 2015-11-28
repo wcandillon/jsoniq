@@ -1,4 +1,4 @@
-class Position {
+export default class Position {
 
     private sl: number = 0;
     private sc: number = 0;
@@ -65,5 +65,3 @@ class Position {
         return this.fileName;
     }
 }
-
-export = Position;

@@ -1,7 +1,7 @@
 /// <reference path="../../typings/tsd.d.ts" />
-import fs = require("fs");
-import cli = require("commander");
-import JSONiq = require("../JSONiq");
+import * as fs from "fs";
+import * as cli from "commander";
+import JSONiq from "../JSONiq";
 
 var pkg = require("../../../package.json");
 
@@ -11,12 +11,8 @@ cli
 .action(file => {
     var query = new JSONiq(fs.readFileSync(file, "utf-8"));
     query.setFileName(file);
-    var it = query.compile();
-    it.forEach(item => {
-        console.log(item.get());
-    }).catch(e => {
-        console.error(e.stack);
-    });
+    //var it = query.compile();
+
 });
 
 cli

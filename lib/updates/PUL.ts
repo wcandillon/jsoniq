@@ -1,27 +1,25 @@
 /// <reference path="../../typings/lodash/lodash.d.ts" />
-/// <reference path="../../typings/es6-promise/es6-promise.d.ts" />
-import es6Promise = require("es6-promise");
-import _ = require("lodash");
+import * as _ from "lodash";
 
-import jerr = require("../errors");
+import * as jerr from "../errors";
 
-import UpdatePrimitive  = require("./primitives/UpdatePrimitive");
-import InsertIntoObject = require("./primitives/InsertIntoObject");
-import InsertIntoArray  = require("./primitives/InsertIntoArray");
-import DeleteFromObject = require("./primitives/DeleteFromObject");
-import DeleteFromArray  = require("./primitives/DeleteFromArray");
-import ReplaceInObject  = require("./primitives/ReplaceInObject");
-import ReplaceInArray   = require("./primitives/ReplaceInArray");
-import RenameInObject   = require("./primitives/RenameInObject");
-import Insert           = require("./primitives/Insert");
-import Remove           = require("./primitives/Remove");
+import UpdatePrimitive  from "./primitives/UpdatePrimitive";
+import InsertIntoObject from "./primitives/InsertIntoObject";
+import InsertIntoArray  from "./primitives/InsertIntoArray";
+import DeleteFromObject from "./primitives/DeleteFromObject";
+import DeleteFromArray  from "./primitives/DeleteFromArray";
+import ReplaceInObject  from "./primitives/ReplaceInObject";
+import ReplaceInArray   from "./primitives/ReplaceInArray";
+import RenameInObject   from "./primitives/RenameInObject";
+import Insert           from "./primitives/Insert";
+import Remove           from "./primitives/Remove";
 
-import UpdatePrimitives = require("./UpdatePrimitives");
-import IPUL             = require("./IPUL");
+import UpdatePrimitives from "./UpdatePrimitives";
+import { IPUL }            from "./IPUL";
 
-import ITransaction = require("../stores/ITransaction");
+import { ITransaction } from "../stores/ITransaction";
 
-class PUL implements IPUL {
+export default class PUL implements IPUL {
 
     udps = new UpdatePrimitives();
 
@@ -48,7 +46,7 @@ class PUL implements IPUL {
                 target = udp.lockTarget(transaction).then(() => { return udp.getTarget(); });
             } else {
 		//TODO: remove setTimeout
-                target = new es6Promise.Promise((resolve, reject) => { setTimeout(resolve, 1); });
+                target = new Promise((resolve, reject) => { setTimeout(resolve, 1); });
             }
             target.then((target) => {
                 udp.invert(target, lPUL);
@@ -78,7 +76,7 @@ class PUL implements IPUL {
             });
             promises.push(target);
         });
-        return es6Promise.Promise.all(promises).then(() => {
+        return Promise.all(promises).then(() => {
             return pul.normalize();
         });
     }
@@ -96,7 +94,7 @@ class PUL implements IPUL {
             }
         });
 
-        return es6Promise.Promise.all(promises).then(() => {
+        return Promise.all(promises).then(() => {
 
             var apply = (udp: UpdatePrimitive) => {
                 var id = udp.id;
@@ -322,5 +320,3 @@ class PUL implements IPUL {
         return this;
     }
 }
-
-export = PUL;

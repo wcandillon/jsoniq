@@ -1,5 +1,5 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-import JSONiq = require("../../../lib/JSONiq");
+import JSONiq from "../../../lib/JSONiq";
 
 export function expectQuery(source: string, jsoniq?: boolean): Promise<jasmine.Matchers> {
     return new Promise((resolve, reject) => {
@@ -9,9 +9,10 @@ export function expectQuery(source: string, jsoniq?: boolean): Promise<jasmine.M
         } else {
             query.setFileName("test.xq");
         }
-        var it = query.compile();
+        query.compile();
         //var plan = JSONiq.serialize(it);
-        var result = [];
+        //var result = [];
+        /*
         it.forEach(function(item) {
             result.push(item.get());
         })
@@ -20,14 +21,8 @@ export function expectQuery(source: string, jsoniq?: boolean): Promise<jasmine.M
             reject(error.stack);
         })
         .then(() => {
-            /*
-            console.log("=");
-            console.log(eval(plan));
-            console.log(result);
-            console.log("=");
-             */
             resolve(expect(result));
-        });
+        });*/
     });
 }
 
@@ -39,8 +34,9 @@ export function expectSerializedQuery(source: string, jsoniq?: boolean): Promise
         } else {
             query.setFileName("test.xq");
         }
-        var it = query.compile();
-        var result: string[] = [];
+        query.compile();
+        //var result: string[] = [];
+        /*
         it.forEach(function(item) {
             result.push(JSON.stringify(item.get()));
         })
@@ -51,5 +47,6 @@ export function expectSerializedQuery(source: string, jsoniq?: boolean): Promise
         .then(() => {
             resolve(expect(result.join(" ")));
         });
+        */
     });
 }

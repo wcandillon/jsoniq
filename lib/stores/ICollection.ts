@@ -1,4 +1,4 @@
-interface ICollection {
+export interface ICollection {
     insert(document: any, id?: string): ICollection;
     remove(id: string): ICollection;
     insertIntoObject(id: string, ordPath: string[], pairs: {}): ICollection;
@@ -10,5 +10,3 @@ interface ICollection {
     renameInObject(id: string, ordPath: string[], key: string, newKey: string): ICollection;
     reset(): ICollection;
 }
-
-export = ICollection;

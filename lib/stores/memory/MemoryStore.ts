@@ -1,18 +1,17 @@
 /// <reference path="../../../typings/node-uuid/node-uuid.d.ts" />
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
-/// <reference path="../../../typings/es6-promise/es6-promise.d.ts" />
-import _ = require("lodash");
-import uuid = require("node-uuid");
-import PUL = require("../../updates/PUL");
-import UpdatePrimitives = require("../../updates/UpdatePrimitives");
-import IStore = require("../IStore");
-import ICollection = require("../ICollection");
-import ICollections = require("../ICollections");
-import LogEntry = require("../LogEntry");
-import MemoryCollection = require("./MemoryCollection");
-import MemoryTransaction = require("./MemoryTransaction");
+import * as _ from "lodash";
+import * as uuid from "node-uuid";
+import PUL from "../../updates/PUL";
+import UpdatePrimitives from "../../updates/UpdatePrimitives";
+import { IStore } from "../IStore";
+import { ICollection } from "../ICollection";
+import { ICollections } from "../ICollections";
+import { ILogEntry } from "../ILogEntry";
+import MemoryCollection from "./MemoryCollection";
+import MemoryTransaction from "./MemoryTransaction";
 
-class MemoryStore implements IStore {
+export default class MemoryStore implements IStore {
 
     snapshot: {} = {};
 
@@ -84,7 +83,7 @@ class MemoryStore implements IStore {
         throw new Error("Not implemented");
     }
 
-    log(from?: number, to?: number): Promise<LogEntry> {
+    log(from?: number, to?: number): Promise<ILogEntry> {
         throw new Error("Not implemented");
     }
 
@@ -96,5 +95,3 @@ class MemoryStore implements IStore {
         throw new Error("Not implemented");
     }
 }
-
-export = MemoryStore;

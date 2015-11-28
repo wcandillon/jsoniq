@@ -1,12 +1,10 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-import SourceMap = require("source-map");
+import * as SourceMap from "source-map";
 
-import Iterator = require("./Iterator");
-import Position = require("../../compiler/parsers/Position");
-import DynamicContext = require("../DynamicContext");
-import Item = require("../items/Item");
+import Iterator from "./Iterator";
+import Position from "../../compiler/parsers/Position";
 
-class AdditiveIterator extends Iterator {
+export default class AdditiveIterator extends Iterator {
 
     private isPlus: boolean;
     private left: Iterator;
@@ -17,32 +15,6 @@ class AdditiveIterator extends Iterator {
         this.left = left;
         this.right = right;
         this.isPlus = isPlus;
-    }
-
-    next(): Promise<Item> {
-        if(this.closed) {
-            return this.emptySequence();
-        }
-        return Promise.all([this.left.next(), this.right.next()]).then((values) => {
-            this.closed = true;
-            var left = values[0].get();
-            var right = values[1].get();
-            return Promise.resolve(new Item(left + (this.isPlus ? right : (- right))));
-        });
-    }
-
-    reset(): Iterator {
-        super.reset();
-        this.left.reset();
-        this.right.reset();
-        return this;
-    }
-
-    setDynamicCtx(dctx: DynamicContext): AdditiveIterator {
-        super.setDynamicCtx(dctx);
-        this.left.setDynamicCtx(dctx);
-        this.right.setDynamicCtx(dctx);
-        return this;
     }
 
     serialize(): SourceMap.SourceNode {
@@ -59,6 +31,4 @@ class AdditiveIterator extends Iterator {
             .add(")");
         return node;
     }
-};
-
-export = AdditiveIterator;
+}

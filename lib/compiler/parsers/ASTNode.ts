@@ -1,7 +1,7 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-import Position = require("./Position");
+import Position from "./Position";
 
-class ASTNode {
+export default class ASTNode {
 
     private name: string;
     private parent: ASTNode;
@@ -120,5 +120,3 @@ class ASTNode {
         return result;
     }
 }
-
-export = ASTNode;

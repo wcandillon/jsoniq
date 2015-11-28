@@ -1,8 +1,8 @@
 /// <reference path="../../typings/tsd.d.ts" />
-import p = require("path");
-import fs = require("fs");
+import * as p from "path";
+import * as fs from "fs";
 
-import JSONiq = require("../../lib/JSONiq");
+import JSONiq from "../../lib/JSONiq";
 
 function getQueries(path: string): string[] {
     var files: string[] = [];

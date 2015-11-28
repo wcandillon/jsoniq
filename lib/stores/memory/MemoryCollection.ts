@@ -1,10 +1,10 @@
 /// <reference path="../../../typings/node-uuid/node-uuid.d.ts" />
-import uuid = require("node-uuid");
+import * as uuid from "node-uuid";
 
-import ICollection = require("../ICollection");
-import PUL = require("../../updates/PUL");
+import { ICollection } from "../ICollection";
+import PUL from "../../updates/PUL";
 
-class MemoryCollection implements ICollection {
+export default class MemoryCollection implements ICollection {
 
     private name: string;
     private pul: PUL;
@@ -78,5 +78,3 @@ class MemoryCollection implements ICollection {
         return this;
     }
 }
-
-export = MemoryCollection;

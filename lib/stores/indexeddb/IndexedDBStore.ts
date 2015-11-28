@@ -1,27 +1,26 @@
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
-import es6Promise = require("es6-promise");
-import _ = require("lodash");
+import * as _ from "lodash";
 
-import PUL = require("../../updates/PUL");
-import UpdatePrimitives = require("../../updates/UpdatePrimitives");
-import IStore = require("../IStore");
-import ICollection = require("../ICollection");
-import ICollections = require("../ICollections");
-import LogEntry = require("../LogEntry");
-import IndexedDBCollection = require("./IndexedDBCollection");
-import IndexedDBTransaction = require("./IndexedDBTransaction");
+import PUL from "../../updates/PUL";
+import UpdatePrimitives from "../../updates/UpdatePrimitives";
+import { IStore } from "../IStore";
+import { ICollection } from "../ICollection";
+import { ICollections } from "../ICollections";
+import { ILogEntry } from "../ILogEntry";
+import IndexedDBCollection from "./IndexedDBCollection";
+import IndexedDBTransaction from "./IndexedDBTransaction";
 
 var indexedDB = indexedDB || window["indexedDB"] || window["webkitIndexedDB"] ||
     window["mozIndexedDB"] || window["OIndexedDB"] || window["msIndexedDB"];
 
-class IndexedDBStore implements IStore {
+export default class IndexedDBStore implements IStore {
 
     private db: IDBDatabase;
     private pul: PUL = new PUL();
     private collections: ICollections = {};
 
     open(name: string, version?: number, onUpgrade?: (IDBVersionChangeEvent, IDBDatabase) => void): Promise<IDBDatabase> {
-        return new es6Promise.Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             var request = indexedDB.open(name, version);
 
             request.onerror = () => {
@@ -89,7 +88,7 @@ class IndexedDBStore implements IStore {
         throw new Error("Not implemented");
     }
 
-    log(from?: number, to?: number): Promise<LogEntry> {
+    log(from?: number, to?: number): Promise<ILogEntry> {
         throw new Error("Not implemented");
     }
 
@@ -101,5 +100,3 @@ class IndexedDBStore implements IStore {
         throw new Error("Not implemented");
     }
 }
-
-export = IndexedDBStore;

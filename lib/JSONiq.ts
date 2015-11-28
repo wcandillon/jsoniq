@@ -1,20 +1,18 @@
 /// <reference path="../typings/tsd.d.ts" />
+import Marker from "./compiler/Marker";
+import Translator from "./compiler/Translator";
+import Position from "./compiler/parsers/Position";
+import RootStaticContext from "./compiler/RootStaticContext";
+import ASTNode from "./compiler/parsers/ASTNode";
+import * as JSONiqParser from "./compiler/parsers/JSONiqParser";
+import * as XQueryParser from "./compiler/parsers/XQueryParser";
+import JSONParseTreeHandler from "./compiler/parsers/JSONParseTreeHandler";
+
+import Iterator from "./runtime/iterators/Iterator";
+
 require("source-map-support").install();
 
-import SourceMap = require("source-map");
-
-import Marker = require("./compiler/Marker");
-import Translator = require("./compiler/Translator");
-import Position = require("./compiler/parsers/Position");
-import RootStaticContext = require("./compiler/RootStaticContext");
-import ASTNode = require("./compiler/parsers/ASTNode");
-import JSONiqParser = require("./compiler/parsers/JSONiqParser");
-import XQueryParser = require("./compiler/parsers/XQueryParser");
-import JSONParseTreeHandler = require("./compiler/parsers/JSONParseTreeHandler");
-
-import Iterator = require("./runtime/iterators/Iterator");
-
-class JSONiq {
+export default class JSONiq {
 
     private rootSctx: RootStaticContext;
     private source: string;
@@ -98,5 +96,3 @@ class JSONiq {
         return this.markers;
     }
 }
-
-export = JSONiq;

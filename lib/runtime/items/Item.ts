@@ -1,4 +1,4 @@
-class Item {
+export default class Item {
     private item: any;
 
     constructor(item: any) {
@@ -9,5 +9,3 @@ class Item {
         return this.item;
     }
 }
-
-export = Item;

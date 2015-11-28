@@ -1,12 +1,12 @@
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
-import _ = require("lodash");
-//import jerr = require("../../errors");
+import * as _ from "lodash";
+//import jerr = from "../../errors");
 
-import UpdatePrimitive = require("./UpdatePrimitive");
+import UpdatePrimitive from "./UpdatePrimitive";
 
-import IPUL = require("../IPUL");
+import {IPUL} from "../IPUL";
 
-class DeleteFromObject extends UpdatePrimitive {
+export default class DeleteFromObject extends UpdatePrimitive {
     keys: string[];
 
     constructor(id: string, ordPath: string[], keys: string[]) {
@@ -36,5 +36,3 @@ class DeleteFromObject extends UpdatePrimitive {
         return this;
     }
 }
-
-export = DeleteFromObject;

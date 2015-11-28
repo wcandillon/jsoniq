@@ -1,11 +1,11 @@
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
 //import _ = require("lodash");
-import jerr = require("../../errors");
-import UpdatePrimitive = require("./UpdatePrimitive");
+import * as jerr from "../../errors";
+import UpdatePrimitive from "./UpdatePrimitive";
 
-import IPUL = require("../IPUL");
+import { IPUL } from "../IPUL";
 
-class ReplaceInObject extends UpdatePrimitive {
+export default class ReplaceInObject extends UpdatePrimitive {
     key: string;
     item: any;
 
@@ -32,5 +32,3 @@ class ReplaceInObject extends UpdatePrimitive {
         return this;
     }
 }
-
-export = ReplaceInObject;

@@ -1,6 +1,6 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-import JSONiq = require("../../../lib/JSONiq");
-import Marker = require("../../../lib/compiler/Marker");
+import JSONiq from "../../../lib/JSONiq";
+import Marker from "../../../lib/compiler/Marker";
 
 export function getMarkers(source: string, jsoniq?: boolean): Marker[] {
     var query = new JSONiq(source);

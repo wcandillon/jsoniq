@@ -1,9 +1,9 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 require("jasmine2-pit");
-import p = require("path");
-import fs = require("fs");
+import * as p from "path";
+import * as fs from "fs";
 
-import u = require("./Utils");
+import * as u from "./Utils";
 
 declare function pit(expectation: string, assertion?: (done: () => void) => any): void;
 

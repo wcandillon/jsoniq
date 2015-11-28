@@ -1,11 +1,11 @@
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
-import _ = require("lodash");
+import * as _ from "lodash";
 
-import Insert        = require("../primitives/Insert");
-import PUL           = require("../PUL");
-import UPComposition = require("./UPComposition");
+import Insert from "../primitives/Insert";
+import PUL from "../PUL";
+import UPComposition from "./UPComposition";
 
-class InsertComposition extends UPComposition {
+export default class InsertComposition extends UPComposition {
 
     constructor(d0: PUL) {
         super(d0);
@@ -20,5 +20,3 @@ class InsertComposition extends UPComposition {
         return this;
     }
 }
-
-export = InsertComposition;

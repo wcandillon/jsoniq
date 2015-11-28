@@ -1,8 +1,8 @@
-import ReplaceInArray = require("../primitives/ReplaceInArray");
-import PUL = require("../PUL");
-import UPComposition = require("./UPComposition");
+import ReplaceInArray from "../primitives/ReplaceInArray";
+import PUL from "../PUL";
+import UPComposition from "./UPComposition";
 
-class ReplaceInArrayComposition extends UPComposition {
+export default class ReplaceInArrayComposition extends UPComposition {
     constructor(d0: PUL) {
         super(d0);
     }
@@ -11,5 +11,3 @@ class ReplaceInArrayComposition extends UPComposition {
         throw new Error("Not implemented yet");
     }
 }
-
-export = ReplaceInArrayComposition;
