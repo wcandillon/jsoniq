@@ -1,5 +1,7 @@
 'use strict';
 
+require('harmonize')(['harmony_default_parameters']);
+
 var gulp = require('gulp');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
@@ -11,6 +13,7 @@ var Config = require('./tasks/config');
 require('./tasks/lint');
 require('./tasks/compile');
 require('./tasks/rex');
+require('./tasks/tests');
 
 gulp.task('browserify', function(){
     return browserify().require('./dist/lib/stores/indexeddb/IndexedDBStore.js', { expose: 'IndexedDBStore' }).bundle()
@@ -19,11 +22,6 @@ gulp.task('browserify', function(){
 });
 
 gulp.task('test-build', $.sequence('compile'));//'browserify'
-
-gulp.task('jasmine', function () {
-    var jasmine = require('gulp-jasmine');
-    return gulp.src('dist/tests/node/**/*.js').pipe(jasmine());
-});
 
 gulp.task('karma', function(done){
     karma.start({
@@ -36,4 +34,4 @@ gulp.task('watch', ['test-build'], function() {
     gulp.watch(Config.ts, ['compile']);
 });
 
-gulp.task('default', ['lint'], $.sequence('test-build', 'jasmine')); //'karma'
+gulp.task('default', ['lint'], $.sequence('test-build', 'tests:node')); //'karma'
