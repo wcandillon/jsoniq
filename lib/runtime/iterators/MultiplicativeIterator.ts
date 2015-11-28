@@ -19,15 +19,9 @@ export default class MultiplicativeIterator extends Iterator {
     serialize(): SourceMap.SourceNode {
         var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getStartColumn() + 1, this.position.getFileName());
         node
-            .add("new r.MultiplicativeIterator(")
-            .add(super.serialize())
-            .add(", ")
             .add(this.right.serialize())
-            .add(", ")
             .add(this.left.serialize())
-            .add(", ")
-            .add(JSON.stringify(this.operator))
-            .add(")");
+            .add("stack.push(r.MultiplicativeIterator(" + JSON.stringify(this.operator) + ", stack.pop(), stack.pop()));\n");
         return node;
     }
 }
