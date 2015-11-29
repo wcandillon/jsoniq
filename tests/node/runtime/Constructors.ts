@@ -68,4 +68,9 @@ describe("Test Item Constructors: ", () => {
         var e = u.expectQuery("[1, 1 + 1, 1 + 1 + 1]", true);
         e.toEqual([[1, 2, 3]]);
     });
+
+    it("array 2", () => {
+        var e = u.expectQuery("[1, 2, 3]", true);
+        e.toEqual([[1, 2, 3]]);
+    });
 });

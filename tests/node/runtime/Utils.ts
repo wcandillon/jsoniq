@@ -6,7 +6,7 @@ import * as fs from "fs";
 
 
 function serializeStandalone(it: Iterator): string {
-    var source = "var exports = {};var r = exports;";
+    var source = "'use strict';var exports = {};var r = exports;";
     source += fs.readFileSync("./dist/lib/runtime/Runtime.js", "utf-8");
     source += "var stack = [];\n";
     source += it.serialize();

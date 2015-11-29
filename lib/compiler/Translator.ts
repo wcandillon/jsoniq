@@ -6,13 +6,11 @@ import Position from "./parsers/Position";
 import StaticContext from "./StaticContext";
 import RootStaticContext from "./RootStaticContext";
 import QName from "./QName";
-//import Variable from "./Variable";
+import Variable from "./Variable";
 import Marker from "./Marker";
 
 import * as err from "./StaticErrors";
-//import * as war from "./StaticWarnings";
-
-//import DynamicContext from "../runtime/DynamicContext";
+import * as war from "./StaticWarnings";
 
 import Iterator from "../runtime/iterators/Iterator";
 import ItemIterator from "../runtime/iterators/ItemIterator";
@@ -25,6 +23,10 @@ import ComparisonIterator from "../runtime/iterators/ComparisonIterator";
 import ObjectIterator from "../runtime/iterators/ObjectIterator";
 import PairIterator from "../runtime/iterators/PairIterator";
 import ArrayIterator from "../runtime/iterators/ArrayIterator";
+
+import FLWORIterator from "../runtime/iterators/flwor/FLWORIterator";
+import ForIterator from "../runtime/iterators/flwor/ForIterator";
+import ReturnIterator from "../runtime/iterators/flwor/ReturnIterator";
 
 import Item from "../runtime/items/Item";
 
@@ -74,7 +76,7 @@ export default class Translator {
         }
         return this.iterators.pop();
     }
-/*
+
     private pushCtx(pos: Position): Translator {
         this.sctx = this.sctx.createContext(pos);
         return this;
@@ -99,7 +101,6 @@ export default class Translator {
         this.sctx = this.sctx.getParent();
         return this;
     }
-    */
 
     compile(): Iterator {
         this.visit(this.ast);
@@ -130,6 +131,44 @@ export default class Translator {
         var l = this.iterators.length;
         this.visitChildren(node);
         this.pushIt(new SequenceIterator(node.getPosition(), this.iterators.splice(l)));
+        return true;
+    }
+
+    //FLWORExpr ::= InitialClause IntermediateClause* ReturnClause
+    FLWORExpr(node: ASTNode): boolean {
+        //this.pushCtx(node.getPosition());
+        var clauses = [];
+        var children = node.getChildren().filter(node => { return node.getName() !== "WS"; });
+        for(var i = 0; i < children.length; i++) {
+            this.visit(children[i]);
+            clauses.push(this.popIt());
+        }
+        this.pushIt(new FLWORIterator(node.getPosition(), clauses));
+        for(var i = 0; i < children.length - 1; i++) {
+            this.popCtx(node.getPosition());
+        }
+        //this.popCtx(node.getPosition());
+        return true;
+    }
+
+    //ForBinding ::= "$" VarName TypeDeclaration? AllowingEmpty? PositionalVar? "in" ExprSingle
+    ForBinding(node: ASTNode): boolean {
+        this.visitChildren(node);
+        this.pushCtx(node.getPosition());
+        var varName = node.find(["VarName"])[0].toString();
+        var allowingEmpty = node.find(["AllowingEmpty"])[0] !== undefined;
+        var pos = node.find(["PositionalVar"])[0];
+        var posVarName;
+        if(pos) {
+            posVarName = pos.find(["VarName"])[0].toString();
+        }
+        this.pushIt(new ForIterator(node.getPosition(), varName, allowingEmpty, posVarName, this.popIt()));
+        return true;
+    }
+
+    ReturnClause(node: ASTNode): boolean {
+        this.visitChildren(node);
+        this.pushIt(new ReturnIterator(node.getPosition(), this.popIt()));
         return true;
     }
 
