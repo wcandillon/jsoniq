@@ -2,7 +2,7 @@
 import * as SourceMap from "source-map";
 
 import Iterator from "../Iterator";
-import IteratorClause from "../IteratorClause";
+import IteratorClause from "./IteratorClause";
 import Position from "../../../compiler/parsers/Position";
 
 export default class ReturnIterator extends IteratorClause {
@@ -17,7 +17,7 @@ export default class ReturnIterator extends IteratorClause {
         this.expr = expr;
     }
 
-    serializeClauses(clauses: IteratorClause[]): SourceMap.SourceNode {
+    serializeClause(clauses: IteratorClause[]): SourceMap.SourceNode {
         if(clauses.length !== 0) {
             throw new Error("Invalid plan.");
         }

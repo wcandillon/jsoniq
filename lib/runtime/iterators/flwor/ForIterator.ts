@@ -26,7 +26,9 @@ export default class ForIterator extends IteratorClause {
         var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getStartColumn() + 1, this.position.getFileName());
         node.add(this.expr.serialize());
         node.add("for(let $" + this.varName + " of stack.pop()) {\n");
-        clauses[0].serializeClause(clauses.slice(1));
+        node.add(
+            clauses[0].serializeClause(clauses.slice(1))
+        );
         node.add("}\n");
         return node;
     }

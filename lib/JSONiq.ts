@@ -73,12 +73,13 @@ export default class JSONiq {
 
     static serialize(it: Iterator): string {
         var node = new SourceMap.SourceNode(1, 1, it.getPosition().getFileName());
+        node.add("'use strict';\n");
         node.add("require('source-map-support').install();\n");
         node.add("var r = require('./dist/lib/runtime/Runtime');\n");
         node.add("var stack = [];\n");
         node.add(it.serialize());
         node.add("stack.forEach(it => {\n");
-        node.add("    for(var item of it) {\n");
+        node.add("    for(var item of it]) {\n");
         node.add("        console.log(item);\n");
         node.add("    }\n");
         node.add("});\n");

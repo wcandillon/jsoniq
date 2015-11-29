@@ -137,14 +137,14 @@ export default class Translator {
     //FLWORExpr ::= InitialClause IntermediateClause* ReturnClause
     FLWORExpr(node: ASTNode): boolean {
         //this.pushCtx(node.getPosition());
-        var clauses = [], ret;
-        var children = node.getChildren();
+        var clauses = [];
+        var children = node.getChildren().filter(node => { return node.getName() !== "WS"; });
         for(var i = 0; i < children.length; i++) {
             this.visit(children[i]);
             clauses.push(this.popIt());
         }
-        this.pushIt(new FLWORIterator(node.getPosition(), clauses, ret));
-        for(var i = 0; i < children.length; i++) {
+        this.pushIt(new FLWORIterator(node.getPosition(), clauses));
+        for(var i = 0; i < children.length - 1; i++) {
             this.popCtx(node.getPosition());
         }
         //this.popCtx(node.getPosition());

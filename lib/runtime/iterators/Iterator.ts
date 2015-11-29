@@ -1,5 +1,4 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-import * as _ from "lodash";
 import * as SourceMap from "source-map";
 import Position from "../../compiler/parsers/Position";
 
@@ -22,10 +21,6 @@ export default class Iterator {
 
 //TODO: Make abstract
     serialize(): SourceMap.SourceNode {
-        var chunk = _.template("new r.Position(<%= sl %>, <%= sc %>, <%= el %>, <%= ec %>, '<%= fileName %>')")(this.position);
-        return new SourceMap.SourceNode(
-            this.position.getStartLine() + 1, this.position.getStartColumn() + 1,
-            this.position.getFileName(), chunk, "position"
-        );
+        throw new Error("abstract method");
     }
 }

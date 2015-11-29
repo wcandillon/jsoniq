@@ -14,12 +14,7 @@ export default class VarRefIterator extends Iterator {
 
     serialize(): SourceMap.SourceNode {
         var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getStartColumn() + 1, this.position.getFileName());
-        node
-            .add("new r.VarRefIterator(")
-            .add(super.serialize())
-            .add(", ")
-            .add(JSON.stringify(this.varName))
-            .add(")");
+        node.add("stack.push(r.ItemIterator($" + this.varName + "));\n");
         return node;
     }
 }

@@ -4,11 +4,17 @@ import * as u from "./Utils";
 
 describe("Test FLWOR", () => {
 
+    it("for 0", () => {
+        var e = u.expectQuery("for $z in (2 to 5) return $z * $z");
+        e.toEqual([4, 9, 16, 25]);
+    });
+
+    /*
     it("for 1", () => {
         var e = u.expectQuery("for $z at $y in (2 to 5) return $z * $y");
         e.toEqual([2, 6, 12, 20]);
     });
-/*
+
     it("for 2", () => {
         return u.expectQuery("for $i at $a in (1 to 2) for $z at $y in (2 to 5) return $z * $y * $a").then(e => {
             e.toEqual([2, 6, 12, 20, 4, 12, 24, 40]);
