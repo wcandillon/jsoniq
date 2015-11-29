@@ -30,7 +30,7 @@ export default class ForIterator extends IteratorClause {
         }
         node.add("for(let $" + this.varName + " of stack.pop()) {\n");
         if(this.positionalVar) {
-            node.add("$" + this.positionalVar + "++\n");
+            node.add("$" + this.positionalVar + "++;\n");
         }
         node.add(
             clauses[0].serializeClause(clauses.slice(1))

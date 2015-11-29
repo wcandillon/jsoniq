@@ -24,9 +24,9 @@ export function expectQuery(source: string, jsoniq?: boolean): jasmine.Matchers 
     query.setFileName(filename);
     var it = query.compile();
     var plan = serializeStandalone(it);
-    global.items = [];
-    vm.runInThisContext(plan, filename);
-    return expect(global.items);
+    var sandbox = <vm.Context>{ items: [] };
+    vm.runInNewContext(plan, sandbox, filename);
+    return expect((<{ items: []; }>sandbox).items);
 }
 
 export function expectSerializedQuery(source:string, jsoniq?:boolean):jasmine.Matchers {

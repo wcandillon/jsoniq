@@ -79,7 +79,7 @@ export default class JSONiq {
         node.add("var stack = [];\n");
         node.add(it.serialize());
         node.add("stack.forEach(it => {\n");
-        node.add("    for(var item of it]) {\n");
+        node.add("    for(var item of it) {\n");
         node.add("        console.log(item);\n");
         node.add("    }\n");
         node.add("});\n");
