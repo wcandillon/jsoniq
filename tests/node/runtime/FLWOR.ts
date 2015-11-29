@@ -23,6 +23,11 @@ describe("Test FLWOR", () => {
         var e = u.expectQuery("for $z at $y in (for $i in (2 to 5) return $i) return $z * $y");
         e.toEqual([2, 6, 12, 20]);
     });
+
+    it("for 3.1", () => {
+        var e = u.expectQuery("for $z at $y in (for $i in (2 to 5) return $i) return (for $i in (1, 2) return $i + $z)");
+        e.toEqual([2, 6, 12, 20]);
+    });
     /*
     it("for 4", () => {
         return u.expectQuery("for $i in (1 to 2) for $z at $y in (2 to 5) return $z * $y").then(e => {

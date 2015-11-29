@@ -16,10 +16,12 @@ export default class PairIterator extends Iterator {
 
     serialize(): SourceMap.SourceNode {
         var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getStartColumn() + 1, this.position.getFileName());
-        node.add(this.value.serialize());
-        node.add(this.key.serialize());
         node
-            .add("stack.push(r.PairIterator(stack.pop(), stack.pop()));\n");
+            .add("r.PairIterator(")
+            .add(this.key.serialize())
+            .add(", ")
+            .add(this.value.serialize())
+            .add(")");
         return node;
     }
 }

@@ -20,9 +20,13 @@ export default class AdditiveIterator extends Iterator {
     serialize(): SourceMap.SourceNode {
         var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getStartColumn() + 1, this.position.getFileName());
         node
-            .add(this.right.serialize())
+            .add("r.AdditiveIterator(")
             .add(this.left.serialize())
-            .add("stack.push(r.AdditiveIterator(stack.pop(), stack.pop(), " + this.isPlus + "));\n");
+            .add(", ")
+            .add(this.right.serialize())
+            .add(", ")
+            .add(JSON.stringify(this.isPlus))
+            .add(")");
         return node;
     }
 }
