@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import * as SourceMap from "source-map";
 import Position from "../../compiler/parsers/Position";
 
+//TODO: Make abstract
 export default class Iterator {
 
     protected position: Position;
@@ -19,6 +20,7 @@ export default class Iterator {
         return JSON.stringify(this, null, 2);
     }
 
+//TODO: Make abstract
     serialize(): SourceMap.SourceNode {
         var chunk = _.template("new r.Position(<%= sl %>, <%= sc %>, <%= el %>, <%= ec %>, '<%= fileName %>')")(this.position);
         return new SourceMap.SourceNode(
