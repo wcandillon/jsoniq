@@ -33,3 +33,38 @@ export function *RangeIterator(l: Iterator<number>, r: Iterator<number>): Iterab
         yield i;
     }
 }
+
+export function *SequenceIterator(its: Iterator<any>[]): Iterable<any> {
+    var item;
+    for(var i = 0; i < its.length; i++) {
+        while((item = its[i].next().value) !== undefined) {
+            yield item;
+        }
+    }
+}
+
+export function *ArrayIterator(it: Iterator<any>): Iterable<any> {
+    var array = [];
+    var item;
+    while((item = it.next().value) !== undefined) {
+        array.push(item);
+    }
+    yield array;
+}
+
+export function *ObjectIterator(its: Iterator<any>[]): Iterable<{}> {
+    var object = {};
+    its.forEach(it => {
+        var pair = it.next().value;
+        var items = [], item;
+        while((item = pair.value.next().value) !== undefined) {
+            items.push(item);
+        }
+        object[pair.key] = items.length > 1 ? items : items[0];
+    });
+    yield object;
+}
+
+export function *PairIterator(key: Iterator<any>, value: Iterator<any>): Iterable<{}> {
+    yield { key: key.next().value, value: value };
+}

@@ -3,12 +3,13 @@
 
 ##The JSON Query Language
 ###Usage
-To run a query:
+To compile a query:
 ```base
 $cat query.jq
 for $i in (1 to 10)
 return $i
-$jsoniq run query.jq
+$jsoniq compile query.jq
+$node query.js
 ```
 
 To print the query AST:

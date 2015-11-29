@@ -6,13 +6,14 @@ import JSONiq from "../JSONiq";
 var pkg = require("../../../package.json");
 
 cli
-.command("run <file>")
-.description("Run JSONiq query")
+.command("compile <file>")
+.description("compile JSONiq query")
 .action(file => {
     var query = new JSONiq(fs.readFileSync(file, "utf-8"));
     query.setFileName(file);
-    //var it = query.compile();
-
+    var it = query.compile();
+    var code = JSONiq.serialize(it);
+    fs.writeFileSync(file.substring(0, file.length - 3) + ".js", code, "utf-8");
 });
 
 cli
