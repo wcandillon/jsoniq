@@ -1,6 +1,6 @@
-import Position = require("./parsers/Position");
+import Position from "./parsers/Position";
 
-class Marker {
+export default class Marker {
 
     private position: Position;
     private type: string;
@@ -30,5 +30,3 @@ class Marker {
         return this.message;
     }
 }
-
-export = Marker;

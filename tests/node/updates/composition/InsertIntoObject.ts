@@ -1,8 +1,8 @@
 require("jasmine2-pit");
 
-import PUL = require("../../../../lib/updates/PUL");
-import PULComposition = require("../../../../lib/updates/composition/PULComposition");
-import Common = require("./Common");
+import PUL from "../../../../lib/updates/PUL";
+import PULComposition from "../../../../lib/updates/composition/PULComposition";
+import Common from "./Common";
 
 declare function pit(expectation: string, assertion?: (done: () => void) => any): void;
 

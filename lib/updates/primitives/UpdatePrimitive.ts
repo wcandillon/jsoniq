@@ -1,12 +1,10 @@
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
-/// <reference path="../../../typings/es6-promise/es6-promise.d.ts" />
-import jerr = require("../../errors");
+import * as jerr from "../../errors";
 
-import ITransaction = require("../../stores/ITransaction");
+import { IPUL } from "../IPUL";
+import { ITransaction } from "../../stores/ITransaction";
 
-import IPUL = require("../IPUL");
-
-class UpdatePrimitive {
+export default class UpdatePrimitive {
 
     public id: string;
     public ordPath: string[];
@@ -58,5 +56,3 @@ class UpdatePrimitive {
         throw new Error("This method is abstract");
     }
 }
-
-export = UpdatePrimitive;

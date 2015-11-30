@@ -1,4 +1,4 @@
-interface IPUL {
+export interface IPUL {
 
     parse(pul: string): IPUL;
     serialize();
@@ -15,5 +15,3 @@ interface IPUL {
     insert(id: string, item: any): IPUL;
     remove(id: string): IPUL;
 }
-
-export = IPUL;

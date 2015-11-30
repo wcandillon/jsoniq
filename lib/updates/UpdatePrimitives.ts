@@ -1,16 +1,16 @@
-import UpdatePrimitive = require("./primitives/UpdatePrimitive");
+import UpdatePrimitive from "./primitives/UpdatePrimitive";
 
-import InsertIntoObject = require("./primitives/InsertIntoObject");
-import InsertIntoArray  = require("./primitives/InsertIntoArray");
-import DeleteFromObject = require("./primitives/DeleteFromObject");
-import DeleteFromArray  = require("./primitives/DeleteFromArray");
-import ReplaceInObject  = require("./primitives/ReplaceInObject");
-import ReplaceInArray   = require("./primitives/ReplaceInArray");
-import RenameInObject   = require("./primitives/RenameInObject");
-import Insert           = require("./primitives/Insert");
-import Remove           = require("./primitives/Remove");
+import InsertIntoObject from "./primitives/InsertIntoObject";
+import InsertIntoArray  from "./primitives/InsertIntoArray";
+import DeleteFromObject from "./primitives/DeleteFromObject";
+import DeleteFromArray  from "./primitives/DeleteFromArray";
+import ReplaceInObject  from "./primitives/ReplaceInObject";
+import ReplaceInArray   from "./primitives/ReplaceInArray";
+import RenameInObject   from "./primitives/RenameInObject";
+import Insert           from "./primitives/Insert";
+import Remove           from "./primitives/Remove";
 
-class UpdatePrimitives {
+export default class UpdatePrimitives {
     insertIntoObject : InsertIntoObject[] = [];
     insertIntoArray  : InsertIntoArray[]  = [];
     deleteFromObject : DeleteFromObject[] = [];
@@ -80,5 +80,3 @@ class UpdatePrimitives {
         return this;
     }
 }
-
-export = UpdatePrimitives;

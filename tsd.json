@@ -11,9 +11,6 @@
     "jasmine/jasmine.d.ts": {
       "commit": "61d066fef5a1ac9e2389b51b9cf88746b7bbfde9"
     },
-    "es6-promise/es6-promise.d.ts": {
-      "commit": "61d066fef5a1ac9e2389b51b9cf88746b7bbfde9"
-    },
     "node-uuid/node-uuid.d.ts": {
       "commit": "61d066fef5a1ac9e2389b51b9cf88746b7bbfde9"
     },

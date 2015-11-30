@@ -1,5 +1,5 @@
-import PUL = require("../../../../lib/updates/PUL");
-import PULComposition = require("../../../../lib/updates/composition/PULComposition");
+import PUL from "../../../../lib/updates/PUL";
+import PULComposition from "../../../../lib/updates/composition/PULComposition";
 
 describe("Composition", () => {
 

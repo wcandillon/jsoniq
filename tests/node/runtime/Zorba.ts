@@ -1,11 +1,9 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 require("jasmine2-pit");
-import p = require("path");
-import fs = require("fs");
+import * as p from "path";
+import * as fs from "fs";
 
-import u = require("./Utils");
-
-declare function pit(expectation: string, assertion?: (done: () => void) => any): void;
+import * as u from "./Utils";
 
 function getQueries(path: string): string[] {
     var files: string[] = [];
@@ -29,18 +27,17 @@ describe("Test JSONiq Expressions", () => {
     //getQueries("tests/queries/zorba/Queries/zorba/jsoniq")
     queries.forEach(file => {
         file = base + "/" + file;
-        pit(file, () => {
+        it(file, () => {
             var query = fs.readFileSync(file, "utf-8");
-            return u.expectSerializedQuery(query, file.substring(file.length - 3) === ".jq").then(e => {
-                file = file.replace("/Queries/", "/ExpQueryResults/");
-                file = file.substring(0, file.length - 3);
-                file = file + ".xml.res";
-                e.toEqual(fs.readFileSync(file, "utf-8"));
-            });
+            var e = u.expectSerializedQuery(query, file.substring(file.length - 3) === ".jq");
+            file = file.replace("/Queries/", "/ExpQueryResults/");
+            file = file.substring(0, file.length - 3);
+            file = file + ".xml.res";
+            e.toEqual(fs.readFileSync(file, "utf-8"));
         });
     });
 });
-
+/*
 
 describe("Test FLWOR Expressions", () => {
 
@@ -57,15 +54,14 @@ describe("Test FLWOR Expressions", () => {
     //getQueries("tests/queries/zorba/Queries/zorba/jsoniq")
     queries.forEach(file => {
         file = base + "/" + file;
-        pit(file, () => {
+        it(file, () => {
             var query = fs.readFileSync(file, "utf-8");
-            return u.expectSerializedQuery(query, file.substring(file.length - 3) === ".jq").then(e => {
-                file = file.replace("/Queries/", "/ExpQueryResults/");
-                file = file.substring(0, file.length - 3);
-                file = file + ".xml.res";
-                e.toEqual(fs.readFileSync(file, "utf-8").trim());
-            });
+            var e = u.expectSerializedQuery(query, file.substring(file.length - 3) === ".jq");
+            file = file.replace("/Queries/", "/ExpQueryResults/");
+            file = file.substring(0, file.length - 3);
+            file = file + ".xml.res";
+            e.toEqual(fs.readFileSync(file, "utf-8").trim());
         });
     });
 });
-
+*/

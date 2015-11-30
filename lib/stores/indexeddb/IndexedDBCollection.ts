@@ -1,10 +1,10 @@
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
-import _ = require("lodash");
+import * as _ from "lodash";
 
-import ICollection = require("../ICollection");
-import PUL = require("../../updates/PUL");
+import { ICollection } from "../ICollection";
+import PUL from "../../updates/PUL";
 
-class IndexedDBCollection implements ICollection {
+export default class IndexedDBCollection implements ICollection {
 
     private name: string;
     private keyPath: string;
@@ -122,5 +122,3 @@ class IndexedDBCollection implements ICollection {
         return this;
     }
 }
-
-export = IndexedDBCollection;

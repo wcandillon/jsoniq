@@ -1,12 +1,12 @@
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
-import _ = require("lodash");
-import jerr = require("../../errors");
+import * as _ from "lodash";
+import * as jerr from "../../errors";
 
-import UpdatePrimitive = require("./UpdatePrimitive");
+import UpdatePrimitive from "./UpdatePrimitive";
 
-import IPUL = require("../IPUL");
+import { IPUL } from "../IPUL";
 
-class InsertIntoObject extends UpdatePrimitive {
+export default class InsertIntoObject extends UpdatePrimitive {
     pairs: {};
 
     constructor(target: string, ordPath: string[], pairs: {}) {
@@ -45,5 +45,3 @@ class InsertIntoObject extends UpdatePrimitive {
         return this;
     }
 }
-
-export = InsertIntoObject;

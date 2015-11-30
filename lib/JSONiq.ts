@@ -1,20 +1,20 @@
 /// <reference path="../typings/tsd.d.ts" />
+import Marker from "./compiler/Marker";
+import Translator from "./compiler/Translator";
+import Position from "./compiler/parsers/Position";
+import RootStaticContext from "./compiler/RootStaticContext";
+import ASTNode from "./compiler/parsers/ASTNode";
+import * as JSONiqParser from "./compiler/parsers/JSONiqParser";
+import * as XQueryParser from "./compiler/parsers/XQueryParser";
+import JSONParseTreeHandler from "./compiler/parsers/JSONParseTreeHandler";
+
+import * as SourceMap from "source-map";
+
+import Iterator from "./runtime/iterators/Iterator";
+
 require("source-map-support").install();
 
-import SourceMap = require("source-map");
-
-import Marker = require("./compiler/Marker");
-import Translator = require("./compiler/Translator");
-import Position = require("./compiler/parsers/Position");
-import RootStaticContext = require("./compiler/RootStaticContext");
-import ASTNode = require("./compiler/parsers/ASTNode");
-import JSONiqParser = require("./compiler/parsers/JSONiqParser");
-import XQueryParser = require("./compiler/parsers/XQueryParser");
-import JSONParseTreeHandler = require("./compiler/parsers/JSONParseTreeHandler");
-
-import Iterator = require("./runtime/iterators/Iterator");
-
-class JSONiq {
+export default class JSONiq {
 
     private rootSctx: RootStaticContext;
     private source: string;
@@ -72,14 +72,16 @@ class JSONiq {
     }
 
     static serialize(it: Iterator): string {
-        var node = new SourceMap.SourceNode(1, 1, it.getPosition().getFileName());
-        node.add("var r = require('./dist/lib/runtime/Runtime');\nvar it = ");
+        var node = new SourceMap.SourceNode(1, 1, it.getPosition().getFileName(), null, "MainQuery");
+        node.add("'use strict';\n");
+        node.add("require('source-map-support').install();\n");
+        node.add("var r = require('./dist/lib/runtime/Runtime');\n");
+        node.add("var it = ");
         node.add(it.serialize());
         node.add(";\n");
-        node.add("\n");
-        node.add("it.setDynamicCtx(new r.DynamicContext());");
-        node.add("\n");
-        node.add("it\n.forEach(function(item){ console.log(item.get()); })\n.catch(function(e){ console.error(e.stack); });");
+        node.add("for(var item of it) {\n");
+        node.add("   console.log(item);\n");
+        node.add("}\n");
         var source = node.toStringWithSourceMap();
 
         // output :: { code :: String, map :: SourceMapGenerator }
@@ -98,5 +100,3 @@ class JSONiq {
         return this.markers;
     }
 }
-
-export = JSONiq;

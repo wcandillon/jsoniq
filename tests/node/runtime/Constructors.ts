@@ -1,86 +1,76 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 require("jasmine2-pit");
-import u = require("./Utils");
-
-declare function pit(expectation: string, assertion?: (done: () => void) => any): void;
+import * as u from "./Utils";
 
 describe("Test Item Constructors: ", () => {
 
-    pit("()", () => {
-        return u.expectQuery("()").then(e => {
-            e.toEqual([]);
-        });
+    it("()", () => {
+        var e = u.expectQuery("()");
+        e.toEqual([]);
     });
 
-    pit("()", () => {
-        return u.expectQuery("((1 + 1, 2), 3, (4 + 0), (5))").then(e => {
-            e.toEqual([2, 2, 3, 4, 5]);
-        });
+    it("()", () => {
+        var e = u.expectQuery("((1 + 1, 2), 3, (4 + 0), (5))");
+        e.toEqual([2, 2, 3, 4, 5]);
     });
 
-    pit("null 1", () => {
-        return u.expectQuery("null", true).then(e => {
-            e.toEqual([null]);
-        });
+    it("null 1", () => {
+        var e = u.expectQuery("null", true);
+        e.toEqual([null]);
     });
 
-    pit("null 2", () => {
-        return u.expectQuery("null, null", true).then(e => {
-            e.toEqual([null, null]);
-        });
+    it("null 2", () => {
+        var e = u.expectQuery("null, null", true);
+        e.toEqual([null, null]);
     });
 
-    pit("null 3", () => {
-        return u.expectQuery("1, null, null", true).then(e => {
-            e.toEqual([1, null, null]);
-        });
+    it("null 3", () => {
+        var e = u.expectQuery("1, null, null", true);
+        e.toEqual([1, null, null]);
     });
 
-    pit("boolean", () => {
-        return u.expectQuery("true, false", true).then(e => {
-            e.toEqual([true, false]);
-        });
+    it("boolean", () => {
+        var e = u.expectQuery("true, false", true);
+        e.toEqual([true, false]);
     });
 
-    pit("primitives 1", () => {
-        return u.expectQuery("true, false, null, 2", true).then(e => {
-            e.toEqual([true, false, null, 2]);
-        });
+    it("primitives 1", () => {
+        var e = u.expectQuery("true, false, null, 2", true);
+        e.toEqual([true, false, null, 2]);
     });
 
-    pit("primitives 2", () => {
-        return u.expectQuery("null, (), false, null, ((), (), true)", true).then(e => {
-            e.toEqual([null, false, null, true]);
-        });
+    it("primitives 2", () => {
+        var e = u.expectQuery("null, (), false, null, ((), (), true)", true);
+        e.toEqual([null, false, null, true]);
     });
 
-    pit("object 1", () => {
-        return u.expectQuery("{}, {}, 1, ({}, 2)", true).then(e => {
-            e.toEqual([{}, {}, 1, {}, 2]);
-        });
+    it("object 1", () => {
+        var e = u.expectQuery("{}, {}, 1, ({}, 2)", true);
+        e.toEqual([{}, {}, 1, {}, 2]);
     });
 
-    pit("object 2", () => {
-        return u.expectQuery("{ \"foo\": 1 + 1 }", true).then(e => {
-            e.toEqual([{ foo: 2 }]);
-        });
+    it("object 2", () => {
+        var e = u.expectQuery("{ \"foo\": 1 + 1 }", true);
+        e.toEqual([{ foo: 2 }]);
     });
 
-    pit("object 3", () => {
-        return u.expectQuery("{ foo: 1, \"bar\": (1 + 1, 2) }", true).then(e => {
-            e.toEqual([{ foo: 1, "bar": [2, 2] }]);
-        });
+    it("object 3", () => {
+        var e = u.expectQuery("{ foo: 1, \"bar\": (1 + 1, 2) }", true);
+        e.toEqual([{ foo: 1, "bar": [2, 2] }]);
     });
 
-    pit("object 4", () => {
-        return u.expectQuery("{ (\"foo\", 2): 1, \"bar\": (1 + 1, 2) }", true).then(e => {
-            e.toEqual([{ foo: 1, "bar": [2, 2] }]);
-        });
+    it("object 4", () => {
+        var e = u.expectQuery("{ (\"foo\", 2): 1, \"bar\": (1 + 1, 2) }", true);
+        e.toEqual([{ foo: 1, "bar": [2, 2] }]);
     });
 
-    pit("array 1", () => {
-        return u.expectQuery("[1, 1 + 1, 1 + 1 + 1]", true).then(e => {
-            e.toEqual([[1, 2, 3]]);
-        });
+    it("array 1", () => {
+        var e = u.expectQuery("[1, 1 + 1, 1 + 1 + 1]", true);
+        e.toEqual([[1, 2, 3]]);
+    });
+
+    it("array 2", () => {
+        var e = u.expectQuery("[1, 2, 3]", true);
+        e.toEqual([[1, 2, 3]]);
     });
 });

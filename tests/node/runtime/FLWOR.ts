@@ -1,140 +1,135 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 require("jasmine2-pit");
-import u = require("./Utils");
-
-declare function pit(expectation: string, assertion?: (done: () => void) => any): void;
+import * as u from "./Utils";
 
 describe("Test FLWOR", () => {
 
-    pit("for 1", () => {
-        return u.expectQuery("for $z at $y in (2 to 5) return $z * $y").then(e => {
-            e.toEqual([2, 6, 12, 20]);
-        });
+    it("for 0", () => {
+        var e = u.expectQuery("for $z in (2 to 5) return $z * $z");
+        e.toEqual([4, 9, 16, 25]);
     });
 
-    pit("for 2", () => {
-        return u.expectQuery("for $i at $a in (1 to 2) for $z at $y in (2 to 5) return $z * $y * $a").then(e => {
-            e.toEqual([2, 6, 12, 20, 4, 12, 24, 40]);
-        });
+    it("for 1", () => {
+        var e = u.expectQuery("for $z at $y in (2 to 5) return $z * $y");
+        e.toEqual([2, 6, 12, 20]);
     });
 
-    pit("for 3", () => {
-        return u.expectQuery("for $z at $y in (for $i in (2 to 5) return $i) return $z * $y").then(e => {
-            e.toEqual([2, 6, 12, 20]);
-        });
+    it("for 2", () => {
+        var e = u.expectQuery("for $i at $a in (1 to 2) for $z at $y in (2 to 5) return $z * $y * $a");
+        e.toEqual([2, 6, 12, 20, 4, 12, 24, 40]);
     });
 
-    pit("for 4", () => {
-        return u.expectQuery("for $i in (1 to 2) for $z at $y in (2 to 5) return $z * $y").then(e => {
-            e.toEqual([2, 6, 12, 20, 2, 6, 12, 20]);
-        });
+    it("for 3", () => {
+        var e = u.expectQuery("for $z at $y in (for $i in (2 to 5) return $i) return $z * $y");
+        e.toEqual([2, 6, 12, 20]);
     });
 
-    pit("for 4 bis", () => {
-        return u.expectQuery("for $w in (1 to 2) for $z at $y in (for $i in (2 to 5) return $i) return $z * $y").then(e => {
-            e.toEqual([2, 6, 12, 20, 2, 6, 12, 20]);
-        });
+    it("for 3.1", () => {
+        var e = u.expectQuery("for $z at $y in (for $i in (2 to 5) return $i) return (for $i in (1, 2) return $i + $z)");
+        e.toEqual([ 3, 4, 4, 5, 5, 6, 6, 7 ]);
     });
 
-    pit("for 5", () => {
-        return u.expectQuery("for $z in (for $i in (2 to 5) return $i) return $z").then(e => {
-            e.toEqual([2, 3, 4, 5]);
-        });
+    it("for 4", () => {
+        var e = u.expectQuery("for $i in (1 to 2) for $z at $y in (2 to 5) return $z * $y");
+        e.toEqual([2, 6, 12, 20, 2, 6, 12, 20]);
     });
 
-    pit("for 6", () => {
-        return u.expectQuery("for $a at $i in (1 to 5) for $b at $j in $a return ($i, $j)").then(e => {
-            e.toEqual([1, 1, 2, 1, 3, 1, 4, 1, 5, 1]);
-        });
+    it("for 4 bis", () => {
+        var e = u.expectQuery("for $w in (1 to 2) for $z at $y in (for $i in (2 to 5) return $i) return $z * $y");
+        e.toEqual([2, 6, 12, 20, 2, 6, 12, 20]);
     });
 
-    pit("for 7", () => {
-        return u.expectQuery("for $i in (1 to 5) return $i").then(e => {
-            e.toEqual([1, 2, 3, 4, 5]);
-        });
+    it("for 5", () => {
+        var e = u.expectQuery("for $z in (for $i in (2 to 5) return $i) return $z");
+        e.toEqual([2, 3, 4, 5]);
     });
 
-    pit("for 8", () => {
-        return u.expectQuery("for $z in (1 to 2) for $i in (1 to 5) return $i").then(e => {
-            e.toEqual([1, 2, 3, 4, 5, 1, 2, 3, 4, 5]);
-        });
+    it("for 6", () => {
+        var e = u.expectQuery("for $a at $i in (1 to 5) for $b at $j in $a return ($i, $j)");
+        e.toEqual([1, 1, 2, 1, 3, 1, 4, 1, 5, 1]);
     });
 
-    pit("for 9", () => {
-        return u.expectQuery("for $i in (for $a in (1 to 5) return $a) return $i").then(e => {
-            e.toEqual([1, 2, 3, 4, 5]);
-        });
+    it("for 7", () => {
+        var e = u.expectQuery("for $i in (1 to 5) return $i");
+        e.toEqual([1, 2, 3, 4, 5]);
     });
 
-    pit("for 10", () => {
-        return u.expectQuery("for $i in (1 to 2) return ($i, $i)").then(e => {
-            e.toEqual([1, 1, 2, 2]);
-        });
+    it("for 8", () => {
+        var e = u.expectQuery("for $z in (1 to 2) for $i in (1 to 5) return $i");
+        e.toEqual([1, 2, 3, 4, 5, 1, 2, 3, 4, 5]);
     });
 
-    pit("for 11", () => {
-        return u.expectQuery("for $i in (1 to 2) return (5 to 10)").then(e => {
-            e.toEqual([5, 6, 7, 8, 9, 10, 5, 6, 7, 8, 9, 10]);
-        });
+    it("for 9", () => {
+        var e = u.expectQuery("for $i in (for $a in (1 to 5) return $a) return $i");
+        e.toEqual([1, 2, 3, 4, 5]);
     });
 
-    pit("for 12", () => {
-        return u.expectQuery("for $i in (1 to 2) return ($i + $i * 2)").then(e => {
-            e.toEqual([3, 6]);
-        });
+    it("for 10", () => {
+        var e = u.expectQuery("for $i in (1 to 2) return ($i, $i)");
+        e.toEqual([1, 1, 2, 2]);
     });
 
-    pit("for 13", () => {
-        return u.expectQuery("for $i in () return $i").then(e => {
-            e.toEqual([]);
-        });
+    it("for 11", () => {
+        var e = u.expectQuery("for $i in (1 to 2) return (5 to 10)");
+        e.toEqual([5, 6, 7, 8, 9, 10, 5, 6, 7, 8, 9, 10]);
     });
 
-    pit("for 14", () => {
-        return u.expectQuery("for $i allowing empty in () return 1").then(e => {
+    it("for 12", () => {
+        var e = u.expectQuery("for $i in (1 to 2) return ($i + $i * 2)");
+        e.toEqual([3, 6]);
+    });
+
+    it("for 13", () => {
+        var e = u.expectQuery("for $i in () return $i");
+        e.toEqual([]);
+    });
+/*
+    it("for 14", () => {
+        return u.expectQuery("for $i allowing empty in () return 1");
             e.toEqual([1]);
         });
     });
 
-    pit("for 15", () => {
-        return u.expectQuery("for $i in () return 1").then(e => {
+    it("for 15", () => {
+        return u.expectQuery("for $i in () return 1");
             e.toEqual([]);
         });
     });
 
-    pit("let 1", () => {
-        return u.expectQuery("let $i := 1 return $i").then(e => {
+    it("let 1", () => {
+        return u.expectQuery("let $i := 1 return $i");
             e.toEqual([1]);
         });
     });
 
-    pit("let 2", () => {
-        return u.expectQuery("let $i := 1 let $i := 2 return $i").then(e => {
+    it("let 2", () => {
+        return u.expectQuery("let $i := 1 let $i := 2 return $i");
             e.toEqual([2]);
         });
     });
 
-    pit("let 3", () => {
-        return u.expectQuery("let $i := 1 let $i := (1, 2, 3) return ($i, $i)").then(e => {
+    it("let 3", () => {
+        return u.expectQuery("let $i := 1 let $i := (1, 2, 3) return ($i, $i)");
             e.toEqual([1, 2, 3, 1, 2, 3]);
         });
     });
 
-    pit("flwor 1", () => {
-        return u.expectQuery("let $a := for $i in (1 to 2) return $i let $b := for $i in (1 to 2) return $i return ($a, $b)").then(e => {
+    it("flwor 1", () => {
+        return u.expectQuery("let $a := for $i in (1 to 2) return $i let $b := for $i in (1 to 2) return $i return ($a, $b)");
             e.toEqual([1, 2, 1, 2]);
         });
     });
 
-    pit("flwor 2", () => {
-        return u.expectQuery("let $a := for $i in (1 to 2) return $i let $b := for $i in (1 to 2) return $i for $a in (1 to 2) for $i in (for $i in (1 to 2) return $i) return $i").then(e => {
+    it("flwor 2", () => {
+        return u.expectQuery("let $a := for $i in (1 to 2) return $i let $b := for $i in (1 to 2) return $i for $a in (1 to 2) for $i in (for $i in (1 to 2) return $i) return $i");
             e.toEqual([1, 2, 1, 2]);
         });
     });
 
-    pit("flwor 3", () => {
-        return u.expectQuery("for $a in (1,2) let $b := (1,2,3) for $c in $b return $a").then(e => {
+    it("flwor 3", () => {
+        return u.expectQuery("for $a in (1,2) let $b := (1,2,3) for $c in $b return $a");
             e.toEqual([1, 1, 1, 2, 2, 2]);
         });
     });
+    */
 });

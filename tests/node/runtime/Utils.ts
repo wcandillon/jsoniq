@@ -1,55 +1,41 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-import JSONiq = require("../../../lib/JSONiq");
+import JSONiq from "../../../lib/JSONiq";
+import Iterator from "../../../lib/runtime/iterators/Iterator";
+import * as vm from "vm";
+import * as fs from "fs";
 
-export function expectQuery(source: string, jsoniq?: boolean): Promise<jasmine.Matchers> {
-    return new Promise((resolve, reject) => {
-        var query = new JSONiq(source);
-        if(jsoniq) {
-            query.setFileName("test.jq");
-        } else {
-            query.setFileName("test.xq");
-        }
-        var it = query.compile();
-        //var plan = JSONiq.serialize(it);
-        var result = [];
-        it.forEach(function(item) {
-            result.push(item.get());
-        })
-        .catch(error => {
-            console.log(error.stack);
-            reject(error.stack);
-        })
-        .then(() => {
-            /*
-            console.log("=");
-            console.log(eval(plan));
-            console.log(result);
-            console.log("=");
-             */
-            resolve(expect(result));
-        });
-    });
+function serializeStandalone(it: Iterator): string {
+    var source = "'use strict';var exports = {};var r = exports;";
+    source += fs.readFileSync("./dist/lib/runtime/Runtime.js", "utf-8");
+    source += "var it = " + it.serialize() + ";\n";
+    source += "for(var item of it) {\n";
+    source += "    items.push(item);\n";
+    source += "}\n";
+    return source;
 }
 
-export function expectSerializedQuery(source: string, jsoniq?: boolean): Promise<jasmine.Matchers> {
-    return new Promise((resolve, reject) => {
-        var query = new JSONiq(source);
-        if(jsoniq) {
-            query.setFileName("test.jq");
-        } else {
-            query.setFileName("test.xq");
-        }
-        var it = query.compile();
-        var result: string[] = [];
-        it.forEach(function(item) {
-            result.push(JSON.stringify(item.get()));
-        })
-        .catch(error => {
-            console.log(error.stack);
-            reject(error.stack);
-        })
-        .then(() => {
-            resolve(expect(result.join(" ")));
-        });
-    });
+export function expectQuery(source: string, jsoniq?: boolean): jasmine.Matchers {
+    var query = new JSONiq(source);
+    var filename = jsoniq ? "test.jq" : "test.xq";
+    query.setFileName(filename);
+    var it = query.compile();
+    var plan = serializeStandalone(it);
+    var sandbox = <vm.Context>{ items: [] };
+    vm.runInNewContext(plan, sandbox, filename);
+    return expect((<{ items: []; }>sandbox).items);
+}
+
+export function expectSerializedQuery(source:string, jsoniq?:boolean):jasmine.Matchers {
+    var query = new JSONiq(source);
+    var filename = jsoniq ? "test.jq" : "test.xq";
+    if (jsoniq) {
+        query.setFileName("test.jq");
+    } else {
+        query.setFileName("test.xq");
+    }
+    var it = query.compile();
+    var plan = serializeStandalone(it);
+    global.items = [];
+    vm.runInThisContext(plan, filename);
+    return expect(global.items.join(" "));
 }

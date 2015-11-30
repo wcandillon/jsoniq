@@ -1,12 +1,11 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-import Iterator = require("./Iterator");
+import Iterator from "./Iterator";
+import Item from "../items/Item";
+import Position from "../../compiler/parsers/Position";
 
-import Item = require("../items/Item");
-import Position = require("../../compiler/parsers/Position");
+import * as SourceMap from "source-map";
 
-import SourceMap = require("source-map");
-
-class ItemIterator extends Iterator {
+export default class ItemIterator extends Iterator {
 
     private item: Item;
 
@@ -15,24 +14,10 @@ class ItemIterator extends Iterator {
         this.item = item;
     }
 
-    next(): Promise<Item> {
-        if(this.closed) {
-            return this.emptySequence();
-        }
-        this.closed = true;
-        return Promise.resolve(this.item);
-    }
-
     serialize(): SourceMap.SourceNode {
-        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getStartColumn() + 1, this.position.getFileName());
+        var node = super.serialize();
         node
-            .add("new r.ItemIterator(")
-            .add(super.serialize())
-            .add(", new r.Item(")
-            .add(JSON.stringify(this.item.get()))
-            .add("))");
+            .add("r.ItemIterator(" + JSON.stringify(this.item.get()) + ")");
         return node;
     }
-};
-
-export = ItemIterator;
+}

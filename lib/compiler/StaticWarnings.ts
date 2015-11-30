@@ -1,7 +1,7 @@
-import _ = require("lodash");
-import Marker = require("./Marker");
-import Variable = require("./Variable");
-import Position = require("./parsers/Position");
+import * as _  from "lodash";
+import Marker from "./Marker";
+import Variable from "./Variable";
+import Position from "./parsers/Position";
 
 class StaticWarning extends Marker {
     constructor(pos: Position, code: string, message: string) {

@@ -1,9 +1,6 @@
-/// <reference path="../../../typings/es6-promise/es6-promise.d.ts" />
-import es6Promise = require("es6-promise");
+import { ITransaction } from "../ITransaction";
 
-import ITransaction = require("../ITransaction");
-
-class MemoryTransaction implements ITransaction {
+export default class MemoryTransaction implements ITransaction {
 
     public snapshot: {} = {};
 
@@ -12,7 +9,7 @@ class MemoryTransaction implements ITransaction {
     }
 
     done(): Promise<any> {
-        return new es6Promise.Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             setTimeout(() => {
                 resolve([]);
             }, 1);
@@ -20,7 +17,7 @@ class MemoryTransaction implements ITransaction {
     }
 
     get(id: string): Promise<any> {
-        return new es6Promise.Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             setTimeout(() => {
                 resolve(this.snapshot[id]);
             }, 1);
@@ -37,5 +34,3 @@ class MemoryTransaction implements ITransaction {
         return this;
     }
 }
-
-export = MemoryTransaction;

@@ -1,13 +1,14 @@
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
-import _ = require("lodash");
+import * as _ from "lodash";
 
-import Insert = require("../primitives/Insert");
-import InsertIntoObject = require("../primitives/InsertIntoObject");
-import ReplaceInObject = require("../primitives/ReplaceInObject");
-import PUL = require("../PUL");
-import UPComposition = require("./UPComposition");
+import InsertIntoObject from "../primitives/InsertIntoObject";
+import ReplaceInObject from "../primitives/ReplaceInObject";
 
-class InsertIntoObjectComposition extends UPComposition {
+import Insert from "../primitives/Insert";
+import PUL from "../PUL";
+import UPComposition from "./UPComposition";
+
+export default class InsertIntoObjectComposition extends UPComposition {
 
     constructor(d0: PUL) {
         super(d0);
@@ -46,5 +47,3 @@ class InsertIntoObjectComposition extends UPComposition {
         }
     }
 }
-
-export = InsertIntoObjectComposition;

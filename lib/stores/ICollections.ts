@@ -1,7 +1,5 @@
-import ICollection = require("./ICollection");
+import { ICollection } from "./ICollection";
 
-interface ICollections {
+export interface ICollections {
     [index: string]: ICollection;
 }
-
-export = ICollections;

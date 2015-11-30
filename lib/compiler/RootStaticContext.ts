@@ -1,13 +1,10 @@
 /// <reference path="../../typings/tsd.d.ts" />
-import StaticContext = require("./StaticContext");
-import Position = require("./parsers/Position");
-//import QName = require("./QName");
+import StaticContext from "./StaticContext";
+import Position from "./parsers/Position";
 
-class RootStaticContext extends StaticContext {
+export default class RootStaticContext extends StaticContext {
 
     constructor(pos: Position) {
         super(null, pos);
     }
 }
-
-export = RootStaticContext;

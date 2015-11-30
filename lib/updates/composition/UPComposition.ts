@@ -1,10 +1,10 @@
 /// <reference path="../../../typings/lodash/lodash.d.ts" />
-import _ = require("lodash");
+import * as _ from "lodash";
 
-import UpdatePrimitive = require("../primitives/UpdatePrimitive");
-import PUL = require("../PUL");
+import UpdatePrimitive from "../primitives/UpdatePrimitive";
+import PUL from "../PUL";
 
-class UPComposition {
+export default class UPComposition {
     d0: PUL;
 
     constructor(d0: PUL) {
@@ -75,5 +75,3 @@ class UPComposition {
         });
     }
 }
-
-export = UPComposition;

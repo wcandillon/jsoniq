@@ -1,7 +1,7 @@
-import QName = require("./QName");
-import Position = require("./parsers/Position");
+import QName from "./QName";
+import Position from "./parsers/Position";
 
-class Variable extends QName {
+export default class Variable extends QName {
 
     private type: string;
     private position: Position;
@@ -20,5 +20,3 @@ class Variable extends QName {
         return this.position;
     }
 }
-
-export = Variable;

@@ -1,8 +1,8 @@
 /// <reference path="../../typings/tsd.d.ts" />
 
-import Iterator = require("./iterators/Iterator");
+import Iterator from "./iterators/Iterator";
 
-class DynamicContext {
+export default class DynamicContext {
 
     private parent: DynamicContext;
     private variables: { [index: string]: Iterator } = {};
@@ -35,5 +35,3 @@ class DynamicContext {
         }
     }
 }
-
-export = DynamicContext;
