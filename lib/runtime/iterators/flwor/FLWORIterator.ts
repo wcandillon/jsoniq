@@ -15,7 +15,7 @@ export default class FLWORIterator extends Iterator {
     }
 
     serialize(): SourceMap.SourceNode {
-        var node = super.serialize();
+        var node = super.serialize("flwor");
         node.add("(function *(){")
             .add(this.clauses[0].serializeClause(this.clauses.slice(1)))
             .add("})()");

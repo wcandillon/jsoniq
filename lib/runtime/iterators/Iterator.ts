@@ -18,13 +18,13 @@ export default class Iterator {
         return JSON.stringify(this, null, 2);
     }
 
-    serialize(): SourceMap.SourceNode {
+    serialize(symbol?: string): SourceMap.SourceNode {
         return new SourceMap.SourceNode(
             this.position.getStartLine() + 1,
             this.position.getStartColumn(),
             this.position.getFileName(),
             undefined,
-            "Iterator"
+            symbol ? symbol : "it"
         );
     }
 }

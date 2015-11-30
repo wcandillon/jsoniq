@@ -21,7 +21,7 @@ export default class ReturnIterator extends IteratorClause {
         if(clauses.length !== 0) {
             throw new Error("Invalid plan.");
         }
-        var node = super.serialize();
+        var node = super.serialize("return");
         node.add("yield *")
             .add(this.expr.serialize())
             .add(";\n");
