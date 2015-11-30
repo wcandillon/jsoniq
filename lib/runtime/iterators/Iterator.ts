@@ -19,10 +19,12 @@ export default class Iterator {
     }
 
     serialize(): SourceMap.SourceNode {
-       return new SourceMap.SourceNode(
-           this.position.getStartLine() + 1,
-           this.position.getStartColumn() + 1,
-           this.position.getFileName()
-       );
+        return new SourceMap.SourceNode(
+            this.position.getStartLine() + 1,
+            this.position.getStartColumn(),
+            this.position.getFileName(),
+            undefined,
+            "Iterator"
+        );
     }
 }
