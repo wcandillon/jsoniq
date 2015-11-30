@@ -4,17 +4,13 @@ import Iterator from "../../../lib/runtime/iterators/Iterator";
 import * as vm from "vm";
 import * as fs from "fs";
 
-
 function serializeStandalone(it: Iterator): string {
     var source = "'use strict';var exports = {};var r = exports;";
     source += fs.readFileSync("./dist/lib/runtime/Runtime.js", "utf-8");
-    source += "var stack = [];\n";
-    source += it.serialize();
-    source += "stack.forEach(it => {\n";
-    source += "    for(var item of it) {\n";
-    source += "        items.push(item);\n";
-    source += "    }\n";
-    source += "});\n";
+    source += "var it = " + it.serialize() + ";\n";
+    source += "for(var item of it) {\n";
+    source += "    items.push(item);\n";
+    source += "}\n";
     return source;
 }
 

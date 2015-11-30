@@ -14,15 +14,15 @@ export default class ObjectIterator extends Iterator {
     }
 
     serialize(): SourceMap.SourceNode {
-        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getStartColumn() + 1, this.position.getFileName());
-        this.pairs.forEach(pair => {
+        var node = super.serialize();
+        node.add("r.ObjectIterator([");
+        this.pairs.forEach((pair, index) => {
             node.add(pair.serialize());
+            if(index !== this.pairs.length - 1) {
+                node.add(", ");
+            }
         });
-        if(this.pairs.length === 0) {
-            node.add("stack.push(r.ObjectIterator([]));\n");
-        } else {
-            node.add("stack.push(r.ObjectIterator(stack.splice(" + (- this.pairs.length) + ")));\n");
-        }
+        node.add("])");
         return node;
     }
 }

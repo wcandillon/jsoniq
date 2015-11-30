@@ -15,15 +15,15 @@ export default class SequenceIterator extends Iterator {
 
     //
     serialize(): SourceMap.SourceNode {
-        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getStartColumn() + 1, this.position.getFileName());
-        this.its.forEach(it => {
+        var node = super.serialize();
+        node.add("r.SequenceIterator([");
+        this.its.forEach((it, index) => {
             node.add(it.serialize());
+            if(index !== this.its.length - 1) {
+                node.add(", ");
+            }
         });
-        if(this.its.length === 0) {
-            node.add("stack.push(r.SequenceIterator([]));\n");
-        } else {
-            node.add("stack.push(r.SequenceIterator(stack.splice(" + (- this.its.length) + ")));\n");
-        }
+        node.add("])");
         return node;
     }
 }

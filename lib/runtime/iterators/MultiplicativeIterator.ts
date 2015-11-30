@@ -17,11 +17,13 @@ export default class MultiplicativeIterator extends Iterator {
     }
 
     serialize(): SourceMap.SourceNode {
-        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getStartColumn() + 1, this.position.getFileName());
+        var node = super.serialize();
         node
-            .add(this.right.serialize())
+            .add("r.MultiplicativeIterator(" + JSON.stringify(this.operator) + ", ")
             .add(this.left.serialize())
-            .add("stack.push(r.MultiplicativeIterator(" + JSON.stringify(this.operator) + ", stack.pop(), stack.pop()));\n");
+            .add(", ")
+            .add(this.right.serialize())
+            .add(")");
         return node;
     }
 }

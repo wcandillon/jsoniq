@@ -15,11 +15,13 @@ export default class RangeIterator extends Iterator {
     }
 
     serialize(): SourceMap.SourceNode {
-        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getStartColumn() + 1, this.position.getFileName());
+        var node = super.serialize();
         node
-            .add(this.to.serialize())
+            .add("r.RangeIterator(")
             .add(this.from.serialize())
-            .add("stack.push(r.RangeIterator(stack.pop(), stack.pop()));\n");
+            .add(", ")
+            .add(this.to.serialize())
+            .add(")");
         return node;
     }
 }

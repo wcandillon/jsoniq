@@ -13,9 +13,10 @@ export default class ArrayIterator extends Iterator {
     }
 
     serialize(): SourceMap.SourceNode {
-        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getStartColumn() + 1, this.position.getFileName());
-        node.add(this.expr.serialize());
-        node.add("stack.push(r.ArrayIterator(stack.pop()));\n");
+        var node = super.serialize();
+        node.add("r.ArrayIterator(")
+            .add(this.expr.serialize())
+            .add(")");
         return node;
     }
 }
