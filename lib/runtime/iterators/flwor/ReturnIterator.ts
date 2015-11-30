@@ -22,7 +22,7 @@ export default class ReturnIterator extends IteratorClause {
             throw new Error("Invalid plan.");
         }
         var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getStartColumn() + 1, this.position.getFileName());
-        node.add(this.expr.serialize());
+        node.add("yield *" + this.expr.serialize() + ";\n");
         return node;
     }
 }
