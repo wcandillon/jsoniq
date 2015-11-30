@@ -23,7 +23,7 @@ export default class ForIterator extends IteratorClause {
     }
 
     serializeClause(clauses: IteratorClause[]): SourceMap.SourceNode {
-        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getStartColumn() + 1, this.position.getFileName());
+        var node = super.serialize();
         if(this.positionalVar) {
             node.add("let $" + this.positionalVar + " = 0;\n");
         }

@@ -23,10 +23,7 @@
     "email": "w@28.io",
     "url": "http://28.io"
   },
-  "license": {
-    "type": "Apache-2.0",
-    "url": "https://github.com/wcandillon/jsoniq/blob/master/LICENSE"
-  },
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/wcandillon/jsoniq/issues"
   },
@@ -36,7 +33,7 @@
     "es6-promise": "~1.0.0",
     "lodash": "~2.4.1",
     "node-uuid": "~1.4.1",
-    "source-map": "^0.4.2",
+    "source-map": "0.5.3",
     "update-notifier": "^0.5.0"
   },
   "devDependencies": {

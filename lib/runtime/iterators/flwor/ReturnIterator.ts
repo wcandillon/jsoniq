@@ -21,8 +21,10 @@ export default class ReturnIterator extends IteratorClause {
         if(clauses.length !== 0) {
             throw new Error("Invalid plan.");
         }
-        var node = new SourceMap.SourceNode(this.position.getStartLine() + 1, this.position.getStartColumn() + 1, this.position.getFileName());
-        node.add("yield *" + this.expr.serialize() + ";\n");
+        var node = super.serialize();
+        node.add("yield *")
+            .add(this.expr.serialize())
+            .add(";\n");
         return node;
     }
 }
