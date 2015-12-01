@@ -93,13 +93,12 @@ describe("Test FLWOR", () => {
         var e = u.expectQuery("for $i in () return 1");
         e.toEqual([]);
     });
-/*
-    it("let 1", () => {
-        return u.expectQuery("let $i := 1 return $i");
-            e.toEqual([1]);
-        });
-    });
 
+    it("let 1", () => {
+        var e = u.expectQuery("let $i := 1 return $i");
+        e.toEqual([1]);
+    });
+/*
     it("let 2", () => {
         return u.expectQuery("let $i := 1 let $i := 2 return $i");
             e.toEqual([2]);

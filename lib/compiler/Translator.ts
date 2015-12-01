@@ -26,6 +26,7 @@ import ArrayIterator from "../runtime/iterators/ArrayIterator";
 
 import FLWORIterator from "../runtime/iterators/flwor/FLWORIterator";
 import ForIterator from "../runtime/iterators/flwor/ForIterator";
+import LetIterator from "../runtime/iterators/flwor/LetIterator";
 import ReturnIterator from "../runtime/iterators/flwor/ReturnIterator";
 
 import Item from "../runtime/items/Item";
@@ -163,6 +164,18 @@ export default class Translator {
             posVarName = pos.find(["VarName"])[0].toString();
         }
         this.pushIt(new ForIterator(node.getPosition(), varName, allowingEmpty, posVarName, this.popIt()));
+        return true;
+    }
+
+
+    //LetBinding ::= ( '$' VarName TypeDeclaration? | FTScoreVar ) ':=' ExprSingle
+    LetBinding(node: ASTNode): boolean {
+        this.visitChildren(node);
+        this.pushCtx(node.getPosition());
+        var v = node.find(["VarName"])[0];
+        var qname = this.resolveQName(v.toString(), v.getPosition());
+        this.sctx.addVariable(new Variable(v.getPosition(), "LetBinding", qname));
+        this.pushIt(new LetIterator(node.getPosition(), v.toString(), this.popIt()));
         return true;
     }
 
