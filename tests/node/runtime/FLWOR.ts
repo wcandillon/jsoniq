@@ -83,19 +83,17 @@ describe("Test FLWOR", () => {
         var e = u.expectQuery("for $i in () return $i");
         e.toEqual([]);
     });
-/*
+
     it("for 14", () => {
-        return u.expectQuery("for $i allowing empty in () return 1");
-            e.toEqual([1]);
-        });
+        var e = u.expectQuery("for $i allowing empty in () return 1");
+        e.toEqual([1]);
     });
 
     it("for 15", () => {
-        return u.expectQuery("for $i in () return 1");
-            e.toEqual([]);
-        });
+        var e = u.expectQuery("for $i in () return 1");
+        e.toEqual([]);
     });
-
+/*
     it("let 1", () => {
         return u.expectQuery("let $i := 1 return $i");
             e.toEqual([1]);
