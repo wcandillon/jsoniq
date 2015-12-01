@@ -48,8 +48,8 @@
     "gulp-load-plugins": "^0.10.0",
     "gulp-sequence": "^0.3.2",
     "gulp-sourcemaps": "^1.1.4",
-    "gulp-tslint": "git://github.com/wcandillon/gulp-tslint.git#aafe27f17c84e46f20838681bcb23a5d7b1e602f",
-    "gulp-typescript": "^2.6.0",
+    "gulp-tslint": "4.1.0",
+    "gulp-typescript": "2.9.2",
     "gulp-util": "^3.0.4",
     "harmonize": "^1.4.4",
     "jasmine2-pit": "^0.2.0",
@@ -64,8 +64,8 @@
     "q": "^1.3.0",
     "request": "^2.55.0",
     "source-map-support": "^0.2.10",
-    "tslint": "^3.1.0-dev.1",
-    "typescript": "^1.8.0-dev.20151128",
+    "tslint": "3.1.0-dev.1",
+    "typescript": "1.8.0-dev.20151128",
     "vinyl-source-stream": "~0.1.1"
   }
 }
