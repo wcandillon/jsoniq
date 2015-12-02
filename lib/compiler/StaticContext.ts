@@ -52,6 +52,17 @@ export default class StaticContext {
         return this;
     }
 
+    getVariable(variable: Variable): Variable {
+        var found = _.find(this.variables, function(v){
+            return v.toString() === variable.toString();
+        });
+        if(found) {
+            return found;
+        } else if(this.parent) {
+            return this.parent.getVariable(variable);
+        }
+    }
+
     getUnusedVarRefs(): QName[] {
         return this.varRefs.filter(varRef => {
             return this.variables.filter(v => { return v.getPrefix() === varRef.getPrefix() && v.getLocalName() === varRef.getLocalName(); }).length === 0;

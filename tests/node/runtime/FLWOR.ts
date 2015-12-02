@@ -83,53 +83,49 @@ describe("Test FLWOR", () => {
         var e = u.expectQuery("for $i in () return $i");
         e.toEqual([]);
     });
-/*
+
     it("for 14", () => {
-        return u.expectQuery("for $i allowing empty in () return 1");
-            e.toEqual([1]);
-        });
+        var e = u.expectQuery("for $i allowing empty in () return 1");
+        e.toEqual([1]);
     });
 
     it("for 15", () => {
-        return u.expectQuery("for $i in () return 1");
-            e.toEqual([]);
-        });
+        var e = u.expectQuery("for $i in () return 1");
+        e.toEqual([]);
     });
 
     it("let 1", () => {
-        return u.expectQuery("let $i := 1 return $i");
-            e.toEqual([1]);
-        });
+        var e = u.expectQuery("let $i := 1 return $i");
+        e.toEqual([1]);
     });
 
     it("let 2", () => {
-        return u.expectQuery("let $i := 1 let $i := 2 return $i");
-            e.toEqual([2]);
-        });
+        var e = u.expectQuery("let $i := 1 let $i := 2 return $i");
+        e.toEqual([2]);
+    });
+
+    it("let 2.1", () => {
+        var e = u.expectQuery("let $i := 1 let $i := $i + 2 return $i");
+        e.toEqual([3]);
     });
 
     it("let 3", () => {
-        return u.expectQuery("let $i := 1 let $i := (1, 2, 3) return ($i, $i)");
-            e.toEqual([1, 2, 3, 1, 2, 3]);
-        });
+        var e = u.expectQuery("let $i := 1 let $i := (1, 2, 3) return ($i, $i)");
+        e.toEqual([1, 2, 3, 1, 2, 3]);
     });
 
     it("flwor 1", () => {
-        return u.expectQuery("let $a := for $i in (1 to 2) return $i let $b := for $i in (1 to 2) return $i return ($a, $b)");
-            e.toEqual([1, 2, 1, 2]);
-        });
+        var e = u.expectQuery("let $a := for $i in (1 to 2) return $i let $b := for $i in (1 to 2) return $i return ($a, $b)");
+        e.toEqual([1, 2, 1, 2]);
     });
 
     it("flwor 2", () => {
-        return u.expectQuery("let $a := for $i in (1 to 2) return $i let $b := for $i in (1 to 2) return $i for $a in (1 to 2) for $i in (for $i in (1 to 2) return $i) return $i");
-            e.toEqual([1, 2, 1, 2]);
-        });
+        var e = u.expectQuery("let $a := for $i in (1 to 2) return $i let $b := for $i in (1 to 2) return $i for $a in (1 to 2) for $i in (for $i in (1 to 2) return $i) return $i");
+        e.toEqual([1, 2, 1, 2]);
     });
 
     it("flwor 3", () => {
-        return u.expectQuery("for $a in (1,2) let $b := (1,2,3) for $c in $b return $a");
-            e.toEqual([1, 1, 1, 2, 2, 2]);
-        });
+        var e = u.expectQuery("for $a in (1,2) let $b := (1,2,3) for $c in $b return $a");
+        e.toEqual([1, 1, 1, 2, 2, 2]);
     });
-    */
 });

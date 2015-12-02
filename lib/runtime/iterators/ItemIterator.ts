@@ -16,8 +16,7 @@ export default class ItemIterator extends Iterator {
 
     serialize(): SourceMap.SourceNode {
         var node = super.serialize();
-        node
-            .add("r.ItemIterator(" + JSON.stringify(this.item.get()) + ")");
+        node.add("r.item([" + JSON.stringify(this.item.get()) + "])");
         return node;
     }
 }

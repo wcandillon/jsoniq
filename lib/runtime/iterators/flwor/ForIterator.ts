@@ -23,20 +23,42 @@ export default class ForIterator extends IteratorClause {
     }
 
     serializeClause(clauses: IteratorClause[]): SourceMap.SourceNode {
+        var clauseId = this.id();
         var node = super.serialize("for");
+        if(this.allowEmpty) {
+            node.add("let $empty_" + clauseId + " = true;\n");
+        }
         if(this.positionalVar) {
-            node.add("let $" + this.positionalVar + " = 0;\n");
+            node.add("let $" + this.positionalVar + " = [0];\n");
         }
         node.add("for(let $" + this.varName + " of ");
         node.add(this.expr.serialize());
         node.add(") {\n");
+        node.add(`$${this.varName} = [$${this.varName}];`);
+        if(this.allowEmpty) {
+            node.add("$empty_" + clauseId + " = false;\n");
+        }
         if(this.positionalVar) {
-            node.add("$" + this.positionalVar + "++;\n");
+            node.add("$" + this.positionalVar + "[0]++;\n");
         }
         node.add(
             clauses[0].serializeClause(clauses.slice(1))
         );
         node.add("}\n");
+        if(this.allowEmpty) {
+            node.add(`if($empty_${clauseId}){
+    let $${this.varName} = undefined;`);
+            node.add(
+                clauses[0].serializeClause(clauses.slice(1))
+            );
+            node.add("}");
+        }
         return node;
+    }
+
+    private id(): string {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
     }
 }
