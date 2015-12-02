@@ -37,7 +37,7 @@ export default class FLWORIterator extends Iterator {
         right: IteratorClause[],
         remaining: any[]
     ): FLWORIterator {
-        var bindings = {};
+        //var bindings = {};
         node.add("let $tuples := (function *(){")
             .add(left[0].serializeClause(left.slice(1)))
             .add("})();")

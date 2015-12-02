@@ -46,8 +46,8 @@ describe("Test FLWOR Expressions", () => {
         "flwor01.xq",
         "flwor02.xq",
         "flwor06.xq",
-        "flwor07.xq",
-        "flwor08.xq",
+        //"flwor07.xq",
+        //"flwor08.xq",
         "flwor10.xq"
     ];
     queries.forEach(file => {
