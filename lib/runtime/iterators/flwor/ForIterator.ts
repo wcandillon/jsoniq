@@ -29,16 +29,17 @@ export default class ForIterator extends IteratorClause {
             node.add("let $empty_" + clauseId + " = true;\n");
         }
         if(this.positionalVar) {
-            node.add("let $" + this.positionalVar + " = 0;\n");
+            node.add("let $" + this.positionalVar + " = [0];\n");
         }
         node.add("for(let $" + this.varName + " of ");
         node.add(this.expr.serialize());
         node.add(") {\n");
+        node.add(`$${this.varName} = [$${this.varName}];`);
         if(this.allowEmpty) {
             node.add("$empty_" + clauseId + " = false;\n");
         }
         if(this.positionalVar) {
-            node.add("$" + this.positionalVar + "++;\n");
+            node.add("$" + this.positionalVar + "[0]++;\n");
         }
         node.add(
             clauses[0].serializeClause(clauses.slice(1))

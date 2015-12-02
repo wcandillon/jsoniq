@@ -1,3 +1,17 @@
+export function load(it: Iterator<any>): any[] {
+    let items = [], item;
+    while((item = it.next().value) !== undefined) {
+        items.push(item);
+    }
+    return items;
+}
+
+export function *wrap(items: any[]): Iterable<any> {
+    for(let i = 0; i < items.length; i++) {
+        yield items[i];
+    }
+}
+
 export function *ItemIterator(item: any): Iterable<any> {
     yield item;
 }

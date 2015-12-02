@@ -20,12 +20,10 @@ export default class LetIterator extends IteratorClause {
 
     serializeClause(clauses: IteratorClause[]): SourceMap.SourceNode {
         var node = super.serialize("let");
-        node.add("let $" + this.varName + " = (function(){ let seq = []; let it = ")
+        node.add("let $" + this.varName + " = r.load(")
             .add(this.expr.serialize())
-            .add("; for(let item of it){ seq.push(item); } return seq; })();\n");
-        node.add(
-            clauses[0].serializeClause(clauses.slice(1))
-        );
+            .add(");\n")
+            .add(clauses[0].serializeClause(clauses.slice(1)));
         return node;
     }
 }
