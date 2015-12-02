@@ -3,7 +3,7 @@
 
 ##The JSON Query Language
 ###Usage
-To compile a query:
+To compile a query to JavaScript:
 ```base
 $cat query.jq
 for $i in (1 to 5)
