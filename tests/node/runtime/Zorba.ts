@@ -42,8 +42,8 @@ describe("Test FLWOR Expressions", () => {
 
     var base = "tests/queries/zorba/Queries/zorba/flwor";
     var queries = [
-        "flwor00.xq"
-        //"flwor01.xq",
+        "flwor00.xq",
+        "flwor01.xq",
         //"flwor02.xq",
         //"flwor06.xq",
         //"flwor07.xq",

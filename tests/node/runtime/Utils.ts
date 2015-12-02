@@ -28,14 +28,10 @@ export function expectQuery(source: string, jsoniq?: boolean): jasmine.Matchers 
 export function expectSerializedQuery(source:string, jsoniq?:boolean):jasmine.Matchers {
     var query = new JSONiq(source);
     var filename = jsoniq ? "test.jq" : "test.xq";
-    if (jsoniq) {
-        query.setFileName("test.jq");
-    } else {
-        query.setFileName("test.xq");
-    }
+    query.setFileName(filename);
     var it = query.compile();
     var plan = serializeStandalone(it);
-    global.items = [];
-    vm.runInThisContext(plan, filename);
-    return expect(global.items.join(" "));
+    var sandbox = <vm.Context>{ items: [] };
+    vm.runInNewContext(plan, sandbox, filename);
+    return expect((<{ items: []; }>sandbox).items.join(" "));
 }
