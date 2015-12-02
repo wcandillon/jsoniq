@@ -128,4 +128,12 @@ describe("Test FLWOR", () => {
         var e = u.expectQuery("for $a in (1,2) let $b := (1,2,3) for $c in $b return $a");
         e.toEqual([1, 1, 1, 2, 2, 2]);
     });
+
+    it("flwor 3", () => {
+        var e = u.expectQuery(`let $i := 1
+        let $i := $i + 2
+        order by $i
+        return $i`);
+        e.toEqual([3]);
+    });
 });

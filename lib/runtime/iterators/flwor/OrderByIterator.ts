@@ -22,7 +22,7 @@ export default class OrderByIterator extends IteratorClause {
 
     serializeClause(clauses: IteratorClause[]): SourceMap.SourceNode {
         var node = super.serialize("order by");
-        clauses[0].serializeClause(clauses.slice(1));
+        node.add(`tuples = r.sort(tuples);\n`);
         return node;
     }
 }

@@ -22,6 +22,10 @@ export default class ForIterator extends IteratorClause {
         this.expr = expr;
     }
 
+    getBindingVar(): string {
+        return this.varName;
+    }
+
     serializeClause(clauses: IteratorClause[]): SourceMap.SourceNode {
         var clauseId = this.id();
         var node = super.serialize("for");
@@ -41,9 +45,11 @@ export default class ForIterator extends IteratorClause {
         if(this.positionalVar) {
             node.add("$" + this.positionalVar + "[0]++;\n");
         }
-        node.add(
-            clauses[0].serializeClause(clauses.slice(1))
-        );
+        if(clauses.length > 0) {
+            node.add(
+                clauses[0].serializeClause(clauses.slice(1))
+            );
+        }
         node.add("}\n");
         if(this.allowEmpty) {
             node.add(`if($empty_${clauseId}){

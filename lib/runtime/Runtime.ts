@@ -6,6 +6,10 @@ export function load(it: Iterator<any>): any[] {
     return items;
 }
 
+export function sort(tuples: {}): {} {
+    return tuples;
+}
+
 export function *item(items: any[]): Iterable<any> {
     for(let i = 0; i < items.length; i++) {
         yield items[i];
