@@ -1,7 +1,7 @@
 {
   "version": "v4",
-  "repo": "wcandillon/DefinitelyTyped",
-  "ref": "patch-1",
+  "repo": "DefinitelyTyped/DefinitelyTyped",
+  "ref": "master",
   "path": "typings",
   "bundle": "typings/tsd.d.ts",
   "installed": {
@@ -21,7 +21,7 @@
       "commit": "b3834d886a95789e6ab56e8244775ec10c5293d0"
     },
     "source-map/source-map.d.ts": {
-      "commit": "dd3fb2e7c8d31a01e239df5c504bd8c4c7e99fed"
+      "commit": "7a3d6944036902996b87981e6150900952b35628"
     }
   }
 }
