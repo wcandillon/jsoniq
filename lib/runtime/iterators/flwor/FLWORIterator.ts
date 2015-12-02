@@ -19,9 +19,6 @@ export default class FLWORIterator extends Iterator {
     }
 
     private isMaterializingClause(it: IteratorClause): boolean {
-        if(it instanceof  OrderByIterator) {
-            console.log(true);
-        }
         return it instanceof OrderByIterator;
     }
 
