@@ -12,10 +12,6 @@ export function *wrap(items: any[]): Iterable<any> {
     }
 }
 
-export function *ItemIterator(item: any): Iterable<any> {
-    yield item;
-}
-
 export function *AdditiveIterator(left: Iterator<number>, right: Iterator<number>, isPlus: boolean): Iterable<number> {
     if(isPlus) {
         yield left.next().value + right.next().value;
