@@ -14,7 +14,7 @@ export default class VarRefIterator extends Iterator {
 
     serialize(): SourceMap.SourceNode {
         var node = super.serialize();
-        node.add(`r.wrap($${this.varName})`);
+        node.add(`r.item($${this.varName})`);
         return node;
     }
 }

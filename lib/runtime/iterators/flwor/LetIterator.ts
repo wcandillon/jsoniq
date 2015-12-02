@@ -9,18 +9,26 @@ export default class LetIterator extends IteratorClause {
 
     private varName: string;
     private expr: Iterator;
+    private overrides: boolean;
 
     constructor(
-        position: Position, varName: string, expr: Iterator
+        position: Position,
+        varName: string,
+        expr: Iterator,
+        overrides: boolean
     ) {
         super(position);
         this.varName = varName;
         this.expr = expr;
+        this.overrides = overrides;
     }
 
     serializeClause(clauses: IteratorClause[]): SourceMap.SourceNode {
         var node = super.serialize("let");
-        node.add("let $" + this.varName + " = r.load(")
+        if(!this.overrides) {
+          node.add("let ");
+        }
+        node.add("$" + this.varName + " = r.load(")
             .add(this.expr.serialize())
             .add(");\n")
             .add(clauses[0].serializeClause(clauses.slice(1)));

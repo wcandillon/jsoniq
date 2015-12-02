@@ -174,8 +174,10 @@ export default class Translator {
         this.pushCtx(node.getPosition());
         var v = node.find(["VarName"])[0];
         var qname = this.resolveQName(v.toString(), v.getPosition());
-        this.sctx.addVariable(new Variable(v.getPosition(), "LetBinding", qname));
-        this.pushIt(new LetIterator(node.getPosition(), v.toString(), this.popIt()));
+        var variable = new Variable(v.getPosition(), "LetBinding", qname);
+        var overrides = this.sctx.getVariable(variable) !== undefined;
+        this.sctx.addVariable(variable);
+        this.pushIt(new LetIterator(node.getPosition(), v.toString(), this.popIt(), overrides));
         return true;
     }
 

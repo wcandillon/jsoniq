@@ -104,6 +104,11 @@ describe("Test FLWOR", () => {
         e.toEqual([2]);
     });
 
+    it("let 2.1", () => {
+        var e = u.expectQuery("let $i := 1 let $i := $i + 2 return $i");
+        e.toEqual([3]);
+    });
+
     it("let 3", () => {
         var e = u.expectQuery("let $i := 1 let $i := (1, 2, 3) return ($i, $i)");
         e.toEqual([1, 2, 3, 1, 2, 3]);
