@@ -33,5 +33,5 @@ export function expectSerializedQuery(source:string, jsoniq?:boolean):jasmine.Ma
     var plan = serializeStandalone(it);
     var sandbox = <vm.Context>{ items: [] };
     vm.runInNewContext(plan, sandbox, filename);
-    return expect((<{ items: []; }>sandbox).items.join(" "));
+    return expect((<{ items: []; }>sandbox).items.map(item => { return JSON.stringify(item); }).join(" "));
 }

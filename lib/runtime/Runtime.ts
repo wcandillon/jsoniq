@@ -17,15 +17,15 @@ export function *comp(l: Iterator<any>, r: Iterator<any>, operator: string): Ite
     var right = r.next().value;
     if(operator === "eq") {
         yield left === right;
-    } else if(this.operator === "ne") {
+    } else if(operator === "ne") {
         yield left !== right;
-    } else if(this.operator === "lt" || this.operator === "<") {
+    } else if(operator === "lt" || operator === "<") {
         yield left < right;
-    } else if(this.operator === "le") {
+    } else if(operator === "le") {
         yield left <= right;
-    } else if(this.operator === "gt" || this.operator === ">") {
+    } else if(operator === "gt" || operator === ">") {
         yield left > right;
-    } else if(this.operator === "ge") {
+    } else if(operator === "ge") {
         yield left >= right;
     }
 }

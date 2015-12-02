@@ -1,4 +1,4 @@
-//import * as _ from "lodash";
+import * as _ from "lodash";
 
 import ASTNode from "./parsers/ASTNode";
 import Position from "./parsers/Position";
@@ -28,6 +28,7 @@ import FLWORIterator from "../runtime/iterators/flwor/FLWORIterator";
 import ForIterator from "../runtime/iterators/flwor/ForIterator";
 import LetIterator from "../runtime/iterators/flwor/LetIterator";
 import WhereIterator from "../runtime/iterators/flwor/WhereIterator";
+import OrderByIterator from "../runtime/iterators/flwor/OrderByIterator";
 import ReturnIterator from "../runtime/iterators/flwor/ReturnIterator";
 
 import Item from "../runtime/items/Item";
@@ -186,6 +187,23 @@ export default class Translator {
         this.visitChildren(node);
         this.pushCtx(node.getPosition());
         this.pushIt(new WhereIterator(node.getPosition(), this.popIt()));
+        return true;
+    }
+
+    //OrderByClause	   ::=   	(("order" "by") | ("stable" "order" "by")) OrderSpecList
+    OrderByClause(node: ASTNode): boolean {
+        this.pushCtx(node.getPosition());
+        var orderSpecs: { expr: Iterator; ascending: boolean; emptyGreatest: boolean }[] = [];
+        var specs: ASTNode[] = node.find(["OrderSpecList"])[0].getChildren();
+        _.chain<ASTNode[]>(specs).forEach((spec: ASTNode) => {
+            this.visitChildren(spec);
+            orderSpecs.push({
+                expr: this.popIt(),
+                ascending: spec.find(["OrderModifier"])[0].toString().indexOf("ascending") !== -1,
+                emptyGreatest: spec.find(["OrderModifier"])[0].toString().indexOf("empty greatest") !== -1
+            });
+        });
+        this.pushIt(new OrderByIterator(node.getPosition(), false, orderSpecs));
         return true;
     }
 
