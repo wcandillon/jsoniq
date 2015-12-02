@@ -6,7 +6,7 @@ export function load(it: Iterator<any>): any[] {
     return items;
 }
 
-export function sort(tuples: {}): {} {
+export function sort(tuples: {}, expr: Iterator<any>, ascending: boolean, emptyGreatest: boolean): {} {
     return tuples;
 }
 
