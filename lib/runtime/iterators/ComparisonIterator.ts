@@ -19,7 +19,7 @@ export default class ComparisonIterator extends Iterator {
     serialize(): SourceMap.SourceNode {
         var node = super.serialize();
         node
-            .add("r.ComparisonIterator(")
+            .add("r.comp(")
             .add(this.left.serialize())
             .add(", ")
             .add(this.right.serialize())

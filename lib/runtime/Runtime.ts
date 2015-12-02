@@ -12,6 +12,24 @@ export function *item(items: any[]): Iterable<any> {
     }
 }
 
+export function *comp(l: Iterator<any>, r: Iterator<any>, operator: string): Iterator<any> {
+    var left = l.next().value;
+    var right = r.next().value;
+    if(operator === "eq") {
+        yield left === right;
+    } else if(operator === "ne") {
+        yield left !== right;
+    } else if(operator === "lt" || operator === "<") {
+        yield left < right;
+    } else if(operator === "le") {
+        yield left <= right;
+    } else if(operator === "gt" || operator === ">") {
+        yield left > right;
+    } else if(operator === "ge") {
+        yield left >= right;
+    }
+}
+
 export function *AdditiveIterator(left: Iterator<number>, right: Iterator<number>, isPlus: boolean): Iterable<number> {
     if(isPlus) {
         yield left.next().value + right.next().value;
