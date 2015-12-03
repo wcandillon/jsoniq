@@ -195,7 +195,11 @@ export default class Translator {
         this.pushCtx(node.getPosition());
         var orderSpecs: { expr: Iterator; ascending: boolean; emptyGreatest: boolean }[] = [];
         var specs: ASTNode[] = node.find(["OrderSpecList"])[0].getChildren();
-        _.chain<ASTNode[]>(specs).forEach((spec: ASTNode) => {
+        _.chain<ASTNode[]>(specs)
+        .filter((spec: ASTNode) => {
+            return spec.getName() === "OrderSpec";
+        })
+        .forEach((spec: ASTNode) => {
             this.visitChildren(spec);
             orderSpecs.push({
                 expr: this.popIt(),
