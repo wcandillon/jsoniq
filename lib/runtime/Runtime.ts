@@ -48,7 +48,7 @@ export function processTuples(tuples: Iterator<any>): any[] {
                     result.push(groups[key]);
                 });
                 return result;
-            });
+            })[0];
         }
         newTuples.forEach(tuples => {
             tuples.sort((tuple1, tuple2) => {
