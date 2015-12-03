@@ -43,14 +43,15 @@ export default class FLWORIterator extends Iterator {
             }
         });
         var leftIts = left.slice(1);
-        leftIts.push(new ReturnTupleIterator(this.position, Object.keys(bindings)));
+        leftIts.push(new ReturnTupleIterator(this.position, Object.keys(bindings), op));
         node.add("(function *(){\n")
             .add("let tuples = (function *(){\n")
             .add(left[0].serializeClause(leftIts))
             //.add()
             .add("})();")
-            .add(op[0].serializeClause(op.slice(1)))
-            .add("for(let tuple of tuples){\n");
+            //.add(op[0].serializeClause(op.slice(1)))
+            .add("tuples = r.processTuples(tuples);\n")
+            .add("for(var i = 0; i < tuples.length; i++) {\nlet tuple = tuples[i];\n");
         _.forEach(bindings, (v, varName) => {
             node.add(`let $${varName} = tuple['$${varName}'];\n`);
         });

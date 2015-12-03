@@ -10,6 +10,26 @@ export function sort(tuples: {}, expr: Iterator<any>, ascending: boolean, emptyG
     return tuples;
 }
 
+export function processTuples(tuples: Iterator<any>): any[] {
+    var newTuples = [];
+    var tuple;
+    while((tuple = tuples.next().value) !== undefined) {
+        newTuples.push(tuple);
+    }
+    newTuples.sort((tuple1, tuple2) => {
+        var v1, v2;
+        Object.keys(tuple1).filter(key => { return key.split("_")[0] === "group"; }).forEach(key => {
+            v1 = tuple1[key];
+            v2 = tuple2[key];
+        });
+        console.log(v1);
+        console.log(v2);
+        return -1;
+        //return v1 > v2;
+    });
+    return newTuples;
+}
+
 export function *item(items: any[]): Iterable<any> {
     for(let i = 0; i < items.length; i++) {
         yield items[i];

@@ -1,5 +1,5 @@
 /// <reference path="../../../../typings/tsd.d.ts" />
-import * as SourceMap from "source-map";
+//import * as SourceMap from "source-map";
 
 import Iterator from "../Iterator";
 import IteratorClause from "./IteratorClause";
@@ -8,7 +8,7 @@ import Position from "../../../compiler/parsers/Position";
 export default class OrderByIterator extends IteratorClause {
 
     private stable: boolean;
-    private specs: { expr: Iterator; ascending: boolean; emptyGreatest: boolean }[];
+    public specs: { expr: Iterator; ascending: boolean; emptyGreatest: boolean }[];
 
     constructor(
         position: Position,
@@ -19,7 +19,7 @@ export default class OrderByIterator extends IteratorClause {
         this.stable = stable;
         this.specs = specs;
     }
-
+/*
     serializeClause(clauses: IteratorClause[]): SourceMap.SourceNode {
         var node = super.serialize("order by");
         this.specs.forEach(spec => {
@@ -29,4 +29,5 @@ export default class OrderByIterator extends IteratorClause {
         });
         return node;
     }
+    */
 }
