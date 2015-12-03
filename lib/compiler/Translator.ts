@@ -251,11 +251,13 @@ export default class Translator {
     AdditiveExpr(node: ASTNode): boolean {
         this.visitChildren(node);
         node.find(["TOKEN"]).forEach((token: ASTNode) => {
+            var right = this.popIt();
+            var left = this.popIt();
             this.iterators.push(
                 new AdditiveIterator(
                     node.getPosition(),
-                    this.popIt(),
-                    this.popIt(),
+                    left,
+                    right,
                     token.getValue() === "+"
                 )
             );
@@ -266,12 +268,14 @@ export default class Translator {
     //MultiplicativeExpr ::= UnionExpr ( ( '*' | 'div' | 'idiv' | 'mod' ) UnionExpr )*
     MultiplicativeExpr(node: ASTNode): boolean {
         this.visitChildren(node);
+        var right = this.popIt();
+        var left = this.popIt();
         node.find(["TOKEN"]).forEach((token: ASTNode) => {
             this.pushIt(
                 new MultiplicativeIterator(
                     node.getPosition(),
-                    this.popIt(),
-                    this.popIt(),
+                    left,
+                    right,
                     token.getValue()
                 )
             );
