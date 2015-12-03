@@ -1,9 +1,11 @@
 /// <reference path="../../../../typings/tsd.d.ts" />
+import * as _ from "lodash";
 import * as SourceMap from "source-map";
 
 import Position from "../../../compiler/parsers/Position";
 import IteratorClause from "./IteratorClause";
 import OrderByIterator from "./OrderByIterator";
+import ReturnTupleIterator from "./ReturnTupleIterator";
 import Iterator from "../Iterator";
 
 export default class FLWORIterator extends Iterator {
@@ -17,9 +19,6 @@ export default class FLWORIterator extends Iterator {
     }
 
     private isMaterializingClause(it: IteratorClause): boolean {
-        if(it instanceof  OrderByIterator) {
-            console.log(true);
-        }
         return it instanceof OrderByIterator;
     }
 
@@ -37,15 +36,29 @@ export default class FLWORIterator extends Iterator {
         right: IteratorClause[],
         remaining: any[]
     ): FLWORIterator {
-        //var bindings = {};
-        node.add("let $tuples := (function *(){")
-            .add(left[0].serializeClause(left.slice(1)))
+        var bindings = {};
+        left.forEach(clause => {
+            if(clause.getBindingVar() !== undefined) {
+                bindings[clause.getBindingVar()] = true;
+            }
+        });
+        var leftIts = left.slice(1);
+        leftIts.push(new ReturnTupleIterator(this.position, Object.keys(bindings), op));
+        node.add("(function *(){\n")
+            .add("let tuples = (function *(){\n")
+            .add(left[0].serializeClause(leftIts))
+            //.add()
             .add("})();")
-            .add(op[0].serializeClause(op.slice(1)))
-            .add(right[0].serializeClause(right.slice(1)))
-        ;
+            //.add(op[0].serializeClause(op.slice(1)))
+            .add("tuples = r.processTuples(tuples);\n")
+            .add("for(var i = 0; i < tuples.length; i++) {\nlet tuple = tuples[i];\n");
+        _.forEach(bindings, (v, varName) => {
+            node.add(`let $${varName} = tuple['$${varName}'];\n`);
+        });
+        node.add(right[0].serializeClause(right.slice(1)))
+            .add("\n}\n})()");
 
-        if(remaining) {
+        if(remaining.length > 0) {
             this.serializeChunk(node, remaining[0], remaining[1], remaining[2], remaining.slice(3));
         }
 

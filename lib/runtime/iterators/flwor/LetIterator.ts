@@ -23,6 +23,10 @@ export default class LetIterator extends IteratorClause {
         this.overrides = overrides;
     }
 
+    getBindingVar(): string {
+        return this.varName;
+    }
+
     serializeClause(clauses: IteratorClause[]): SourceMap.SourceNode {
         var node = super.serialize("let");
         if(!this.overrides) {
