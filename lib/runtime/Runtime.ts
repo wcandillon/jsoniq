@@ -11,19 +11,33 @@ export function sort(tuples: {}, expr: Iterator<any>, ascending: boolean, emptyG
 }
 
 export function processTuples(tuples: Iterator<any>): any[] {
-    var newTuples = [];
-    var tuple;
+    let newTuples = [];
+    let tuple;
     while((tuple = tuples.next().value) !== undefined) {
         newTuples.push(tuple);
     }
-    newTuples.sort((tuple1, tuple2) => {
-        var v1, v2, ascending = "true";
-        Object.keys(tuple1).filter(key => { return key.split("_")[0] === "group"; }).forEach(key => {
-            v1 = tuple1[key];
-            v2 = tuple2[key];
-            ascending = key.split("_")[1];
+    //Sorting
+    let sortingKeys = [];
+    newTuples.forEach(tuple => {
+        Object.keys(tuple).filter(key => { return key.split("_")[0] === "group"; }).forEach(key => {
+            sortingKeys.push(key);
         });
-        return ascending === "true" ? (v1 > v2 ? 1 : -1) : (v1 < v2 ? 1 : -1);
+    });
+    sortingKeys.forEach(key => {
+        let tokens = key.split("_");
+        let ascending = tokens[1] === "true";
+        newTuples.sort((tuple1, tuple2) => {
+            let v1 = tuple1[key];
+            let v2 = tuple2[key];
+            let comp = ascending ? v1 > v2 : v1 < v2;
+            if(comp) {
+                return 1;
+            } else if(v1 === v2) {
+                return 0;
+            } else {
+                return -1;
+            }
+        });
     });
     return newTuples;
 }
