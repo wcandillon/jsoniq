@@ -1,13 +1,11 @@
+import * as _ from "lodash";
+
 export function load(it: Iterator<any>): any[] {
     let items = [], item;
     while((item = it.next().value) !== undefined) {
         items.push(item);
     }
     return items;
-}
-
-export function sort(tuples: {}, expr: Iterator<any>, ascending: boolean, emptyGreatest: boolean): {} {
-    return tuples;
 }
 
 export function processTuples(tuples: Iterator<any>): any[] {
@@ -17,29 +15,59 @@ export function processTuples(tuples: Iterator<any>): any[] {
         newTuples.push(tuple);
     }
     //Sorting
-    let sortingKeys = [];
+    let keys = {}, sortingKeys = [];
     newTuples.forEach(tuple => {
         Object.keys(tuple).filter(key => { return key.split("_")[0] === "group"; }).forEach(key => {
-            sortingKeys.push(key);
+            keys[key] = true;
         });
     });
-    sortingKeys.forEach(key => {
-        let tokens = key.split("_");
-        let ascending = tokens[1] === "true";
-        newTuples.sort((tuple1, tuple2) => {
-            let v1 = tuple1[key];
-            let v2 = tuple2[key];
-            let comp = ascending ? v1 > v2 : v1 < v2;
-            if(comp) {
-                return 1;
-            } else if(v1 === v2) {
-                return 0;
-            } else {
-                return -1;
-            }
-        });
+    sortingKeys = Object.keys(keys);
+    sortingKeys.sort((a, b) => {
+        let v1 = parseInt(a.split("_")[3], 10);
+        let v2 = parseInt(b.split("_")[3], 10);
+        if(v1 > v2) {
+            return 1;
+        } else if(v1 === v2) {
+            return 0;
+        } else {
+            return -1;
+        }
     });
-    return newTuples;
+    newTuples = [newTuples];
+    sortingKeys.reduce((done, key) => {
+        let ascending = key.split("_")[1] === "true";
+        if(done.length > 0) {
+            newTuples = newTuples.map(tuples => {
+                let result = [];
+                let groups = _.groupBy(tuples, tuple => {
+                    return done.map(key => {
+                        return "" + tuple[key];
+                    });
+                });
+                Object.keys(groups).forEach(key => {
+                    result.push(groups[key]);
+                });
+                return result;
+            });
+        }
+        newTuples.forEach(tuples => {
+            tuples.sort((tuple1, tuple2) => {
+                let v1 = tuple1[key];
+                let v2 = tuple2[key];
+                let comp = ascending ? v1 > v2 : v1 < v2;
+                if(comp) {
+                    return 1;
+                } else if(v1 === v2) {
+                    return 0;
+                } else {
+                    return -1;
+                }
+            });
+        });
+        done.push(key);
+        return done;
+    }, []);
+    return _.flatten(newTuples);
 }
 
 export function *item(items: any[]): Iterable<any> {
