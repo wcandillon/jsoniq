@@ -66,3 +66,22 @@ describe("Test FLWOR Expressions", () => {
         });
     });
 });
+
+describe("Test Bang Expressions", () => {
+
+    var base = "tests/queries/zorba/Queries/zorba/bang";
+    var queries = [
+        "1.xq"
+    ];
+    queries.forEach(file => {
+        file = base + "/" + file;
+        it(file, () => {
+            var query = fs.readFileSync(file, "utf-8");
+            var e = u.expectSerializedQuery(query, file.substring(file.length - 3) === ".jq");
+            file = file.replace("/Queries/", "/ExpQueryResults/");
+            file = file.substring(0, file.length - 3);
+            file = file + ".xml.res";
+            e.toEqual(fs.readFileSync(file, "utf-8").trim());
+        });
+    });
+});

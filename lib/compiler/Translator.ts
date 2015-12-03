@@ -23,6 +23,7 @@ import ComparisonIterator from "../runtime/iterators/ComparisonIterator";
 import ObjectIterator from "../runtime/iterators/ObjectIterator";
 import PairIterator from "../runtime/iterators/PairIterator";
 import ArrayIterator from "../runtime/iterators/ArrayIterator";
+import SimpleMapExpr from "../runtime/iterators/SimpleMapExpr";
 
 import FLWORIterator from "../runtime/iterators/flwor/FLWORIterator";
 import ForIterator from "../runtime/iterators/flwor/ForIterator";
@@ -232,6 +233,12 @@ export default class Translator {
         return true;
     }
 
+    ContextItemExpr(node: ASTNode): boolean {
+        this.sctx.addVarRef(this.resolveQName("$", node.getPosition()));
+        this.pushIt(new VarRefIterator(node.getPosition(), "$"));
+        return true;
+    }
+
     RangeExpr(node: ASTNode): boolean {
         this.visitChildren(node);
         var to = this.popIt();
@@ -290,6 +297,23 @@ export default class Translator {
             this.pushIt(new ObjectIterator(node.getPosition(), []));
         }
         return true;
+    }
+
+
+    //RelativePathExpr ::= PostfixExpr ( ( '/' | '//' | '!' ) StepExpr )*
+    RelativePathExpr(node: ASTNode): boolean {
+        var exprs = node.find(["PostfixExpr"]).concat(node.find(["StepExpr"]));
+        if(exprs.length > 1) {
+            this.visitChildren(exprs[0]);
+            var it = this.popIt();
+            for(var i = 1; i < exprs.length; i++) {
+                this.visitChildren(exprs[i]);
+                it = new SimpleMapExpr(node.getPosition(), it, this.popIt());
+            }
+            this.pushIt(it);
+            return true;
+        }
+        return false;
     }
 
     ObjectConstructor(node: ASTNode): boolean {

@@ -22,7 +22,7 @@ export default class JSONParseTreeHandler implements Parser.ParsingEventHandler 
         "OrExpr", "AndExpr", "ComparisonExpr", "StringConcatExpr", "RangeExpr",
         "AdditiveExpr", "MultiplicativeExpr", "NotExpr",
         "UnionExpr", "IntersectExceptExpr", "InstanceofExpr", "TreatExpr", "CastableExpr", "CastExpr", "UnaryExpr", "ValueExpr",
-        "FTContainsExpr", "SimpleMapExpr", "PathExpr", "RelativePathExpr", "PostfixExpr", "StepExpr"
+        "FTContainsExpr"
     ];
 
     constructor(source: string, fileName: string) {
