@@ -17,7 +17,7 @@ export function processTuples(tuples: Iterator<any>): any[] {
         newTuples.push(tuple);
     }
     newTuples.sort((tuple1, tuple2) => {
-        var v1, v2, ascending = true;
+        var v1, v2, ascending = "true";
         Object.keys(tuple1).filter(key => { return key.split("_")[0] === "group"; }).forEach(key => {
             v1 = tuple1[key];
             v2 = tuple2[key];
