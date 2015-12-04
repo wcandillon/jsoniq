@@ -294,9 +294,9 @@ export default class Translator {
         return false;
     }
 
-    //	ComparisonExpr	   ::=   	StringConcatExpr ( (ValueComp | GeneralComp | NodeComp) StringConcatExpr )?
+    //	ComparisonExpr	   ::=   	FTContainsExpr ( (ValueComp | GeneralComp | NodeComp) FTContainsExpr )?
     ComparisonExpr(node: ASTNode): boolean {
-        var exprs = node.find(["StringConcatExpr"]);
+        var exprs = node.find(["FTContainsExpr"]);
         if(exprs.length > 1) {
             this.visitChildren(node);
             var right = this.popIt();
