@@ -239,59 +239,67 @@ export default class Translator {
         return true;
     }
 
+    //RangeExpr	   ::=   	AdditiveExpr ( "to" AdditiveExpr )?
     RangeExpr(node: ASTNode): boolean {
-        this.visitChildren(node);
-        var to = this.popIt();
-        var f = this.popIt();
-        this.iterators.push(new RangeIterator(node.getPosition(), f, to));
-        return true;
+        var exprs = node.find(["AdditiveExpr"]);
+        if(exprs.length > 1) {
+            this.visitChildren(node);
+            var to = this.popIt();
+            var f = this.popIt();
+            this.iterators.push(new RangeIterator(node.getPosition(), f, to));
+            return true;
+        }
+        return false;
     }
 
     //AdditiveExpr ::= MultiplicativeExpr ( ( '+' | '-' ) MultiplicativeExpr )*
     AdditiveExpr(node: ASTNode): boolean {
-        this.visitChildren(node);
-        node.find(["TOKEN"]).forEach((token: ASTNode) => {
-            var right = this.popIt();
-            var left = this.popIt();
-            this.iterators.push(
-                new AdditiveIterator(
-                    node.getPosition(),
-                    left,
-                    right,
-                    token.getValue() === "+"
-                )
-            );
-        });
-        return true;
+        var exprs = node.find(["MultiplicativeExpr"]);
+        var ops = node.find(["TOKEN"]);
+        if(exprs.length > 1) {
+            this.visitChildren(exprs[0]);
+            var it = this.popIt();
+            for(var i = 1; i < exprs.length; i++) {
+                this.visitChildren(exprs[i]);
+                it = new AdditiveIterator(node.getPosition(), it, this.popIt(), ops.splice(0, 1)[0].getValue() === "+");
+            }
+            this.pushIt(it);
+            return true;
+        }
+        return false;
     }
 
     //MultiplicativeExpr ::= UnionExpr ( ( '*' | 'div' | 'idiv' | 'mod' ) UnionExpr )*
     MultiplicativeExpr(node: ASTNode): boolean {
-        this.visitChildren(node);
-        var right = this.popIt();
-        var left = this.popIt();
-        node.find(["TOKEN"]).forEach((token: ASTNode) => {
-            this.pushIt(
-                new MultiplicativeIterator(
-                    node.getPosition(),
-                    left,
-                    right,
-                    token.getValue()
-                )
-            );
-        });
-        return true;
+        var exprs = node.find(["UnionExpr"]);
+        var ops = node.find(["TOKEN"]);
+        if(exprs.length > 1) {
+            this.visitChildren(exprs[0]);
+            var it = this.popIt();
+            for(var i = 1; i < exprs.length; i++) {
+                this.visitChildren(exprs[i]);
+                it = new MultiplicativeIterator(node.getPosition(), it, this.popIt(), ops.splice(0, 1)[0].getValue());
+            }
+            this.pushIt(it);
+            return true;
+        }
+        return false;
     }
 
+    //	ComparisonExpr	   ::=   	StringConcatExpr ( (ValueComp | GeneralComp | NodeComp) StringConcatExpr )?
     ComparisonExpr(node: ASTNode): boolean {
-        this.visitChildren(node);
-        var right = this.popIt();
-        var left = this.popIt();
-        var comp = node.find(["ValueComp"]).toString();
-        comp = comp === "" ? node.find(["GeneralComp"]).toString() : comp;
-        comp = comp === "" ? node.find(["NodeComp"]).toString() : comp;
-        this.pushIt(new ComparisonIterator(node.getPosition(), left, right, comp));
-        return true;
+        var exprs = node.find(["StringConcatExpr"]);
+        if(exprs.length > 1) {
+            this.visitChildren(node);
+            var right = this.popIt();
+            var left = this.popIt();
+            var comp = node.find(["ValueComp"]).toString();
+            comp = comp === "" ? node.find(["GeneralComp"]).toString() : comp;
+            comp = comp === "" ? node.find(["NodeComp"]).toString() : comp;
+            this.pushIt(new ComparisonIterator(node.getPosition(), left, right, comp));
+            return true;
+        }
+        return false;
     }
 
     BlockExpr(node: ASTNode): boolean {
