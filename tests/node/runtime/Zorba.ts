@@ -71,7 +71,9 @@ describe("Test Bang Expressions", () => {
 
     var base = "tests/queries/zorba/Queries/zorba/bang";
     var queries = [
-        "1.xq"
+        "1.xq",
+        "9.xq",
+        "10.xq"
     ];
     queries.forEach(file => {
         file = base + "/" + file;

@@ -38,7 +38,7 @@ export default class ForIterator extends IteratorClause {
         node.add("for(let $" + this.varName + " of ");
         node.add(this.expr.serialize());
         node.add(") {\n");
-        node.add(`$${this.varName} = [$${this.varName}];`);
+        node.add(`$${this.varName} = [$${this.varName}];\n`);
         if(this.allowEmpty) {
             node.add("$empty_" + clauseId + " = false;\n");
         }

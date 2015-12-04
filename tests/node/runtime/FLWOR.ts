@@ -129,7 +129,7 @@ describe("Test FLWOR", () => {
         e.toEqual([1, 1, 1, 2, 2, 2]);
     });
 
-    it("flwor 3", () => {
+    it("flwor 3.1", () => {
         var e = u.expectQuery(`let $i := 1
         let $i := $i + 2
         order by $i

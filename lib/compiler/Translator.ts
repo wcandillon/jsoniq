@@ -24,6 +24,7 @@ import ObjectIterator from "../runtime/iterators/ObjectIterator";
 import PairIterator from "../runtime/iterators/PairIterator";
 import ArrayIterator from "../runtime/iterators/ArrayIterator";
 import SimpleMapExpr from "../runtime/iterators/SimpleMapExpr";
+import UnaryExpr from "../runtime/iterators/UnaryExpr";
 
 import FLWORIterator from "../runtime/iterators/flwor/FLWORIterator";
 import ForIterator from "../runtime/iterators/flwor/ForIterator";
@@ -331,6 +332,17 @@ export default class Translator {
                 it = new SimpleMapExpr(node.getPosition(), it, this.popIt());
             }
             this.pushIt(it);
+            return true;
+        }
+        return false;
+    }
+
+    //UnaryExpr ::= ( '-' | '+' )* ValueExpr
+    UnaryExpr(node: ASTNode): boolean {
+        var ops = node.find(["TOKEN"]);
+        if(ops.length > 0) {
+            this.visitChildren(node);
+            this.pushIt(new UnaryExpr(node.getPosition(), ops.map(op => { return op.getValue(); }), this.popIt()));
             return true;
         }
         return false;

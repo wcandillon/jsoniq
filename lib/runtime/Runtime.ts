@@ -70,6 +70,19 @@ export function processTuples(tuples: Iterator<any>): any[] {
     return _.flatten(newTuples);
 }
 
+export function *unary(ops: string[], value: Iterator<any>): Iterable<any> {
+    value = value.next().value;
+    if(ops.length === 0) {
+        yield value;
+    } else {
+        if(ops[0] === "+") {
+            yield * unary(ops.slice(1), (function *(){ yield + value; })());
+        } else {
+            yield * unary(ops.slice(1), (function *(){ yield - value; })());
+        }
+    }
+}
+
 export function *item(items: any[]): Iterable<any> {
     for(let i = 0; i < items.length; i++) {
         yield items[i];
