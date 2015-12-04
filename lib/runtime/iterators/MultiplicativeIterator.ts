@@ -9,7 +9,7 @@ export default class MultiplicativeIterator extends Iterator {
     private left: Iterator;
     private right: Iterator;
 
-    constructor(position: Position, right: Iterator, left: Iterator, operator: string) {
+    constructor(position: Position, left: Iterator, right: Iterator, operator: string) {
         super(position);
         this.left = left;
         this.right = right;
