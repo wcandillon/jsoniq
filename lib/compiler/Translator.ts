@@ -131,11 +131,19 @@ export default class Translator {
         return true;
     }
 
+    //	Expr	   ::=   	ExprSingle ("," ExprSingle)*
     Expr(node: ASTNode): boolean {
-        var l = this.iterators.length;
-        this.visitChildren(node);
-        this.pushIt(new SequenceIterator(node.getPosition(), this.iterators.splice(l)));
-        return true;
+        var exprs = node.find(["ExprSingle"]);
+        if(exprs.length > 1) {
+            var its = [];
+            exprs.forEach(expr => {
+                this.visit(expr);
+                its.push(this.popIt());
+            });
+            this.pushIt(new SequenceIterator(node.getPosition(), its));
+            return true;
+        }
+        return false;
     }
 
     //FLWORExpr ::= InitialClause IntermediateClause* ReturnClause
@@ -169,7 +177,6 @@ export default class Translator {
         this.pushIt(new ForIterator(node.getPosition(), varName, allowingEmpty, posVarName, this.popIt()));
         return true;
     }
-
 
     //LetBinding ::= ( '$' VarName TypeDeclaration? | FTScoreVar ) ':=' ExprSingle
     LetBinding(node: ASTNode): boolean {
@@ -218,12 +225,13 @@ export default class Translator {
         return true;
     }
 
+    //ParenthesizedExpr	   ::=   	"(" Expr? ")"
     ParenthesizedExpr(node: ASTNode): boolean {
-        this.visitChildren(node);
-        if(this.iterators.length === 0) {
+        if(node.find(["Expr"]).length === 0) {
             this.pushIt(new SequenceIterator(node.getPosition(), []));
+            return true;
         }
-        return true;
+        return false;
     }
 
     VarRef(node: ASTNode): boolean {
@@ -245,8 +253,8 @@ export default class Translator {
         if(exprs.length > 1) {
             this.visitChildren(node);
             var to = this.popIt();
-            var f = this.popIt();
-            this.iterators.push(new RangeIterator(node.getPosition(), f, to));
+            var from = this.popIt();
+            this.iterators.push(new RangeIterator(node.getPosition(), from, to));
             return true;
         }
         return false;
@@ -257,10 +265,10 @@ export default class Translator {
         var exprs = node.find(["MultiplicativeExpr"]);
         var ops = node.find(["TOKEN"]);
         if(exprs.length > 1) {
-            this.visitChildren(exprs[0]);
+            this.visit(exprs[0]);
             var it = this.popIt();
             for(var i = 1; i < exprs.length; i++) {
-                this.visitChildren(exprs[i]);
+                this.visit(exprs[i]);
                 it = new AdditiveIterator(node.getPosition(), it, this.popIt(), ops.splice(0, 1)[0].getValue() === "+");
             }
             this.pushIt(it);
@@ -274,10 +282,10 @@ export default class Translator {
         var exprs = node.find(["UnionExpr"]);
         var ops = node.find(["TOKEN"]);
         if(exprs.length > 1) {
-            this.visitChildren(exprs[0]);
+            this.visit(exprs[0]);
             var it = this.popIt();
             for(var i = 1; i < exprs.length; i++) {
-                this.visitChildren(exprs[i]);
+                this.visit(exprs[i]);
                 it = new MultiplicativeIterator(node.getPosition(), it, this.popIt(), ops.splice(0, 1)[0].getValue());
             }
             this.pushIt(it);
@@ -316,10 +324,10 @@ export default class Translator {
     RelativePathExpr(node: ASTNode): boolean {
         var exprs = node.find(["PostfixExpr"]).concat(node.find(["StepExpr"]));
         if(exprs.length > 1) {
-            this.visitChildren(exprs[0]);
+            this.visit(exprs[0]);
             var it = this.popIt();
             for(var i = 1; i < exprs.length; i++) {
-                this.visitChildren(exprs[i]);
+                this.visit(exprs[i]);
                 it = new SimpleMapExpr(node.getPosition(), it, this.popIt());
             }
             this.pushIt(it);
