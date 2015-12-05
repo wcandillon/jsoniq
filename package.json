@@ -2,7 +2,7 @@
   "name": "jsoniq",
   "version": "0.0.2",
   "description": "JSONiq implementation for JavaScript",
-  "main": "dist/jsoniq.js",
+  "main": "dist/lib/JSONiq.js",
   "jsoniq": {
     "jsoniq": "./bin/jsoniq"
   },
