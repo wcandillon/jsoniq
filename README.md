@@ -4,7 +4,7 @@
 ##The JSON Query Language
 ###Usage
 To compile a query:
-```base
+```bash
 $cat query.jq
 for $i in (1 to 5)
 return $i
@@ -17,12 +17,18 @@ $node query.js
 5
 ```
 
+Or to run the query directly
+```bash
+$ jsoniq run query.jq
+```
+
+
 To print the query AST:
-```base
+```bash
 $jsoniq ast query.jq
 ```
 
 To print the query plan:
-```base
+```bash
 $jsoniq plan query.jq
 ```
