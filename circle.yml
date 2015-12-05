@@ -2,6 +2,8 @@ machine:
   node:
     version: 5.1.0
 dependencies:
+  pre:
+    - npm install -g npm
   post:
     - npm install -g tsd@next
     - tsd reinstall
