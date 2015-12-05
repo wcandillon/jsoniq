@@ -260,6 +260,13 @@ export default class Translator {
     //ArgumentList ::= '(' ( Argument ( ',' Argument )* )? ')'
     //Predicate ::= '[' Expr ']'
 
+    //StringConcatExpr ::= RangeExpr ( '||' RangeExpr )*
+    /*
+    StringConcatExpr(node: ASTNode): boolean {
+        var exprs =
+        return false;
+    }
+    */
 
     //ParenthesizedExpr	   ::=   	"(" Expr? ")"
     ParenthesizedExpr(node: ASTNode): boolean {
