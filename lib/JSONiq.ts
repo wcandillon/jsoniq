@@ -83,16 +83,23 @@ export default class JSONiq {
         node.add("   console.log(item);\n");
         node.add("}\n");
         var source = node.toStringWithSourceMap();
-
-        // output :: { code :: String, map :: SourceMapGenerator }
-        //var output         = rootSourceNode.toStringWithSourceMap({ file: mapFilename});
-
-        //We must add the //# sourceMappingURL comment directive
-        //so that the browser’s debugger knows where to find the source map.
         source.code +=  "\n//# sourceMappingURL=data:application/json," + source.map;
+        return source.code;
+    }
 
-        //fs.writeFileSync(codeFilename, output.code);
-        //fs.writeFileSync(mapFilename,  output.map);
+    static serializeAsJSON(it: Iterator): string {
+        var node = new SourceMap.SourceNode(1, 1, it.getPosition().getFileName(), null, "MainQuery");
+        node.add("'use strict';\n");
+        node.add("require('source-map-support').install();\n");
+        node.add("var r = require('./dist/lib/runtime/Runtime');\n");
+        node.add("var it = ");
+        node.add(it.serialize());
+        node.add(";\n");
+        node.add("for(var item of it) {\n");
+        node.add("   console.log(JSON.stringify(item));\n");
+        node.add("}\n");
+        var source = node.toStringWithSourceMap();
+        source.code +=  "\n//# sourceMappingURL=data:application/json," + source.map;
         return source.code;
     }
 
