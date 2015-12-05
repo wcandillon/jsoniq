@@ -6,15 +6,19 @@
 To compile a query to JavaScript:
 ```bash
 $ cat query.jq
-for $i in (1 to 5)
-return $i
+for $x in (4,1,2,3)
+for $y in (4,1,2,3)
+order by $x ascending, $y descending
+return { x: $x, y: $y }
 $ jsoniq compile query.jq
 $ node query.js
-1
-2
-3
-4
-5
+{ x: 1, y: 4 }
+{ x: 1, y: 3 }
+{ x: 1, y: 2 }
+{ x: 1, y: 1 }
+{ x: 2, y: 4 }
+{ x: 2, y: 3 }
+...
 ```
 
 Or to run the query directly
