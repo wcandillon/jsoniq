@@ -1,29 +1,33 @@
 /// <reference path="../../../typings/tsd.d.ts" />
+//import * as _ from "lodash";
 import Iterator from "./Iterator";
 import Position from "../../compiler/parsers/Position";
 import * as SourceMap from "source-map";
 
-export default class MultiplicativeIterator extends Iterator {
+export default class SimpleMapExpr extends Iterator {
 
-    private operator: string;
     private left: Iterator;
     private right: Iterator;
 
-    constructor(position: Position, left: Iterator, right: Iterator, operator: string) {
+    constructor(position: Position, left: Iterator, right: Iterator) {
         super(position);
         this.left = left;
         this.right = right;
-        this.operator = operator;
     }
 
+    //
     serialize(): SourceMap.SourceNode {
         var node = super.serialize();
-        node
-            .add("r.MultiplicativeIterator(" + JSON.stringify(this.operator) + ", ")
+        node.add("(function *(){\n")
+            .add("for(let $$ of ")
             .add(this.left.serialize())
-            .add(", ")
+            .add("){\n")
+            .add(`$$ = [$$];\n`)
+            .add("yield *")
             .add(this.right.serialize())
-            .add(")");
+            .add(";\n")
+            .add("}\n})()")
+        ;
         return node;
     }
 }

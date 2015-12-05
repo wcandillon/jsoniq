@@ -1,3 +1,5 @@
+import * as _ from "lodash";
+
 export function load(it: Iterator<any>): any[] {
     let items = [], item;
     while((item = it.next().value) !== undefined) {
@@ -6,26 +8,87 @@ export function load(it: Iterator<any>): any[] {
     return items;
 }
 
-export function sort(tuples: {}, expr: Iterator<any>, ascending: boolean, emptyGreatest: boolean): {} {
-    return tuples;
-}
-
 export function processTuples(tuples: Iterator<any>): any[] {
-    var newTuples = [];
-    var tuple;
+    let newTuples = [];
+    let tuple;
     while((tuple = tuples.next().value) !== undefined) {
         newTuples.push(tuple);
     }
-    newTuples.sort((tuple1, tuple2) => {
-        var v1, v2, ascending = true;
-        Object.keys(tuple1).filter(key => { return key.split("_")[0] === "group"; }).forEach(key => {
-            v1 = tuple1[key];
-            v2 = tuple2[key];
-            ascending = key.split("_")[1];
+    //Sorting
+    let keys = {}, sortingKeys = [];
+    newTuples.forEach(tuple => {
+        Object.keys(tuple).filter(key => { return key.split("_")[0] === "group"; }).forEach(key => {
+            keys[key] = true;
         });
-        return ascending === "true" ? (v1 > v2 ? 1 : -1) : (v1 < v2 ? 1 : -1);
     });
-    return newTuples;
+    sortingKeys = Object.keys(keys);
+    sortingKeys.sort((a, b) => {
+        let v1 = parseInt(a.split("_")[3], 10);
+        let v2 = parseInt(b.split("_")[3], 10);
+        if(v1 > v2) {
+            return 1;
+        } else if(v1 === v2) {
+            return 0;
+        } else {
+            return -1;
+        }
+    });
+    newTuples = [newTuples];
+    sortingKeys.reduce((done, key) => {
+        let ascending = key.split("_")[1] === "true";
+        if(done.length > 0) {
+            newTuples = newTuples.map(tuples => {
+                let result = [];
+                let groups = _.groupBy(tuples, tuple => {
+                    return done.map(key => {
+                        return "" + tuple[key];
+                    });
+                });
+                Object.keys(groups).forEach(key => {
+                    result.push(groups[key]);
+                });
+                return result;
+            })[0];
+        }
+        newTuples.forEach(tuples => {
+            tuples.sort((tuple1, tuple2) => {
+                let v1 = tuple1[key];
+                let v2 = tuple2[key];
+                let comp = ascending ? v1 > v2 : v1 < v2;
+                if(comp) {
+                    return 1;
+                } else if(v1 === v2) {
+                    return 0;
+                } else {
+                    return -1;
+                }
+            });
+        });
+        done.push(key);
+        return done;
+    }, []);
+    return _.flatten(newTuples);
+}
+
+export function *unary(ops: string[], value: Iterator<any>): Iterable<any> {
+    value = value.next().value;
+    if(ops.length === 0) {
+        yield value;
+    } else {
+        if(ops[0] === "+") {
+            yield * unary(ops.slice(1), (function *(){ yield + value; })());
+        } else {
+            yield * unary(ops.slice(1), (function *(){ yield - value; })());
+        }
+    }
+}
+
+export function *lookup(source: Iterator<{}>, target: Iterator<string>): Iterable<any> {
+    let key = target.next().value;
+    let item;
+    while((item = source.next().value) !== undefined) {
+        yield item[key];
+    }
 }
 
 export function *item(items: any[]): Iterable<any> {

@@ -27,8 +27,8 @@ yield {
     ${this.variables.map(varName => { return `"$${varName}": $${varName}`; }).join(",\n")},
     ${this.operators.map(op => {
         if(op instanceof OrderByIterator) {
-            return op.specs.map(spec => {
-                return `group_${spec.ascending}_${spec.emptyGreatest}: r.load(${spec.expr.serialize()})`;
+            return op.specs.map((spec, index) => {
+                return `group_${spec.ascending}_${spec.emptyGreatest}_${index}: r.load(${spec.expr.serialize()})`;
             });
         }
     }).join(",\n")}

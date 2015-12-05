@@ -17,14 +17,6 @@ export default class JSONParseTreeHandler implements Parser.ParsingEventHandler 
 
     private toBeIndexed: string[] = ["VarDecl", "FunctionDecl"];
 
-    //List of nodes that are not targeted by the parse tree size optimization.
-    private list: string[] = [
-        "OrExpr", "AndExpr", "ComparisonExpr", "StringConcatExpr", "RangeExpr",
-        "AdditiveExpr", "MultiplicativeExpr", "NotExpr",
-        "UnionExpr", "IntersectExceptExpr", "InstanceofExpr", "TreatExpr", "CastableExpr", "CastExpr", "UnaryExpr", "ValueExpr",
-        "FTContainsExpr", "SimpleMapExpr", "PathExpr", "RelativePathExpr", "PostfixExpr", "StepExpr"
-    ];
-
     constructor(source: string, fileName: string) {
         this.source = source;
         this.remains = source;
@@ -84,14 +76,6 @@ export default class JSONParseTreeHandler implements Parser.ParsingEventHandler 
 
         if (this.ptr.getParent() !== undefined) {
             this.ptr = this.ptr.getParent();
-        }
-
-        //Parse tree size optimization
-        if (this.ptr.getChildren().length > 0) {
-            var lastChild = this.ptr.getChildren()[this.ptr.getChildren().length - 1];
-            if (lastChild.getChildren().length === 1 && this.list.indexOf(lastChild.getName()) !== -1) {
-                this.ptr.getChildren()[this.ptr.getChildren().length - 1] = lastChild.getChildren()[0];
-            }
         }
         return this;
     }

@@ -129,11 +129,22 @@ describe("Test FLWOR", () => {
         e.toEqual([1, 1, 1, 2, 2, 2]);
     });
 
-    it("flwor 3", () => {
+    it("flwor 3.1", () => {
         var e = u.expectQuery(`let $i := 1
         let $i := $i + 2
         order by $i
         return $i`);
         e.toEqual([3]);
+    });
+
+    it("flwor 4", () => {
+        var source = `for $x in (4,1,2,3)
+for $y in (4,1,2,3)
+order by $x ascending, $y descending
+return { x: $x, y: $y }`;
+        var e = u.expectQuery(source, true);
+        e.toEqual(
+            [{"x":1,"y":4},{"x":1,"y":3},{"x":1,"y":2},{"x":1,"y":1},{"x":2,"y":4},{"x":2,"y":3},{"x":2,"y":2},{"x":2,"y":1},{"x":3,"y":4},{"x":3,"y":3},{"x":3,"y":2},{"x":3,"y":1},{"x":4,"y":4},{"x":4,"y":3},{"x":4,"y":2},{"x":4,"y":1}]
+        );
     });
 });

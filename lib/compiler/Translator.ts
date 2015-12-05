@@ -23,6 +23,9 @@ import ComparisonIterator from "../runtime/iterators/ComparisonIterator";
 import ObjectIterator from "../runtime/iterators/ObjectIterator";
 import PairIterator from "../runtime/iterators/PairIterator";
 import ArrayIterator from "../runtime/iterators/ArrayIterator";
+import SimpleMapExpr from "../runtime/iterators/SimpleMapExpr";
+import UnaryExpr from "../runtime/iterators/UnaryExpr";
+import ObjectLookupExpr from "../runtime/iterators/ObjectLookupExpr";
 
 import FLWORIterator from "../runtime/iterators/flwor/FLWORIterator";
 import ForIterator from "../runtime/iterators/flwor/ForIterator";
@@ -31,6 +34,7 @@ import WhereIterator from "../runtime/iterators/flwor/WhereIterator";
 import OrderByIterator from "../runtime/iterators/flwor/OrderByIterator";
 import ReturnIterator from "../runtime/iterators/flwor/ReturnIterator";
 
+//TODO: remove this class
 import Item from "../runtime/items/Item";
 
 export default class Translator {
@@ -130,11 +134,19 @@ export default class Translator {
         return true;
     }
 
+    //	Expr	   ::=   	ExprSingle ("," ExprSingle)*
     Expr(node: ASTNode): boolean {
-        var l = this.iterators.length;
-        this.visitChildren(node);
-        this.pushIt(new SequenceIterator(node.getPosition(), this.iterators.splice(l)));
-        return true;
+        var exprs = node.find(["ExprSingle"]);
+        if(exprs.length > 1) {
+            var its = [];
+            exprs.forEach(expr => {
+                this.visit(expr);
+                its.push(this.popIt());
+            });
+            this.pushIt(new SequenceIterator(node.getPosition(), its));
+            return true;
+        }
+        return false;
     }
 
     //FLWORExpr ::= InitialClause IntermediateClause* ReturnClause
@@ -169,7 +181,6 @@ export default class Translator {
         return true;
     }
 
-
     //LetBinding ::= ( '$' VarName TypeDeclaration? | FTScoreVar ) ':=' ExprSingle
     LetBinding(node: ASTNode): boolean {
         this.visitChildren(node);
@@ -195,7 +206,11 @@ export default class Translator {
         this.pushCtx(node.getPosition());
         var orderSpecs: { expr: Iterator; ascending: boolean; emptyGreatest: boolean }[] = [];
         var specs: ASTNode[] = node.find(["OrderSpecList"])[0].getChildren();
-        _.chain<ASTNode[]>(specs).forEach((spec: ASTNode) => {
+        _.chain<ASTNode[]>(specs)
+        .filter((spec: ASTNode) => {
+            return spec.getName() === "OrderSpec";
+        })
+        .forEach((spec: ASTNode) => {
             this.visitChildren(spec);
             orderSpecs.push({
                 expr: this.popIt(),
@@ -213,12 +228,53 @@ export default class Translator {
         return true;
     }
 
-    ParenthesizedExpr(node: ASTNode): boolean {
-        this.visitChildren(node);
-        if(this.iterators.length === 0) {
-            this.pushIt(new SequenceIterator(node.getPosition(), []));
-        }
+    //PostfixExpr ::= PrimaryExpr  ( Predicate | ArgumentList | ObjectLookup | ArrayLookup | ArrayUnboxing )*
+    PostfixExpr(node: ASTNode): boolean {
+        var primary = node.find(["PrimaryExpr"]);
+        this.visit(primary[0]);
+        var it = this.popIt();
+        var names = ["Predicate", "ArgumentList", "ObjectLookup", "ArrayLookup", "ArrayUnboxing"];
+        var exprs = [];
+        names.forEach(name => {
+            exprs = exprs.concat(node.find([name]));
+        });
+        exprs.forEach(expr => {
+            this.visit(expr);
+            //ObjectLookup ::= "." ( StringLiteral | NCName | ParenthesizedExpr | VarRef | ContextItemExpr )
+            if(expr.getName() === "ObjectLookup") {
+                var name = expr.find(["NCName"]);
+                if(name.length > 0) {
+                    it = new ObjectLookupExpr(node.getPosition(), it, new ItemIterator(name[0].getPosition(), new Item(name[0].toString())));
+                } else {
+                    it = new ObjectLookupExpr(node.getPosition(), it, this.popIt());
+                }
+            }
+        });
+        this.pushIt(it);
         return true;
+    }
+
+    //ObjectLookup ::= "." ( StringLiteral | NCName | ParenthesizedExpr | VarRef | ContextItemExpr )
+    //ArrayLookup ::= '[' '[' Expr ']' ']'
+    //ArrayUnboxing ::= '[' ']'
+    //ArgumentList ::= '(' ( Argument ( ',' Argument )* )? ')'
+    //Predicate ::= '[' Expr ']'
+
+    //StringConcatExpr ::= RangeExpr ( '||' RangeExpr )*
+    /*
+    StringConcatExpr(node: ASTNode): boolean {
+        var exprs =
+        return false;
+    }
+    */
+
+    //ParenthesizedExpr	   ::=   	"(" Expr? ")"
+    ParenthesizedExpr(node: ASTNode): boolean {
+        if(node.find(["Expr"]).length === 0) {
+            this.pushIt(new SequenceIterator(node.getPosition(), []));
+            return true;
+        }
+        return false;
     }
 
     VarRef(node: ASTNode): boolean {
@@ -228,55 +284,73 @@ export default class Translator {
         return true;
     }
 
-    RangeExpr(node: ASTNode): boolean {
-        this.visitChildren(node);
-        var to = this.popIt();
-        var f = this.popIt();
-        this.iterators.push(new RangeIterator(node.getPosition(), f, to));
+    ContextItemExpr(node: ASTNode): boolean {
+        this.sctx.addVarRef(this.resolveQName("$", node.getPosition()));
+        this.pushIt(new VarRefIterator(node.getPosition(), "$"));
         return true;
+    }
+
+    //RangeExpr	   ::=   	AdditiveExpr ( "to" AdditiveExpr )?
+    RangeExpr(node: ASTNode): boolean {
+        var exprs = node.find(["AdditiveExpr"]);
+        if(exprs.length > 1) {
+            this.visitChildren(node);
+            var to = this.popIt();
+            var from = this.popIt();
+            this.iterators.push(new RangeIterator(node.getPosition(), from, to));
+            return true;
+        }
+        return false;
     }
 
     //AdditiveExpr ::= MultiplicativeExpr ( ( '+' | '-' ) MultiplicativeExpr )*
     AdditiveExpr(node: ASTNode): boolean {
-        this.visitChildren(node);
-        node.find(["TOKEN"]).forEach((token: ASTNode) => {
-            this.iterators.push(
-                new AdditiveIterator(
-                    node.getPosition(),
-                    this.popIt(),
-                    this.popIt(),
-                    token.getValue() === "+"
-                )
-            );
-        });
-        return true;
+        var exprs = node.find(["MultiplicativeExpr"]);
+        var ops = node.find(["TOKEN"]);
+        if(exprs.length > 1) {
+            this.visit(exprs[0]);
+            var it = this.popIt();
+            for(var i = 1; i < exprs.length; i++) {
+                this.visit(exprs[i]);
+                it = new AdditiveIterator(node.getPosition(), it, this.popIt(), ops.splice(0, 1)[0].getValue() === "+");
+            }
+            this.pushIt(it);
+            return true;
+        }
+        return false;
     }
 
     //MultiplicativeExpr ::= UnionExpr ( ( '*' | 'div' | 'idiv' | 'mod' ) UnionExpr )*
     MultiplicativeExpr(node: ASTNode): boolean {
-        this.visitChildren(node);
-        node.find(["TOKEN"]).forEach((token: ASTNode) => {
-            this.pushIt(
-                new MultiplicativeIterator(
-                    node.getPosition(),
-                    this.popIt(),
-                    this.popIt(),
-                    token.getValue()
-                )
-            );
-        });
-        return true;
+        var exprs = node.find(["UnionExpr"]);
+        var ops = node.find(["TOKEN"]);
+        if(exprs.length > 1) {
+            this.visit(exprs[0]);
+            var it = this.popIt();
+            for(var i = 1; i < exprs.length; i++) {
+                this.visit(exprs[i]);
+                it = new MultiplicativeIterator(node.getPosition(), it, this.popIt(), ops.splice(0, 1)[0].getValue());
+            }
+            this.pushIt(it);
+            return true;
+        }
+        return false;
     }
 
+    //	ComparisonExpr	   ::=   	FTContainsExpr ( (ValueComp | GeneralComp | NodeComp) FTContainsExpr )?
     ComparisonExpr(node: ASTNode): boolean {
-        this.visitChildren(node);
-        var right = this.popIt();
-        var left = this.popIt();
-        var comp = node.find(["ValueComp"]).toString();
-        comp = comp === "" ? node.find(["GeneralComp"]).toString() : comp;
-        comp = comp === "" ? node.find(["NodeComp"]).toString() : comp;
-        this.pushIt(new ComparisonIterator(node.getPosition(), left, right, comp));
-        return true;
+        var exprs = node.find(["FTContainsExpr"]);
+        if(exprs.length > 1) {
+            this.visitChildren(node);
+            var right = this.popIt();
+            var left = this.popIt();
+            var comp = node.find(["ValueComp"]).toString();
+            comp = comp === "" ? node.find(["GeneralComp"]).toString() : comp;
+            comp = comp === "" ? node.find(["NodeComp"]).toString() : comp;
+            this.pushIt(new ComparisonIterator(node.getPosition(), left, right, comp));
+            return true;
+        }
+        return false;
     }
 
     BlockExpr(node: ASTNode): boolean {
@@ -286,6 +360,34 @@ export default class Translator {
             this.pushIt(new ObjectIterator(node.getPosition(), []));
         }
         return true;
+    }
+
+
+    //RelativePathExpr ::= PostfixExpr ( ( '/' | '//' | '!' ) StepExpr )*
+    RelativePathExpr(node: ASTNode): boolean {
+        var exprs = node.find(["PostfixExpr"]).concat(node.find(["StepExpr"]));
+        if(exprs.length > 1) {
+            this.visit(exprs[0]);
+            var it = this.popIt();
+            for(var i = 1; i < exprs.length; i++) {
+                this.visit(exprs[i]);
+                it = new SimpleMapExpr(node.getPosition(), it, this.popIt());
+            }
+            this.pushIt(it);
+            return true;
+        }
+        return false;
+    }
+
+    //UnaryExpr ::= ( '-' | '+' )* ValueExpr
+    UnaryExpr(node: ASTNode): boolean {
+        var ops = node.find(["TOKEN"]);
+        if(ops.length > 0) {
+            this.visitChildren(node);
+            this.pushIt(new UnaryExpr(node.getPosition(), ops.map(op => { return op.getValue(); }), this.popIt()));
+            return true;
+        }
+        return false;
     }
 
     ObjectConstructor(node: ASTNode): boolean {

@@ -45,10 +45,35 @@ describe("Test FLWOR Expressions", () => {
         "flwor00.xq",
         "flwor01.xq",
         "flwor02.xq",
+        //"flwor03.xq",
+        //"flwor04.xq",
+        //"flwor05.xq",
         "flwor06.xq",
         "flwor07.xq",
         "flwor08.xq",
+        //"flwor09.xq",
         "flwor10.xq"
+    ];
+    queries.forEach(file => {
+        file = base + "/" + file;
+        it(file, () => {
+            var query = fs.readFileSync(file, "utf-8");
+            var e = u.expectSerializedQuery(query, file.substring(file.length - 3) === ".jq");
+            file = file.replace("/Queries/", "/ExpQueryResults/");
+            file = file.substring(0, file.length - 3);
+            file = file + ".xml.res";
+            e.toEqual(fs.readFileSync(file, "utf-8").trim());
+        });
+    });
+});
+
+describe("Test Bang Expressions", () => {
+
+    var base = "tests/queries/zorba/Queries/zorba/bang";
+    var queries = [
+        "1.xq",
+        "9.xq",
+        "10.xq"
     ];
     queries.forEach(file => {
         file = base + "/" + file;

@@ -9,7 +9,7 @@ describe("Test Item Constructors: ", () => {
         e.toEqual([]);
     });
 
-    it("()", () => {
+    it("seq", () => {
         var e = u.expectQuery("((1 + 1, 2), 3, (4 + 0), (5))");
         e.toEqual([2, 2, 3, 4, 5]);
     });
