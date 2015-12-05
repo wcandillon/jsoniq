@@ -1,15 +1,15 @@
-#JSONiq
+# JSONiq
 [![Circle CI](https://circleci.com/gh/wcandillon/jsoniq/tree/master.svg?style=svg)](https://circleci.com/gh/wcandillon/jsoniq/tree/master) [![NPM version](http://img.shields.io/npm/v/jsoniq.svg?style=flat)](http://badge.fury.io/js/jsoniq)
 
-##The JSON Query Language
-###Usage
-To compile a query:
+## The JSON Query Language
+### Usage
+To compile a query to JavaScript:
 ```bash
-$cat query.jq
+$ cat query.jq
 for $i in (1 to 5)
 return $i
-$jsoniq compile query.jq
-$node query.js
+$ jsoniq compile query.jq
+$ node query.js
 1
 2
 3
@@ -25,10 +25,10 @@ $ jsoniq run query.jq
 
 To print the query AST:
 ```bash
-$jsoniq ast query.jq
+$ jsoniq ast query.jq
 ```
 
 To print the query plan:
 ```bash
-$jsoniq plan query.jq
+$ jsoniq plan query.jq
 ```
