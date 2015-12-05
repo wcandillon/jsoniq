@@ -78,7 +78,7 @@ export default class JSONiq {
         var node = new SourceMap.SourceNode(1, 1, it.getPosition().getFileName(), null, "MainQuery");
         node.add("'use strict';\n");
         node.add("require('source-map-support').install();\n");
-        node.add("var r = require('./dist/lib/runtime/Runtime');\n");
+        node.add("var r = require('jsoniq').Runtime;\n");
         node.add("var it = ");
         node.add(it.serialize());
         node.add(";\n");
@@ -90,7 +90,7 @@ export default class JSONiq {
         return source.code;
     }
 
-    static serializeAsJSON(it: Iterator): string {
+    static serializeDebug(it: Iterator): string {
         var node = new SourceMap.SourceNode(1, 1, it.getPosition().getFileName(), null, "MainQuery");
         node.add("'use strict';\n");
         node.add("require('source-map-support').install();\n");
