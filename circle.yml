@@ -2,7 +2,15 @@ machine:
   node:
     version: 5.1.0
 dependencies:
+  pre:
+    - npm install -g npm
   post:
     - npm install -g tsd@next
     - tsd reinstall
     - tsd rebundle
+deployment:
+  try:
+    branch: master
+    commands:
+      - echo -e "$NPM_USERNAME\n$NPM_PASSWORD\n$NPM_EMAIL" | npm login
+      - npm publish .

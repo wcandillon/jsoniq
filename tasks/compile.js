@@ -6,7 +6,7 @@ var merge = require('merge2');
 
 var Config = require('./config');
 
-var tsProject = $.typescript.createProject({
+var ts = $.typescript.createProject({
     declarationFiles: false,
     target: 'ES6',
     module: 'commonjs',
@@ -20,7 +20,7 @@ gulp.task('compile:clean', function () {
 gulp.task('compile:typescript', ['compile:clean'], function() {
     var tsResult = gulp.src(Config.ts.concat(['typings/**/*.ts']))
         .pipe($.sourcemaps.init())
-        .pipe($.typescript(tsProject));
+        .pipe($.typescript(ts));
     return merge([
         tsResult.dts.pipe(gulp.dest(Config.dist)),
         tsResult.js.pipe($.sourcemaps.write()).pipe(gulp.dest(Config.dist))

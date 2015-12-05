@@ -1,0 +1,12 @@
+node_modules
+typings
+
+.DS_Store
+*.swp
+.tscache
+.baseDir.ts
+docs
+.idea
+.gulp*
+gulp-tsc-tmp*
+coverage
