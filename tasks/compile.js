@@ -6,11 +6,19 @@ var merge = require('merge2');
 
 var Config = require('./config');
 
-var tsProject = $.typescript.createProject({
+var test = $.typescript.createProject({
     declarationFiles: false,
     target: 'ES6',
     module: 'commonjs',
     typescript: require('typescript')
+});
+
+var dist = $.typescript.createProject({
+    declarationFiles: false,
+    target: 'ES6',
+    module: 'commonjs',
+    typescript: require('typescript'),
+    outFile: 'jsoniq.js'
 });
 
 gulp.task('compile:clean', function () {
@@ -20,10 +28,19 @@ gulp.task('compile:clean', function () {
 gulp.task('compile:typescript', ['compile:clean'], function() {
     var tsResult = gulp.src(Config.ts.concat(['typings/**/*.ts']))
         .pipe($.sourcemaps.init())
-        .pipe($.typescript(tsProject));
+        .pipe($.typescript(test));
     return merge([
         tsResult.dts.pipe(gulp.dest(Config.dist)),
         tsResult.js.pipe($.sourcemaps.write()).pipe(gulp.dest(Config.dist))
+    ]);
+});
+
+gulp.task('compile:dist', ['compile:typescript'], function(){
+    var tsResult = gulp.src(Config.ts.concat(['typings/**/*.ts']))
+        .pipe($.typescript(dist));
+    return merge([
+        tsResult.dts.pipe(gulp.dest(Config.dist)),
+        tsResult.js.pipe(gulp.dest(Config.dist))
     ]);
 });
 
