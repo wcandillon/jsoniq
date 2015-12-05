@@ -1,6 +1,6 @@
 {
   "name": "jsoniq",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "JSONiq implementation for JavaScript",
   "main": "dist/lib/JSONiq.js",
   "jsoniq": {
