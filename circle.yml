@@ -6,3 +6,8 @@ dependencies:
     - npm install -g tsd@next
     - tsd reinstall
     - tsd rebundle
+deployment:
+  try:
+    branch: master
+    commands:
+      - npm publish .
