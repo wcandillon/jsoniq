@@ -1,11 +1,8 @@
 {
   "name": "jsoniq",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "JSONiq implementation for JavaScript",
-  "main": {
-    "jsoniq": "dist/lib/JSONiq.js",
-    "jsoniq-runtime": "dist/lib/Runtime.js"
-  },
+  "main": "dist/lib/JSONiq.js",
   "bin": {
     "jsoniq": "./bin/jsoniq"
   },

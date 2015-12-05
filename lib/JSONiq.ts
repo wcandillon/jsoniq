@@ -7,12 +7,15 @@ import ASTNode from "./compiler/parsers/ASTNode";
 import * as JSONiqParser from "./compiler/parsers/JSONiqParser";
 import * as XQueryParser from "./compiler/parsers/XQueryParser";
 import JSONParseTreeHandler from "./compiler/parsers/JSONParseTreeHandler";
+import * as Runtime from "./runtime/Runtime";
 
 import * as SourceMap from "source-map";
 
 import Iterator from "./runtime/iterators/Iterator";
 
 require("source-map-support").install();
+
+exports.Runtime = Runtime;
 
 export default class JSONiq {
 
