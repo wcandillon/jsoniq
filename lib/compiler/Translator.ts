@@ -25,6 +25,7 @@ import PairIterator from "../runtime/iterators/PairIterator";
 import ArrayIterator from "../runtime/iterators/ArrayIterator";
 import SimpleMapExpr from "../runtime/iterators/SimpleMapExpr";
 import UnaryExpr from "../runtime/iterators/UnaryExpr";
+import ObjectLookupExpr from "../runtime/iterators/ObjectLookupExpr";
 
 import FLWORIterator from "../runtime/iterators/flwor/FLWORIterator";
 import ForIterator from "../runtime/iterators/flwor/ForIterator";
@@ -33,6 +34,7 @@ import WhereIterator from "../runtime/iterators/flwor/WhereIterator";
 import OrderByIterator from "../runtime/iterators/flwor/OrderByIterator";
 import ReturnIterator from "../runtime/iterators/flwor/ReturnIterator";
 
+//TODO: remove this class
 import Item from "../runtime/items/Item";
 
 export default class Translator {
@@ -225,6 +227,39 @@ export default class Translator {
         this.pushIt(new ReturnIterator(node.getPosition(), this.popIt()));
         return true;
     }
+
+    //PostfixExpr ::= PrimaryExpr  ( Predicate | ArgumentList | ObjectLookup | ArrayLookup | ArrayUnboxing )*
+    PostfixExpr(node: ASTNode): boolean {
+        var primary = node.find(["PrimaryExpr"]);
+        this.visit(primary[0]);
+        var it = this.popIt();
+        var names = ["Predicate", "ArgumentList", "ObjectLookup", "ArrayLookup", "ArrayUnboxing"];
+        var exprs = [];
+        names.forEach(name => {
+            exprs = exprs.concat(node.find([name]));
+        });
+        exprs.forEach(expr => {
+            this.visit(expr);
+            //ObjectLookup ::= "." ( StringLiteral | NCName | ParenthesizedExpr | VarRef | ContextItemExpr )
+            if(expr.getName() === "ObjectLookup") {
+                var name = expr.find(["NCName"]);
+                if(name.length > 0) {
+                    it = new ObjectLookupExpr(node.getPosition(), it, new ItemIterator(name[0].getPosition(), new Item(name[0].toString())));
+                } else {
+                    it = new ObjectLookupExpr(node.getPosition(), it, this.popIt());
+                }
+            }
+        });
+        this.pushIt(it);
+        return true;
+    }
+
+    //ObjectLookup ::= "." ( StringLiteral | NCName | ParenthesizedExpr | VarRef | ContextItemExpr )
+    //ArrayLookup ::= '[' '[' Expr ']' ']'
+    //ArrayUnboxing ::= '[' ']'
+    //ArgumentList ::= '(' ( Argument ( ',' Argument )* )? ')'
+    //Predicate ::= '[' Expr ']'
+
 
     //ParenthesizedExpr	   ::=   	"(" Expr? ")"
     ParenthesizedExpr(node: ASTNode): boolean {

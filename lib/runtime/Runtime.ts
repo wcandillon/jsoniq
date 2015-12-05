@@ -83,6 +83,14 @@ export function *unary(ops: string[], value: Iterator<any>): Iterable<any> {
     }
 }
 
+export function *lookup(source: Iterator<{}>, target: Iterator<string>): Iterable<any> {
+    let key = target.next().value;
+    let item;
+    while((item = source.next().value) !== undefined) {
+        yield item[key];
+    }
+}
+
 export function *item(items: any[]): Iterable<any> {
     for(let i = 0; i < items.length; i++) {
         yield items[i];
