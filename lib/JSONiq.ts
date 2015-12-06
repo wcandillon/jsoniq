@@ -7,11 +7,12 @@ import ASTNode from "./compiler/parsers/ASTNode";
 import * as JSONiqParser from "./compiler/parsers/JSONiqParser";
 import * as XQueryParser from "./compiler/parsers/XQueryParser";
 import JSONParseTreeHandler from "./compiler/parsers/JSONParseTreeHandler";
-import * as Runtime from "./runtime/Runtime";
 
 import * as SourceMap from "source-map";
 
 import Iterator from "./runtime/iterators/Iterator";
+
+import * as Runtime from "./runtime/Runtime";
 
 require("source-map-support").install();
 
@@ -74,11 +75,12 @@ export default class JSONiq {
         return it;
     }
 
-    static serialize(it: Iterator): string {
+    serialize(it: Iterator): string {
         var node = new SourceMap.SourceNode(1, 1, it.getPosition().getFileName(), null, "MainQuery");
         node.add("'use strict';\n");
         node.add("require('source-map-support').install();\n");
         node.add("var r = require('jsoniq').Runtime;\n");
+        node.add(this.rootSctx.getProlog());
         node.add("var it = ");
         node.add(it.serialize());
         node.add(";\n");
@@ -90,11 +92,12 @@ export default class JSONiq {
         return source.code;
     }
 
-    static serializeDebug(it: Iterator): string {
+    serializeDebug(it: Iterator): string {
         var node = new SourceMap.SourceNode(1, 1, it.getPosition().getFileName(), null, "MainQuery");
         node.add("'use strict';\n");
         node.add("require('source-map-support').install();\n");
         node.add("var r = require('./dist/lib/runtime/Runtime');\n");
+        node.add(this.rootSctx.getProlog());
         node.add("var it = ");
         node.add(it.serialize());
         node.add(";\n");

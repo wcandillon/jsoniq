@@ -127,6 +127,14 @@ export default class Translator {
         return true;
     }
 
+    //ModuleImport ::= 'import' 'module' ( 'namespace' NCName '=' )? URILiteral ( 'at' URILiteral ( ',' URILiteral )* )?
+    ModuleImport(node: ASTNode): boolean {
+        var prefix = node.find(["NCName"])[0].toString();
+        var uri = node.find(["URILiteral"])[0].toString();
+        this.rootSctx.importModule(prefix, uri);
+        return true;
+    }
+
     NamespaceDecl(node: ASTNode): boolean {
         var prefix = node.find(["NCName"]).toString();
         var uri = node.find(["URILiteral"]).toString();

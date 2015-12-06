@@ -13,7 +13,7 @@ cli
     var query = new JSONiq(fs.readFileSync(file, "utf-8"));
     query.setFileName(file);
     var it = query.compile();
-    var source = JSONiq.serialize(it);
+    var source = query.serialize(it);
     var child = cp.execSync("node", { input: source });
     process.stdout.write(child.toString());
 });
@@ -25,7 +25,7 @@ cli
         var query = new JSONiq(fs.readFileSync(file, "utf-8"));
         query.setFileName(file);
         var it = query.compile();
-        var code = JSONiq.serialize(it);
+        var code = query.serialize(it);
         fs.writeFileSync(file.substring(0, file.length - 3) + ".js", code, "utf-8");
     });
 
@@ -36,7 +36,7 @@ cli
     var query = new JSONiq(fs.readFileSync(file, "utf-8"));
     query.setFileName(file);
     var it = query.compile();
-    console.log(JSONiq.serialize(it));
+    console.log(query.serialize(it));
 });
 
 cli
