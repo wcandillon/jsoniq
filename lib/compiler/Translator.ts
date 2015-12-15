@@ -26,6 +26,7 @@ import ArrayIterator from "../runtime/iterators/ArrayIterator";
 import SimpleMapExpr from "../runtime/iterators/SimpleMapExpr";
 import UnaryExpr from "../runtime/iterators/UnaryExpr";
 import ObjectLookupExpr from "../runtime/iterators/ObjectLookupExpr";
+import FunctionCallExpr from "../runtime/iterators/FunctionCallExpr";
 
 import FLWORIterator from "../runtime/iterators/flwor/FLWORIterator";
 import ForIterator from "../runtime/iterators/flwor/ForIterator";
@@ -139,6 +140,14 @@ export default class Translator {
         var prefix = node.find(["NCName"]).toString();
         var uri = node.find(["URILiteral"]).toString();
         this.sctx.addNamespace(prefix, uri);
+        return true;
+    }
+
+    //FunctionCall ::= FunctionName ArgumentList
+    FunctionCall(node: ASTNode): boolean {
+        var name = this.resolveQName(node.find(["FunctionName"]).toString(), node.getPosition());
+        var args = [];
+        this.pushIt(new FunctionCallExpr(node.getPosition(), name, args));
         return true;
     }
 

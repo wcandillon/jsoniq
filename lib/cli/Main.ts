@@ -11,10 +11,8 @@ cli
 .description("run JSONiq query")
 .action(file => {
     var query = new JSONiq(fs.readFileSync(file, "utf-8"));
-    query.setFileName(file);
-    var it = query.compile();
-    var source = query.serialize(it);
-    var child = cp.execSync("node", { input: source });
+    var code = query.setFileName(file).compile().serialize();
+    var child = cp.execSync("node", { input: code });
     process.stdout.write(child.toString());
 });
 
@@ -23,9 +21,7 @@ cli
     .description("compile JSONiq query")
     .action(file => {
         var query = new JSONiq(fs.readFileSync(file, "utf-8"));
-        query.setFileName(file);
-        var it = query.compile();
-        var code = query.serialize(it);
+        var code = query.setFileName(file).compile().serialize();
         fs.writeFileSync(file.substring(0, file.length - 3) + ".js", code, "utf-8");
     });
 
@@ -34,9 +30,7 @@ cli
 .description("Print query plan")
 .action(file => {
     var query = new JSONiq(fs.readFileSync(file, "utf-8"));
-    query.setFileName(file);
-    var it = query.compile();
-    console.log(query.serialize(it));
+    console.log(query.setFileName(file).compile().serialize());
 });
 
 cli
