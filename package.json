@@ -8,7 +8,7 @@
   },
   "scripts": {
     "install": "$(npm bin)/typings install",
-    "test": "gulp"
+    "test": "$(npm bin)/gulp"
   },
   "repository": {
     "type": "git",
