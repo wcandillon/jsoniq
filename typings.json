@@ -1,0 +1,11 @@
+{
+  "name": "jsoniq",
+  "globalDependencies": {
+    "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#61d066fef5a1ac9e2389b51b9cf88746b7bbfde9",
+    "jasmine": "github:DefinitelyTyped/DefinitelyTyped/jasmine/jasmine.d.ts#61d066fef5a1ac9e2389b51b9cf88746b7bbfde9",
+    "node-uuid": "github:DefinitelyTyped/DefinitelyTyped/node-uuid/node-uuid.d.ts#61d066fef5a1ac9e2389b51b9cf88746b7bbfde9",
+    "lodash": "github:DefinitelyTyped/DefinitelyTyped/lodash/lodash.d.ts#61d066fef5a1ac9e2389b51b9cf88746b7bbfde9",
+    "commander": "github:DefinitelyTyped/DefinitelyTyped/commander/commander.d.ts#b3834d886a95789e6ab56e8244775ec10c5293d0",
+    "source-map": "github:DefinitelyTyped/DefinitelyTyped/source-map/source-map.d.ts#7a3d6944036902996b87981e6150900952b35628"
+  }
+}
