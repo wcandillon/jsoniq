@@ -7,11 +7,12 @@ import ASTNode from "./compiler/parsers/ASTNode";
 import * as JSONiqParser from "./compiler/parsers/JSONiqParser";
 import * as XQueryParser from "./compiler/parsers/XQueryParser";
 import JSONParseTreeHandler from "./compiler/parsers/JSONParseTreeHandler";
-import * as Runtime from "./runtime/Runtime";
 
 import * as SourceMap from "source-map";
 
 import Iterator from "./runtime/iterators/Iterator";
+
+import * as Runtime from "./runtime/Runtime";
 
 require("source-map-support").install();
 
@@ -23,6 +24,7 @@ export default class JSONiq {
     private source: string;
     private fileName: string = "";
     private markers: Marker[] = [];
+    private it: Iterator;
 
     constructor(source: string) {
         this.source = source;
@@ -64,23 +66,25 @@ export default class JSONiq {
         return h.getParseTree();
     }
 
-    compile(): Iterator {
+    compile(): JSONiq {
         var ast = this.parse();
         //TODO: check for syntax errors and don't compile
         //console.log(ast.toXML());
         var translator = new Translator(this.rootSctx, ast);
         var it = translator.compile();
         this.markers = this.markers.concat(translator.getMarkers());
-        return it;
+        this.it = it;
+        return this;
     }
 
-    static serialize(it: Iterator): string {
-        var node = new SourceMap.SourceNode(1, 1, it.getPosition().getFileName(), null, "MainQuery");
+    serialize(): string {
+        var node = new SourceMap.SourceNode(1, 1, this.fileName, null, "MainQuery");
         node.add("'use strict';\n");
         node.add("require('source-map-support').install();\n");
         node.add("var r = require('jsoniq').Runtime;\n");
+        node.add(this.rootSctx.getProlog());
         node.add("var it = ");
-        node.add(it.serialize());
+        node.add(this.it.serialize());
         node.add(";\n");
         node.add("for(var item of it) {\n");
         node.add("   console.log(item);\n");
@@ -90,13 +94,14 @@ export default class JSONiq {
         return source.code;
     }
 
-    static serializeDebug(it: Iterator): string {
-        var node = new SourceMap.SourceNode(1, 1, it.getPosition().getFileName(), null, "MainQuery");
+    serializeDebug(): string {
+        var node = new SourceMap.SourceNode(1, 1, this.fileName, null, "MainQuery");
         node.add("'use strict';\n");
         node.add("require('source-map-support').install();\n");
         node.add("var r = require('./dist/lib/runtime/Runtime');\n");
+        node.add(this.rootSctx.getProlog());
         node.add("var it = ");
-        node.add(it.serialize());
+        node.add(this.it.serialize());
         node.add(";\n");
         node.add("for(var item of it) {\n");
         node.add("   console.log(JSON.stringify(item));\n");
